@@ -16,6 +16,6 @@ Windows but I just have not tried it.
 + $ sudo useradd -m sme
 + $ sudo passwd sme
 
-### 2 Set up watchersbot software
+### 2 Set up StatisticalMe software
 
 TODO
