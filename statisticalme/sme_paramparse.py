@@ -16,7 +16,7 @@
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from sme_utils import normalize_caseless
+from .sme_utils import normalize_caseless
 import logging
 
 

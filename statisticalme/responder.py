@@ -19,7 +19,7 @@ import sys
 
 from datetime import datetime, timedelta
 from discord.ext import tasks
-from sme_utils import normalize_caseless
+from .sme_utils import normalize_caseless
 import aiohttp
 import copy
 import discord
@@ -27,10 +27,10 @@ import logging
 import math
 import pytz
 import re
-import sme_paramparse
-import sme_scores
-import sme_table
-import sme_tech
+from . import sme_paramparse
+from . import sme_scores
+from . import sme_table
+from . import sme_tech
 import traceback
 import yaml
 

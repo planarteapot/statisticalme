@@ -21,7 +21,7 @@ import sys
 
 from dotenv import load_dotenv
 from pathlib import Path
-from responder import MainCommand
+from .responder import MainCommand
 import discord
 import logging
 import os
@@ -134,8 +134,13 @@ class SmeClient(discord.Client):
             mainc.set_guild(self.guilds[0])
 
 
-client = SmeClient()
-mainc.set_discord_client(client)
+def main_function():
+    client = SmeClient()
+    mainc.set_discord_client(client)
 
-logger.info('Calling discord Client.run')
-client.run(os.environ['STATISTICALME_TOKEN'])
+    logger.info('Calling discord Client.run')
+    client.run(os.environ['STATISTICALME_TOKEN'])
+
+
+if __name__ == "__main__":
+    main_function()
