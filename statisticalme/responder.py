@@ -122,7 +122,6 @@ class MainCommand:
         logger.debug('ok_channels {}'.format(self.ok_channels))
 
         self.weights = dict()
-        self.weights['totalcargo'] = sme_scores.import_weights('totalcargo')
         self.weights['wspoints'] = sme_scores.import_weights('wspoints')
 
         self.temp_rolemap = dict()
@@ -1850,15 +1849,10 @@ class MainCommand:
             who_list_good = [self.current_author.id]
 
         score_key = 'wspoints'
-        flag_relics = False
         flag_detail = False
         flagged_whotruncated = False
         if len(other_list) > 0:
             new_key = other_list[0]
-            if new_key == 'relics':
-                new_key = 'totalcargo'
-                flag_relics = True
-
             if new_key in self.weights:
                 score_key = new_key
 
@@ -1878,8 +1872,6 @@ class MainCommand:
         user_list = []
 
         t_header = ['User', score_key]
-        if flag_relics:
-            t_header = ['User', 'relics']
 
         for pkey in who_list_good:
             pp = self.players[pkey]
@@ -2137,9 +2129,6 @@ class MainCommand:
                         if tkey in ww:
                             tweights = ww[tkey]
                             accum += tweights[tval - 1]
-
-                if flag_relics:
-                    accum = int(accum / 4)
 
             if flag_detail:
                 olist = list()
