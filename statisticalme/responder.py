@@ -765,7 +765,7 @@ class MainCommand:
             if 'tech' in p:
                 pt = p['tech']
 
-                if techname == 'relics':
+                if techname == 'relics' or techname == 'totalcargo':
                     ti_cbe = teh.get_tech_index('cargobayextension')
                     ti_ts = teh.get_tech_index('transport')
 
@@ -781,9 +781,9 @@ class MainCommand:
                             score_ts = [1, 2, 3, 4, 5, 6]
                             totalcargo += score_ts[val_ts - 1]
 
-                        r_value = int(totalcargo / 4)
-                elif techname == 'sprint10':
-                    r_value = 0  # NOP
+                        r_value = int(totalcargo)
+                        if techname == 'relics':
+                            r_value = int(totalcargo / 4)
                 else:
                     tech_index = teh.get_tech_index(techname)
 

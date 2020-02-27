@@ -174,7 +174,7 @@ class TechHandler:
             li = self.tech_key_index[tech]
         elif tech == 'relics':
             li = 9900
-        elif tech == 'sprint10':
+        elif tech == 'totalcargo':
             li = 9901
 
         return li
@@ -188,7 +188,7 @@ class TechHandler:
         elif tindex == 9900:
             tname = 'Relics'
         elif tindex == 9901:
-            tname = 'Sprint to L10'
+            tname = 'Total Cargo'
 
         return tname
 
