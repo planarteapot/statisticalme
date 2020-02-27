@@ -481,7 +481,7 @@ class MainCommand:
         return return_list
 
     def dev_command_info(self, params):
-        return_list = ['StatisticalMe\nversion: 20.2\ncode: faster ws updates']
+        return_list = ['StatisticalMe\nversion: 20.2.1\ncode: faster ws updates\nfix1: for thanu level cargo bays']
         return return_list
 
     def dev_command_save(self, params):
@@ -775,12 +775,12 @@ class MainCommand:
                     if ti_cbe >= 0 and ti_ts >= 0:
                         totalcargo = 0
                         val_cbe = pt[ti_cbe]
-                        if val_cbe > 0:
-                            score_cbe = [1, 2, 3, 5, 7, 9, 12, 15, 19, 25, 31]
+                        if val_cbe > 0 and val_cbe <= 12:
+                            score_cbe = [1, 2, 3, 5, 7, 9, 12, 15, 19, 25, 31, 46]
                             totalcargo += score_cbe[val_cbe - 1]
 
                         val_ts = pt[ti_ts]
-                        if val_ts > 0:
+                        if val_ts > 0 and val_ts <= 6:
                             score_ts = [1, 2, 3, 4, 5, 6]
                             totalcargo += score_ts[val_ts - 1]
 
