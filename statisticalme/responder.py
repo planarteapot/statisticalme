@@ -784,8 +784,6 @@ class MainCommand:
                         r_value = int(totalcargo / 4)
                 elif techname == 'sprint10':
                     r_value = 0  # NOP
-                elif techname == 'mmrate':
-                    r_value = 0  # NOP
                 else:
                     tech_index = teh.get_tech_index(techname)
 

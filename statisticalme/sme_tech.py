@@ -176,8 +176,6 @@ class TechHandler:
             li = 9900
         elif tech == 'sprint10':
             li = 9901
-        elif tech == 'mmrate':
-            li = 9902
 
         return li
 
@@ -191,8 +189,6 @@ class TechHandler:
             tname = 'Relics'
         elif tindex == 9901:
             tname = 'Sprint to L10'
-        elif tindex == 9902:
-            tname = 'Max Mining Rate'
 
         return tname
 
