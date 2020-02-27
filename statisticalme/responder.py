@@ -123,7 +123,6 @@ class MainCommand:
 
         self.weights = dict()
         self.weights['totalcargo'] = sme_scores.import_weights('totalcargo')
-        self.weights['wspoints20192'] = sme_scores.import_weights('wspoints20192')
         self.weights['wspoints'] = sme_scores.import_weights('wspoints')
 
         self.temp_rolemap = dict()
@@ -1873,7 +1872,7 @@ class MainCommand:
                     del who_list_good[4:]
 
         flag_wspoints = False
-        if score_key == 'wspoints' or score_key == 'wspoints20192':
+        if score_key == 'wspoints':
             flag_wspoints = True
 
         ww = self.weights[score_key]
