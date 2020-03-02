@@ -2149,7 +2149,7 @@ class MainCommand:
             return_list += sme_table.draw(t_header, ['l', 'r'], user_list)
 
         if flagged_whotruncated:
-            return_list.append('Only showing 3 pilots')
+            return_list.append('Only showing 4 pilots')
 
         return return_list
 
