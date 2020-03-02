@@ -122,9 +122,6 @@ class MainCommand:
         logger.debug('ok_channels {}'.format(self.ok_channels))
 
         self.weights = dict()
-        self.weights['whitestar'] = sme_scores.import_weights('whitestar')
-        self.weights['totalcargo'] = sme_scores.import_weights('totalcargo')
-        self.weights['wspoints20192'] = sme_scores.import_weights('wspoints20192')
         self.weights['wspoints'] = sme_scores.import_weights('wspoints')
 
         self.temp_rolemap = dict()
@@ -189,6 +186,12 @@ class MainCommand:
             title='StatisticalMe pilot')
         self.subparser_pilot.add_command('lastup', False, self.command_pilot_lastup)
 
+        self.subparser_queue = sme_paramparse.CommandParse(
+            title='StatisticalMe queue')
+        self.subparser_queue.add_command('in', False, self.command_queue_in)
+        self.subparser_queue.add_command('out', False, self.command_queue_out)
+        self.subparser_queue.add_command('list', False, self.command_queue_list)
+
         self.ord_parser = sme_paramparse.CommandParse(
             title='StatisticalMe')
         self.ord_parser.add_command('dev', True, self.dev_parser, auth_fn=self.auth_dev)
@@ -197,8 +200,8 @@ class MainCommand:
         self.ord_parser.add_command('tech', True, self.subparser_tech, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('time', True, self.subparser_time, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
+        self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
-        # self.ord_parser.add_command('rate', False, self.command_rate, auth_fn=self.auth_watcher)
 
         self.current_author = None
         self.current_channel = None
@@ -761,7 +764,7 @@ class MainCommand:
             if 'tech' in p:
                 pt = p['tech']
 
-                if techname == 'relics':
+                if techname == 'relics' or techname == 'totalcargo':
                     ti_cbe = teh.get_tech_index('cargobayextension')
                     ti_ts = teh.get_tech_index('transport')
 
@@ -777,11 +780,9 @@ class MainCommand:
                             score_ts = [1, 2, 3, 4, 5, 6]
                             totalcargo += score_ts[val_ts - 1]
 
-                        r_value = int(totalcargo / 4)
-                elif techname == 'sprint10':
-                    r_value = 0  # NOP
-                elif techname == 'mmrate':
-                    r_value = 0  # NOP
+                        r_value = int(totalcargo)
+                        if techname == 'relics':
+                            r_value = int(totalcargo / 4)
                 else:
                     tech_index = teh.get_tech_index(techname)
 
@@ -1848,15 +1849,10 @@ class MainCommand:
             who_list_good = [self.current_author.id]
 
         score_key = 'wspoints'
-        flag_relics = False
         flag_detail = False
         flagged_whotruncated = False
         if len(other_list) > 0:
             new_key = other_list[0]
-            if new_key == 'relics':
-                new_key = 'totalcargo'
-                flag_relics = True
-
             if new_key in self.weights:
                 score_key = new_key
 
@@ -1868,7 +1864,7 @@ class MainCommand:
                     del who_list_good[4:]
 
         flag_wspoints = False
-        if score_key == 'wspoints' or score_key == 'wspoints20192':
+        if score_key == 'wspoints':
             flag_wspoints = True
 
         ww = self.weights[score_key]
@@ -1876,8 +1872,6 @@ class MainCommand:
         user_list = []
 
         t_header = ['User', score_key]
-        if flag_relics:
-            t_header = ['User', 'relics']
 
         for pkey in who_list_good:
             pp = self.players[pkey]
@@ -2136,9 +2130,6 @@ class MainCommand:
                             tweights = ww[tkey]
                             accum += tweights[tval - 1]
 
-                if flag_relics:
-                    accum = int(accum / 4)
-
             if flag_detail:
                 olist = list()
                 olist.append('`{nm}` {ac}'.format(nm=self.member_name_from_id(pkey), ac=accum))
@@ -2161,70 +2152,6 @@ class MainCommand:
             return_list.append('Only showing 3 pilots')
 
         return return_list
-
-    # def command_rate(self, params):
-    #     return_list = []
-
-    #     who_list_good = list()
-    #     return_list = return_list + self.parse_who(params, who_list_good)
-
-    #     if len(who_list_good) == 0:
-    #         who_list_good = [self.current_author.id]
-
-    #     if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
-    #         who_list_good = [self.current_author.id]
-
-    #     score_key = 'whitestar'
-    #     ww = self.weights[score_key]
-
-    #     weapon_tech_keys = teh.tech_keys_range_weapon()
-    #     shield_tech_keys = teh.tech_keys_range_shield()
-    #     support_tech_keys = teh.tech_keys_range_support()
-    #     user_list = []
-
-    #     for pkey in who_list_good:
-    #         pp = self.players[pkey]
-    #         ppt = pp['tech']
-
-    #         weitem = ['', '']
-    #         wefound = False
-    #         shitem = ['', '']
-    #         shfound = False
-    #         slist = []
-    #         for tkey, tweights in ww.items():
-    #             if tkey in teh.tech_keys:
-    #                 index = ppt[teh.get_tech_index(tkey)] - 1
-    #                 if index >= 0:
-    #                     if tkey in weapon_tech_keys:
-    #                         if not wefound or int(tweights[index]) > weitem[1]:
-    #                             weitem = [tkey, int(tweights[index])]
-
-    #                     if tkey in shield_tech_keys:
-    #                         if not shfound or int(tweights[index]) > shitem[1]:
-    #                             shitem = [tkey, int(tweights[index])]
-    #                             shfound = True
-
-    #                     if tkey in support_tech_keys:
-    #                         slist.append([tkey, int(tweights[index])])
-
-    #         slist.sort(key=lambda x: x[1], reverse=True)
-    #         sprint = []
-    #         for ss in slist:
-    #             sprint.append('{}'.format(ss[0]))
-
-    #         support_names = sprint[:bs_support_count[ppt[teh.get_tech_index('battleship')]]]
-    #         user_list.append([self.member_name_from_id(pkey),
-    #                           '{}'.format(weitem[0]),
-    #                           '{}'.format(shitem[0]),
-    #                           ', '.join(support_names)])
-
-    #     user_list.sort(key=lambda x: x[0])
-
-    #     return_list += sme_table.draw(['User', 'Weapon', 'Shield', 'Support'],
-    #                                   ['l', 'l', 'l', 'l'],
-    #                                   user_list)
-
-    #     return return_list
 
 
 class SmeArgumentWarning(Exception):
