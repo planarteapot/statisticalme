@@ -2146,7 +2146,7 @@ class MainCommand:
 
                 # mining
                 otherminingtech = list()
-                ml1 = teh.tech_keys_range_mining() + ['alpharocket', 'deltarocket']
+                ml1 = teh.tech_keys_range_mining()
                 for mtkey in ml1:
                     score = 0
                     if mtkey in ww:
@@ -2198,8 +2198,7 @@ class MainCommand:
                 if bslvl >= 2 and bslvl <= 6:
                     scount = bslvl - 1
 
-                    sl1 = teh.tech_keys_range_support()
-                    techlist = [t for t in sl1 if t not in ['alpharocket', 'deltarocket']]
+                    techlist = teh.tech_keys_range_support()
 
                     supporttech = list()
                     for tkey in techlist:
