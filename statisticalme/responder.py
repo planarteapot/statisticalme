@@ -2134,7 +2134,7 @@ class MainCommand:
                 detail_sh = []
 
                 # relics, entrust, dispatch
-                for tkey in ['relics', 'entrust', 'dispatch']:
+                for tkey in ['relics', 'entrust', 'dispatch', 'dart']:
                     if tkey in ww:
                         tweights = ww[tkey]
                         tval = self.player_tech_get(pkey, tkey)
@@ -2253,7 +2253,8 @@ class MainCommand:
                         faccum.append(fscore)
 
                 # weapons
-                techlist = teh.tech_keys_range_weapon()
+                wl1 = teh.tech_keys_range_weapon()
+                techlist = [t for t in wl1 if t not in ['dart']]
                 weapontech = list()
                 for tkey in techlist:
                     score = 0
