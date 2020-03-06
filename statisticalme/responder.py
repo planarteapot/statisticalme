@@ -123,6 +123,7 @@ class MainCommand:
 
         self.weights = dict()
         self.weights['wspoints'] = sme_scores.import_weights('wspoints')
+        self.weights['wspoints200302'] = sme_scores.import_weights('wspoints200302')
 
         self.temp_rolemap = dict()
         # self.temp_rolemap = {  # Previous RS role mappings
@@ -477,7 +478,7 @@ class MainCommand:
         return return_list
 
     def dev_command_info(self, params):
-        return_list = ['StatisticalMe\nversion: 20.2.1\ncode: faster ws updates\nfix1: for thanu level cargo bays']
+        return_list = ['StatisticalMe\nversion: 20.3\ncode: score changes']
         return return_list
 
     def dev_command_save(self, params):
@@ -1848,7 +1849,7 @@ class MainCommand:
         if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
-        score_key = 'wspoints'
+        score_key = 'wspoints200302'
         flag_detail = False
         flagged_whotruncated = False
         if len(other_list) > 0:
@@ -1866,6 +1867,10 @@ class MainCommand:
         flag_wspoints = False
         if score_key == 'wspoints':
             flag_wspoints = True
+
+        flag_wspoints200302 = False
+        if score_key == 'wspoints200302':
+            flag_wspoints200302 = True
 
         ww = self.weights[score_key]
 
