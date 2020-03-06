@@ -2124,6 +2124,247 @@ class MainCommand:
                 #
                 faccum.append(0.5)
                 accum = int(math.floor(math.fsum(faccum)))
+            elif flag_wspoints200302:
+                faccum = list()
+                detail_aa = []
+                detail_mi = []
+                detail_s1 = []
+                detail_s2 = []
+                detail_we = []
+                detail_sh = []
+
+                # relics, entrust, dispatch
+                for tkey in ['relics', 'entrust', 'dispatch']:
+                    if tkey in ww:
+                        tweights = ww[tkey]
+                        tval = self.player_tech_get(pkey, tkey)
+                        if tval > 0:
+                            score = tweights[tval - 1]
+                            faccum.append(float(score))
+                            if flag_detail:
+                                detail_aa.append('{tk} {sc}'.format(tk=tkey, sc=score))
+
+                # mining
+                otherminingtech = list()
+                ml1 = teh.tech_keys_range_mining() + ['alpharocket', 'deltarocket']
+                for mtkey in ml1:
+                    score = 0
+                    if mtkey in ww:
+                        tweights = ww[mtkey]
+                        tval = self.player_tech_get(pkey, mtkey)
+                        if tval > 0:
+                            score = tweights[tval - 1]
+
+                    if score > 0:
+                        otherminingtech.append([mtkey, score])
+
+                if len(otherminingtech) > 0:
+                    otherminingtech.sort(key=lambda x: x[1], reverse=True)
+                    minerlvl = self.player_tech_get(pkey, 'miner')
+                    mcount = 0
+                    if minerlvl >= 2 and minerlvl <= 6:
+                        mcount = minerlvl - 1
+
+                    fscore = float(0.0)
+
+                    mmax = len(otherminingtech)
+                    mhi = mcount
+                    if mhi > mmax:
+                        mhi = mmax
+
+                    for zz in range(0, mhi):
+                        iscore = float(otherminingtech[zz][1])
+                        fscore += iscore
+                        if flag_detail:
+                            detail_mi.append('{tn} {ts}'.format(
+                                tn=otherminingtech[zz][0], ts=iscore))
+
+                    if mcount < mmax:
+                        mhi = mcount * 2 - 2
+                        if mhi > mmax:
+                            mhi = mmax
+
+                        for zz in range(mcount, mhi):
+                            iscore = float(otherminingtech[zz][1]) * 0.5
+                            fscore += iscore
+                            if flag_detail:
+                                detail_mi.append('{tn} {ts}'.format(
+                                    tn=otherminingtech[zz][0], ts=iscore))
+
+                    faccum.append(fscore)
+
+                # support (and trade)
+                bslvl = self.player_tech_get(pkey, 'bs')
+                if bslvl >= 2 and bslvl <= 6:
+                    scount = bslvl - 1
+
+                    sl1 = teh.tech_keys_range_support()
+                    techlist = [t for t in sl1 if t not in ['alpharocket', 'deltarocket']]
+
+                    supporttech = list()
+                    for tkey in techlist:
+                        score = 0
+                        if tkey in ww:
+                            tweights = ww[tkey]
+                            tval = self.player_tech_get(pkey, tkey)
+                            if tval > 0:
+                                score = tweights[tval - 1]
+
+                        if score > 0:
+                            supporttech.append([tkey, score])
+
+                    if len(supporttech) > 0:
+                        supporttech.sort(key=lambda x: x[1], reverse=True)
+
+                        fscore = float(0.0)
+
+                        smax = len(supporttech)
+                        shi = scount
+                        if shi > smax:
+                            shi = smax
+
+                        for zz in range(0, shi):
+                            iscore = float(supporttech[zz][1])
+                            fscore += iscore
+                            if flag_detail:
+                                detail_s1.append('{tn} {ts}'.format(
+                                    tn=supporttech[zz][0], ts=iscore))
+
+                        if scount < smax:
+                            shi = scount * 2
+                            if shi > smax:
+                                shi = smax
+
+                            for zz in range(scount, shi):
+                                iscore = float(supporttech[zz][1]) * 0.75
+                                fscore += iscore
+                                if flag_detail:
+                                    detail_s1.append('{tn} {ts}'.format(
+                                        tn=supporttech[zz][0], ts=iscore))
+
+                            if (scount * 2) < smax:
+                                for zz in range(scount * 2, smax):
+                                    iscore = float(supporttech[zz][1]) * 0.25
+                                    fscore += iscore
+                                    if flag_detail:
+                                        detail_s2.append('{tn} {ts}'.format(
+                                            tn=supporttech[zz][0], ts=iscore))
+
+                        faccum.append(fscore)
+
+                # weapons
+                techlist = teh.tech_keys_range_weapon()
+                weapontech = list()
+                for tkey in techlist:
+                    score = 0
+                    if tkey in ww:
+                        tweights = ww[tkey]
+                        tval = self.player_tech_get(pkey, tkey)
+                        if tval > 0:
+                            score = tweights[tval - 1]
+
+                    if score > 0:
+                        weapontech.append([tkey, score])
+
+                if len(weapontech) > 0:
+                    weapontech.sort(key=lambda x: x[1], reverse=True)
+                    got_first = False
+                    wt2 = list()
+
+                    for weapon_tuple in weapontech:
+                        skey = weapon_tuple[0]
+
+                        if skey in ['battery', 'laser']:
+                            if not got_first:
+                                wt2.append(weapon_tuple)
+                                got_first = True
+
+                        else:
+                            wt2.append(weapon_tuple)
+
+                    whi = 3
+                    if whi > len(wt2):
+                        whi = len(wt2)
+
+                    if 0 < whi:
+                        iscore = float(wt2[0][1])
+                        fscore = iscore
+                        if flag_detail:
+                            detail_we.append('{tn} {ts}'.format(tn=wt2[0][0], ts=iscore))
+
+                        if 1 < whi:
+                            iscore = float(wt2[1][1]) * 0.75
+                            fscore += iscore
+                            if flag_detail:
+                                detail_we.append('{tn} {ts}'.format(
+                                    tn=wt2[1][0], ts=iscore))
+
+                            if 2 < whi:
+                                iscore = float(wt2[2][1]) * 0.5
+                                fscore += iscore
+                                if flag_detail:
+                                    detail_we.append('{tn} {ts}'.format(
+                                        tn=wt2[2][0], ts=iscore))
+
+                        faccum.append(fscore)
+
+                # shields
+                techlist = teh.tech_keys_range_shield()
+                shieldtech = list()
+                for tkey in techlist:
+                    score = 0
+                    if tkey in ww:
+                        tweights = ww[tkey]
+                        tval = self.player_tech_get(pkey, tkey)
+                        if tval > 0:
+                            score = tweights[tval - 1]
+
+                    if score > 0:
+                        shieldtech.append([tkey, score])
+
+                if len(shieldtech) > 0:
+                    shieldtech.sort(key=lambda x: x[1], reverse=True)
+                    gotmain = False
+                    st2 = list()
+
+                    for ss in shieldtech:
+                        skey = ss[0]
+
+                        if skey in ['passiveshield', 'omegashield', 'mirrorshield']:
+                            if not gotmain:
+                                st2.append(ss)
+                                gotmain = True
+
+                        else:
+                            st2.append(ss)
+
+                    shi = 3
+                    if shi > len(st2):
+                        shi = len(st2)
+
+                    if 0 < shi:
+                        iscore = float(st2[0][1])
+                        fscore = iscore
+                        if flag_detail:
+                            detail_sh.append('{tn} {ts}'.format(tn=st2[0][0], ts=iscore))
+
+                        if 1 < shi:
+                            iscore = float(st2[1][1]) * 0.75
+                            fscore += iscore
+                            if flag_detail:
+                                detail_sh.append('{tn} {ts}'.format(tn=st2[1][0], ts=iscore))
+
+                            if 2 < shi:
+                                iscore = float(st2[2][1]) * 0.5
+                                fscore += iscore
+                                if flag_detail:
+                                    detail_sh.append('{tn} {ts}'.format(tn=st2[2][0], ts=iscore))
+
+                        faccum.append(fscore)
+
+                #
+                faccum.append(0.5)
+                accum = int(math.floor(math.fsum(faccum)))
             else:
                 for tindex in range(len(ppt)):
                     tval = ppt[tindex]
