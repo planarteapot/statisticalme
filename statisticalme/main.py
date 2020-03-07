@@ -68,11 +68,12 @@ alias_matches = [
     (re.compile(r'\s*!away\b', re.IGNORECASE), ['time', 'away']),
     (re.compile(r'\s*!back\b', re.IGNORECASE), ['time', 'back']),
     (re.compile(r'\s*!dead\b', re.IGNORECASE), ['ws', 'ship', 'dead']),
-    (re.compile(r'\s*!in\b', re.IGNORECASE), ['ws', 'ship', 'in']),
-    (re.compile(r'\s*!out\b', re.IGNORECASE), ['ws', 'ship', 'out']),
     (re.compile(r'\s*!ship\b', re.IGNORECASE), ['ws', 'ship']),
     (re.compile(r'\s*!st\b', re.IGNORECASE), ['tech', 'set']),
     (re.compile(r'\s*!tr\b', re.IGNORECASE), ['tech', 'report']),
+    (re.compile(r'\s*!in\b', re.IGNORECASE), ['queue', 'in']),
+    (re.compile(r'\s*!out\b', re.IGNORECASE), ['queue', 'out']),
+    (re.compile(r'\s*!q\b', re.IGNORECASE), ['queue', 'list']),
     (re.compile(r'\s*!time\s+set\b', re.IGNORECASE), ['time']),  # keeps the 'set'
     (re.compile(r'\s*!time\b', re.IGNORECASE), ['time', 'list'])
 ]
