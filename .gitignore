@@ -16,6 +16,7 @@ build/
 .eggs/
 *.egg-info/
 # */_native*
+/dist
 
 # pyenv
 .python-version
