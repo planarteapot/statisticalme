@@ -7,7 +7,7 @@ set -o errexit
 /bin/rm -rf dist/*
 ~/.venv/pypy_smetest1/bin/python3 setup.py bdist_wheel
 wheelname=$(ls dist/statisticalme-*-py3-none-any.whl)
-echo "MEGAFONE wheelname $wheelname"
+echo "Destination wheel name $wheelname"
 
 # Containerize
 
