@@ -9,5 +9,5 @@ SMECONTAR_NAME=$(tempfile -s .tar)
 
 # podman save --compress --format oci-dir --output sme-ocidir statisticalme:latest
 podman save --compress --format docker-archive statisticalme:latest > "$SMECONTAR_NAME"
-rsync -av "$SMECONTAR_NAME" sme@flowertower:smecon.tar
+rsync -av "$SMECONTAR_NAME" sme@timtower:smecon.tar
 rm "$SMECONTAR_NAME"
