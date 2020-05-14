@@ -77,6 +77,7 @@ class TechHandler:
             'remotemining': ['remote'],
             'hydrogenupload': ['upload', 'hupload', 'hydroupload'],
             'miningunity': ['munity'],
+            'genesis': ['gen'],
             'hydrogenrocket': ['hrocket', 'hydrorocket'],
             'miningdrone': ['mdrone', 'minedrone'],
 
@@ -98,10 +99,15 @@ class TechHandler:
             'redstarlifeextender': ['rse', 'rsle', 'rsextender'],
             'remoterepair': ['rr', 'repair'],
             'timewarp': ['tw', 'warp'],
+            'sanctuary': ['sanc'],
             'alpharocket': ['ar', 'arocket', 'rocket'],
-            'suppress': ['suppres'],
+            'suppress': ['sup', 'suppres'],
+            'destiny': ['dest'],
+            'barrier': ['bar'],
+            'vengeance': ['veng'],
             'deltarocket': ['dr', 'drocket'],
             'alphadrone': ['ad', 'drone'],
+            'suspend': ['sus', 'susp'],
             'omegarocket': ['or']}
 
         self.tech_names = [
