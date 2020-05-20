@@ -19,8 +19,8 @@ buildah run $cont apt-get -y install --no-install-recommends pypy3-dev python-pi
 buildah run $cont pypy3 -m venv /root
 buildah config --env 'PATH=/root/bin:$PATH' $cont
 buildah config --env 'VIRTUAL_ENV=/root' $cont
-buildah run $cont pip3 install wheel
-buildah run $cont pip3 install --requirement /opt/statisticalme/requirements.txt
+buildah run $cont pip3 install --no-use-pep517 wheel
+buildah run $cont pip3 install --no-use-pep517 --requirement /opt/statisticalme/requirements.txt
 
 buildah run $cont apt-get -y purge pypy3-dev python-pip-whl make gcc g++ libxml2-dev libxslt1-dev zlib1g-dev
 
