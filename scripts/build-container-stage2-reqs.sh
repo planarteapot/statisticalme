@@ -10,6 +10,8 @@ buildah run $cont mkdir -p /opt/statisticalme /opt/statisticalme/data /opt/stati
 
 buildah copy $cont requirements.txt /opt/statisticalme
 
+buildah config --env 'DEBIAN_FRONTEND=noninteractive' $cont
+
 buildah run $cont apt-get update
 buildah run $cont apt-get -y install --no-install-recommends libxml2 libxslt1.1 zlib1g
 buildah run $cont apt-get -y install --no-install-recommends pypy3-dev python-pip-whl make gcc g++ libxml2-dev libxslt1-dev zlib1g-dev
