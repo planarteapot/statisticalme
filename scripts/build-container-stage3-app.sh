@@ -5,7 +5,7 @@ set -o errexit
 # Wheel prebuild
 
 /bin/rm -rf dist/*
-~/.venv/pypy_smetest1/bin/python3 setup.py bdist_wheel
+${HOME}/.venv/sme_deploy/bin/python3 setup.py bdist_wheel
 wheelname=$(ls dist/statisticalme-*-py3-none-any.whl)
 echo "Destination wheel name $wheelname"
 
@@ -17,7 +17,7 @@ buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" $co
 
 buildah run $cont mkdir -p /opt/statisticalme /opt/statisticalme/data /opt/statisticalme/var
 
-buildah run --volume $(readlink -f .):/src_sme $cont pip3 install /src_sme/${wheelname}
+buildah run --volume $(readlink -f .):/src_sme $cont pip3 install --no-use-pep517 /src_sme/${wheelname}
 buildah copy $cont data/values-*.txt /opt/statisticalme/data
 
 buildah config --workingdir /opt/statisticalme $cont
