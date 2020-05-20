@@ -5,7 +5,7 @@ set -o errexit
 # Wheel prebuild
 
 /bin/rm -rf dist/*
-~/.venv/pypy_smetest1/bin/python3 setup.py bdist_wheel
+${HOME}/.venv/sme_deploy/bin/python3 setup.py bdist_wheel
 wheelname=$(ls dist/statisticalme-*-py3-none-any.whl)
 echo "Destination wheel name $wheelname"
 
