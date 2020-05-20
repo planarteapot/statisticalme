@@ -2,7 +2,7 @@
 
 set -o errexit
 
-cont=$(buildah from debian:testing-slim)
+cont=$(buildah from ubuntu:20.04)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" $cont
 
