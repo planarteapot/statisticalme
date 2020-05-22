@@ -54,7 +54,8 @@ class TechHandler:
             'fortify', 'impulse', 'alpharocket', 'salvage',
             'suppress', 'destiny', 'barrier', 'vengeance',
             'deltarocket', 'leap', 'bond', 'alphadrone',
-            'suspend', 'omegarocket']
+            'suspend', 'omegarocket', 'remotebomb'
+            ]
 
         self.tech_key_aliases = {
             'redstarscanner': ['rs', 'rscanner', 'rsscanner', 'scanner', 'redstar'],
@@ -108,7 +109,9 @@ class TechHandler:
             'deltarocket': ['dr', 'drocket'],
             'alphadrone': ['ad', 'drone'],
             'suspend': ['sus', 'susp'],
-            'omegarocket': ['or']}
+            'omegarocket': ['or'],
+            'remotebomb': ['bomb', 'rbomb']
+            }
 
         self.tech_names = [
             # 0
@@ -141,14 +144,15 @@ class TechHandler:
             'Fortify', 'Impulse', 'Alpha Rocket', 'Salvage',
             'Suppress', 'Destiny', 'Barrier', 'Vengeance',
             'Delta Rocket', 'Leap', 'Bond', 'Alpha Drone',
-            'Suspend', 'Omega Rocket']
+            'Suspend', 'Omega Rocket', 'Remote Bomb'
+            ]
 
         self.ships_range = (1, 4)
         self.trade_range = (4, 15)
         self.mining_range = (15, 25)
         self.weapon_range = (25, 31)
         self.shield_range = (31, 37)
-        self.support_range = (37, 59)
+        self.support_range = (37, 60)
 
         # tech key or tech alias to tech index
         self.tech_key_index = dict()
