@@ -203,6 +203,7 @@ class MainCommand:
         self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
         # self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
+        self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
 
         self.current_author = None
         self.current_channel = None
@@ -390,6 +391,8 @@ class MainCommand:
         self.current_author = p_author
         self.current_channel = p_channel
 
+        self.current_author_msg = None
+
         try:
             if self.groups_next_refresh_all < self.time_now:
                 self.group_refresh_all()
@@ -419,6 +422,10 @@ class MainCommand:
                 return_list = ['Sorry about that chief']
             else:
                 return_list = ['Oh crap']
+
+        if self.current_author_msg is not None:
+            # Contains string msg to send
+            await self.current_author.send(self.current_author_msg)
 
         self.current_author = None
         self.current_channel = None
@@ -2396,6 +2403,15 @@ class MainCommand:
 
         if flagged_whotruncated:
             return_list.append('Only showing 4 pilots')
+
+        return return_list
+
+    def command_msgme(self, params):
+        return_list = []
+
+        self.current_author_msg = 'You rang?'
+
+        return_list.append('OK')
 
         return return_list
 
