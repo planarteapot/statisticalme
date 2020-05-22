@@ -478,7 +478,7 @@ class MainCommand:
         return return_list
 
     def dev_command_info(self, params):
-        return_list = ['StatisticalMe\nversion: 20.3.0\ncode: score changes']
+        return_list = ['StatisticalMe\nversion: 20.3.1\ncode: add Remote Bomb']
         return return_list
 
     def dev_command_save(self, params):
