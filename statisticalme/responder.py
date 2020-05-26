@@ -708,7 +708,11 @@ class MainCommand:
                 pass
             else:
                 what = normalize_caseless(value)
-                if what == 'ships':
+                if what == 'other':
+                    for tt in teh.tech_keys_range_other():
+                        if tt not in what_set:
+                            what_set.append(tt)
+                elif what == 'ships':
                     for tt in teh.tech_keys_range_ships():
                         if tt not in what_set:
                             what_set.append(tt)

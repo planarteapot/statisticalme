@@ -148,6 +148,7 @@ class TechHandler:
             'Suspend', 'Omega Rocket', 'Remote Bomb'
             ]
 
+        self.other_range = (0, 2)
         self.ships_range = (2, 5)
         self.trade_range = (5, 16)
         self.mining_range = (16, 26)
@@ -203,6 +204,9 @@ class TechHandler:
 
         return tname
 
+    def tech_keys_range_other(self):
+        return self.tech_keys[self.other_range[0]:self.other_range[1]]
+
     def tech_keys_range_ships(self):
         return self.tech_keys[self.ships_range[0]:self.ships_range[1]]
 
@@ -224,8 +228,8 @@ class TechHandler:
     def range_name(self, tech_id):
         name = 'unknown'
 
-        if tech_id >= 0 and tech_id < 1:
-            name = 'rs'
+        if tech_id >= self.other_range[0] and tech_id < self.other_range[1]:
+            name = 'other'
         elif tech_id >= self.ships_range[0] and tech_id < self.ships_range[1]:
             name = 'ships'
         elif tech_id >= self.trade_range[0] and tech_id < self.trade_range[1]:
