@@ -25,30 +25,30 @@ class TechHandler:
     def __init__(self):
         self.tech_keys = [
             # 0
-            'redstarscanner',
+            'redstarscanner', 'creditcapacity',
 
-            # 1 ships
+            # 2 ships
             'transport', 'miner', 'battleship',
 
-            # 4 trade
+            # 5 trade
             'cargobayextension', 'shipmentcomputer', 'tradeboost', 'rush',
             'tradeburst', 'shipmentdrone', 'offload', 'shipmentbeam',
             'entrust', 'dispatch', 'recall',
 
-            # 15 mining
+            # 16 mining
             'miningboost', 'hydrogenbayextension', 'enrich', 'remotemining',
             'hydrogenupload', 'miningunity', 'crunch', 'genesis',
             'hydrogenrocket', 'miningdrone',
 
-            # 25 weapon
+            # 26 weapon
             'battery', 'laser', 'massbattery',
             'duallaser', 'barrage', 'dart',
 
-            # 31 shield
+            # 32 shield
             'deltashield', 'passiveshield', 'omegashield',
             'mirrorshield', 'blastshield', 'areashield',
 
-            # 37 support
+            # 38 support
             'emp', 'teleport', 'redstarlifeextender', 'remoterepair',
             'timewarp', 'unity', 'sanctuary', 'stealth',
             'fortify', 'impulse', 'alpharocket', 'salvage',
@@ -59,6 +59,7 @@ class TechHandler:
 
         self.tech_key_aliases = {
             'redstarscanner': ['rs', 'rscanner', 'rsscanner', 'scanner', 'redstar'],
+            'creditcapacity': ['cc', 'credcap', 'creditcap'],
 
             # ships
             'transport': ['ts', 'transp'],
@@ -115,30 +116,30 @@ class TechHandler:
 
         self.tech_names = [
             # 0
-            'RedStar Scanner',
+            'RedStar Scanner', 'Credit Capacity',
 
-            # 1 ships
+            # 2 ships
             'Transport', 'Miner', 'Battleship',
 
-            # 4 trade
+            # 5 trade
             'Cargo Bay Extension', 'Shipment Computer', 'Trade Boost', 'Rush',
             'Trade Burst', 'Shipment Drone', 'Offload', 'Shipment Beam',
             'Entrust', 'Dispatch', 'Recall',
 
-            # 15 mining
+            # 16 mining
             'Mining Boost', 'Hydrogen Bay Extension', 'Enrich', 'Remote Mining',
             'Hydrogen Upload', 'Mining Unity', 'Crunch', 'Genesis',
             'Hydrogen Rocket', 'Mining Drone',
 
-            # 25 weapon
+            # 26 weapon
             'Battery', 'Laser', 'Mass Battery',
             'Dual Laser', 'Barrage', 'Dart',
 
-            # 31 shield
+            # 32 shield
             'Delta Shield', 'Passive Shield', 'Omega Shield',
             'Mirror Shield', 'Blast Shield', 'Area Shield',
 
-            # 37 support
+            # 38 support
             'EMP', 'Teleport', 'Red Star Life Extender', 'Remote Repair',
             'Time Warp', 'Unity', 'Sanctuary', 'Stealth',
             'Fortify', 'Impulse', 'Alpha Rocket', 'Salvage',
@@ -147,12 +148,12 @@ class TechHandler:
             'Suspend', 'Omega Rocket', 'Remote Bomb'
             ]
 
-        self.ships_range = (1, 4)
-        self.trade_range = (4, 15)
-        self.mining_range = (15, 25)
-        self.weapon_range = (25, 31)
-        self.shield_range = (31, 37)
-        self.support_range = (37, 60)
+        self.ships_range = (2, 5)
+        self.trade_range = (5, 16)
+        self.mining_range = (16, 26)
+        self.weapon_range = (26, 32)
+        self.shield_range = (32, 38)
+        self.support_range = (38, 62)
 
         # tech key or tech alias to tech index
         self.tech_key_index = dict()
