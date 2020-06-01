@@ -1789,7 +1789,7 @@ class MainCommand:
         if away_player_id > 0 and len(other_list) >= 1 and is_float(other_list[0]):
             delay = float(other_list[0])
 
-            if delay < 24.0:
+            if delay <= 36.0:
                 from_str = self.sme_time_as_string(self.time_now)
                 self.player_info_set(away_player_id, 'away_from', from_str, savepersdata=False)
 
