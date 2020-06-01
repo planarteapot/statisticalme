@@ -1699,6 +1699,7 @@ class MainCommand:
                     t_sorting = ta.utcoffset()
 
                 away_result = ''
+                away_msg_str = ''
                 away_until_str = self.player_info_get(pkey, 'away_until')
                 if away_until_str is not None and len(away_until_str) > 2:
                     away_until = self.sme_time_from_string(away_until_str)
@@ -1716,6 +1717,10 @@ class MainCommand:
                         mins = int(sec / 60)
                         away_result = away_result + '{}m'.format(mins)
 
+                    away_msg_str = self.player_info_get(pkey, 'away_msg')
+                    if away_msg_str is None:
+                        away_msg_str = ''
+
                 # Use '\U0001F451' for a unicode emoji of Crown.
                 pilot_name = self.member_name_from_id(pkey)
                 if ws_info is not None:
@@ -1724,7 +1729,7 @@ class MainCommand:
                     else:
                         pilot_name = '  ' + pilot_name
 
-                user_info = [pilot_name, timestr, away_result, t_sorting, pkey]
+                user_info = [pilot_name, timestr, away_result, t_sorting, pkey, away_msg_str]
                 user_list.append(user_info)
 
             user_list.sort(key=lambda x: x[3], reverse=True)
@@ -1733,16 +1738,24 @@ class MainCommand:
             t_align = ['l', 'l']
             t_user_list = list()
 
-            sumlen = 0
+            sumlen = 2
             for ee in user_list:
-                sumlen = sumlen + len(ee[2])
+                if sumlen < 3 and len(ee[2]) > 0:
+                    sumlen = 3
 
-            if sumlen == 0:
+                if sumlen < 4 and len(ee[5]) > 0:
+                    sumlen = 4
+
+            if sumlen <= 2:
                 t_user_list = [[ee[0], ee[1]] for ee in user_list]
-            else:
+            elif sumlen <= 3:
                 t_header = ['User', 'time', 'away']
                 t_align = ['l', 'l', 'r']
                 t_user_list = [[ee[0], ee[1], ee[2]] for ee in user_list]
+            else:
+                t_header = ['User', 'time', 'away', 'reason']
+                t_align = ['l', 'l', 'r', 'l']
+                t_user_list = [[ee[0], ee[1], ee[2], ee[5]] for ee in user_list]
 
             return_list += sme_table.draw(t_header, t_align, t_user_list)
 
