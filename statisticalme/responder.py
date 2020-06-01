@@ -1250,6 +1250,7 @@ class MainCommand:
                 time_list = list()
                 s_cmd = None
                 s_shiptype = None
+                s_flagship = False
                 s_timertype = None
                 s_enemy = None
 
@@ -1257,8 +1258,10 @@ class MainCommand:
                     ostr = normalize_caseless(ostr_withcase)
                     if ostr in ['in', 'out', 'timer', 'dead', 'add', 'remove']:
                         s_cmd = ostr
-                    elif ostr in ['bs', 'bat', 'battleship']:
+                    elif ostr in ['bs', 'bat', 'battleship', 'fs', 'flagship']:
                         s_shiptype = 'bs'
+                        if ostr in ['fs', 'flagship']:
+                            s_flagship = True
                     elif ostr in ['ts', 'tr', 'tran', 'trans', 'transport']:
                         s_shiptype = 'ts'
                     elif ostr in ['ms', 'mn', 'mr', 'min', 'miner']:
@@ -1331,7 +1334,10 @@ class MainCommand:
                                 if s_cmd == 'in':
                                     open_time += timedelta(hours=2)
                                 elif s_cmd == 'dead':
-                                    open_time += timedelta(hours=18)
+                                    if s_flagship:
+                                        open_time += timedelta(hours=16)
+                                    else:
+                                        open_time += timedelta(hours=18)
 
                                 if open_time > nova_time:
                                     open_time = nova_time
