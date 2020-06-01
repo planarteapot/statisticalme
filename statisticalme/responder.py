@@ -273,7 +273,7 @@ class MainCommand:
 
                             if teh.get_tech_index(key) >= 0:
                                 self.player_tech_set(
-                                    loaded_pkey, key, loaded_tech[index], savepersdata=False)
+                                    loaded_pkey, key, loaded_tech[index])
                             else:
                                 unk_tech.add(key)
 
@@ -811,7 +811,7 @@ class MainCommand:
 
         return r_value
 
-    def player_tech_set(self, playerid, techname, techvalue, savepersdata=False):
+    def player_tech_set(self, playerid, techname, techvalue):
         tech_index = teh.get_tech_index(techname)
 
         if tech_index >= 0 and tech_index < 9900:
@@ -835,7 +835,7 @@ class MainCommand:
 
         return r_value
 
-    def player_info_set(self, playerid, infoname, infovalue, savepersdata=False):
+    def player_info_set(self, playerid, infoname, infovalue):
         self.ensure_player_created(playerid)
         pi = self.players[playerid]['info']
         pi[infoname] = infovalue
@@ -1489,14 +1489,14 @@ class MainCommand:
 
                 for who in who_list_good:
                     self.player_info_set(
-                        who, 'last_name', self.member_name_from_id(who), savepersdata=False)
+                        who, 'last_name', self.member_name_from_id(who))
 
                     from_str = self.sme_time_as_string(self.time_now)
-                    self.player_info_set(who, 'last_tech_update', from_str, savepersdata=False)
+                    self.player_info_set(who, 'last_tech_update', from_str)
 
                     for what, val in zip(what_list_good, value_list):
                         old_value_list.append(self.player_tech_get(who, what))
-                        self.player_tech_set(who, what, val, savepersdata=False)
+                        self.player_tech_set(who, what, val)
 
                 if len(value_list) == 1:
                     return_list.append('Value set to {nv} (was {ov})'.format(
@@ -1803,7 +1803,7 @@ class MainCommand:
 
             if delay <= 36.0:
                 from_str = self.sme_time_as_string(self.time_now)
-                self.player_info_set(away_player_id, 'away_from', from_str, savepersdata=False)
+                self.player_info_set(away_player_id, 'away_from', from_str)
 
                 until_time = self.time_now + timedelta(hours=delay)
                 until_str = self.sme_time_as_string(until_time)
@@ -1830,7 +1830,7 @@ class MainCommand:
         if len(who_list_good) > 0:
             return_list.append('Oh crap. Will only work on self.')
         else:
-            self.player_info_set(self.current_author.id, 'away_from', '', savepersdata=False)
+            self.player_info_set(self.current_author.id, 'away_from', '')
             self.player_info_set(self.current_author.id, 'away_until', '')
             self.player_info_set(self.current_author.id, 'away_msg', '')
 
