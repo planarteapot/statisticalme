@@ -1773,17 +1773,25 @@ class MainCommand:
             else:
                 return_list.append('Oh crap. Will only work on self.')
 
-        if away_player_id > 0 and is_float(other_list[0]):
+        if away_player_id > 0 and len(other_list) >= 1 and is_float(other_list[0]):
             delay = float(other_list[0])
 
-            from_str = self.sme_time_as_string(self.time_now)
-            self.player_info_set(away_player_id, 'away_from', from_str, savepersdata=False)
+            if delay < 24.0:
+                from_str = self.sme_time_as_string(self.time_now)
+                self.player_info_set(away_player_id, 'away_from', from_str, savepersdata=False)
 
-            until_time = self.time_now + timedelta(hours=delay)
-            until_str = self.sme_time_as_string(until_time)
-            self.player_info_set(away_player_id, 'away_until', until_str)
+                until_time = self.time_now + timedelta(hours=delay)
+                until_str = self.sme_time_as_string(until_time)
+                self.player_info_set(away_player_id, 'away_until', until_str)
 
-            return_list.append('OK')
+                if len(other_list) >= 2:
+                    self.player_info_set(away_player_id, 'away_msg', ' '.join(other_list[1:]))
+                else:
+                    self.player_info_set(away_player_id, 'away_msg', '')
+
+                return_list.append('OK')
+            else:
+                return_list.append('Away denied. Engage leaders for therapy.')
 
         return return_list
 
@@ -1799,6 +1807,7 @@ class MainCommand:
         else:
             self.player_info_set(self.current_author.id, 'away_from', '', savepersdata=False)
             self.player_info_set(self.current_author.id, 'away_until', '')
+            self.player_info_set(self.current_author.id, 'away_msg', '')
 
             return_list.append('OK')
 
