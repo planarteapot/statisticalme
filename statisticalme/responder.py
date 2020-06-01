@@ -486,11 +486,15 @@ class MainCommand:
         return return_list
 
     def dev_command_info(self, params):
-        uptime_str = self.timedelta_as_string(self.time_now - self.time_up)
+        info_str = 'StatisticalMe'
+        info_str += '\nversion: 20.3.3'
+        info_str += '\nchanges:'
+        info_str += '\n  - add optional away message'
+        info_str += '\n  - add away timer maximum of 36hrs'
+        info_str += '\n  - add proper flagship timer'
+        info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
-        return_list = ['StatisticalMe\nversion: 20.3.2\ncode: add Credit Cap\nuptime: {ut}'.format(ut=uptime_str)]
-
-        return return_list
+        return [info_str]
 
     def dev_command_save(self, params):
         self.config_save()
