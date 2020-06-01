@@ -1453,7 +1453,8 @@ class MainCommand:
         # if len(p_name) > 11:
         #     p_name = p_name[:11]
 
-        return ['{:.11}'.format(pilot_name), '{:1.1} {:>5}'.format(b_ship, b_delay), '{:1.1} {:>5}'.format(s_ship, s_delay)]
+        return ['{:.11}'.format(pilot_name), '{:1.1} {:>5}'.format(b_ship, b_delay),
+                '{:1.1} {:>5}'.format(s_ship, s_delay)]
 
     def command_tech_set(self, params):
         return_list = []
