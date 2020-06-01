@@ -811,8 +811,7 @@ class MainCommand:
             pt = self.players[playerid]['tech']
             pt[tech_index] = int(techvalue)
 
-            if savepersdata:
-                self.persdata_save()
+            self.flag_persdata_dirty = True
 
     def player_info_get(self, playerid, infoname):
         r_value = None
@@ -833,8 +832,7 @@ class MainCommand:
         pi = self.players[playerid]['info']
         pi[infoname] = infovalue
 
-        if savepersdata:
-            self.persdata_save()
+        self.flag_persdata_dirty = True
 
     def command_group_add(self, params):
         return_list = []
