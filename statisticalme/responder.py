@@ -66,6 +66,7 @@ class MainCommand:
         logger.debug('MainCommand __init__')
 
         self.time_now = self.sme_time_now()
+        self.time_up = self.time_now
 
         self.aiohttp_session = aiohttp.ClientSession()
 
@@ -485,7 +486,10 @@ class MainCommand:
         return return_list
 
     def dev_command_info(self, params):
-        return_list = ['StatisticalMe\nversion: 20.3.2\ncode: add Credit Cap']
+        uptime_str = self.timedelta_as_string(self.time_now - self.time_up)
+
+        return_list = ['StatisticalMe\nversion: 20.3.2\ncode: add Credit Cap\nuptime: {ut}'.format(ut=uptime_str)]
+
         return return_list
 
     def dev_command_save(self, params):
