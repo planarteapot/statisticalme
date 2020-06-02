@@ -1981,10 +1981,50 @@ class MainCommand:
     async def command_queue_in(self, params):
         return_list = []
 
+        who_list_good = list()
+        other_list = list()
+        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+
+        q_player_id = self.current_author.id
+
+        if q_player_id > 0:
+            rs_q_level = None
+
+            # First check for last rs level played
+            rs_q_level_str = self.player_info_get(q_player_id, 'rs_q_level')
+            if rs_q_level_str is not None and is_int(rs_q_level_str):
+                rs_q_level = int(rs_q_level_str)
+
+            # If rs level given, use that (instead)
+            if len(other_list) > 0 and is_int(other_list[0]):
+                rs_q_level = int(other_list[0])
+
+            # Othwrewise use native rs level
+            if rs_q_level is None:
+                rs_q_level = self.player_tech_get(q_player_id, 'rs')
+
+            if rs_q_level is None:
+                return_list.append('Please give an RS level, or set your RS tech level')
+            else:
+                self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
+                self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
+
+                self.rs_q.append(q_player_id)
+
+                return_list.append('dented-control-message:delete-original-message')
+
         return return_list
 
     async def command_queue_out(self, params):
         return_list = []
+
+        q_player_id = self.current_author.id
+
+        if q_player_id > 0:
+            if q_player_id in self.rs_q:
+                self.rs_q.remove(q_player_id)
+
+                return_list.append('dented-control-message:delete-original-message')
 
         return return_list
 
