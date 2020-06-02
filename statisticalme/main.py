@@ -121,8 +121,11 @@ class SmeClient(discord.Client):
                 rarg = return_message_list[0]
                 if rarg[:23] == 'dented-control-message:':
                     return_message_list.pop()
+                    rarg_command = rarg[23:]
 
-                    if rarg[22:] == ':quit':
+                    if rarg_command == 'delete-original-message':
+                        await message.delete()
+                    elif rarg_command == 'quit':
                         await self.close()
                         sys.exit(0)
 
