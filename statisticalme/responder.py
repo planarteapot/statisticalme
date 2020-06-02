@@ -192,11 +192,11 @@ class MainCommand:
             title='StatisticalMe pilot')
         self.subparser_pilot.add_command('lastup', False, self.command_pilot_lastup)
 
-        # self.subparser_queue = sme_paramparse.CommandParse(
-        #     title='StatisticalMe queue')
-        # self.subparser_queue.add_command('in', False, self.command_queue_in)
-        # self.subparser_queue.add_command('out', False, self.command_queue_out)
-        # self.subparser_queue.add_command('list', False, self.command_queue_list)
+        self.subparser_queue = sme_paramparse.CommandParse(
+            title='StatisticalMe queue')
+        self.subparser_queue.add_command('in', False, self.command_queue_in)
+        self.subparser_queue.add_command('out', False, self.command_queue_out)
+        self.subparser_queue.add_command('refresh', False, self.command_queue_refresh)
 
         self.ord_parser = sme_paramparse.CommandParse(
             title='StatisticalMe')
@@ -206,7 +206,7 @@ class MainCommand:
         self.ord_parser.add_command('tech', True, self.subparser_tech, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('time', True, self.subparser_time, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
-        # self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_watcher)
+        self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_redstar)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('clear', False, self.command_clear, auth_fn=self.auth_chief)
@@ -389,6 +389,17 @@ class MainCommand:
         elif self.auth_chief():
             allowed = True
         elif self.group_contains_member('auth_watcher', self.current_author.id):
+            allowed = True
+
+        return allowed
+
+    def auth_redstar(self):
+        allowed = False
+        if self.group_contains_member('dev', self.current_author.id):
+            allowed = True
+        elif self.group_contains_member('auth_chief', self.current_author.id):
+            allowed = True
+        elif self.group_contains_member('auth_redstar', self.current_author.id):
             allowed = True
 
         return allowed
