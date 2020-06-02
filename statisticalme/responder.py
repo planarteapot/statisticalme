@@ -237,8 +237,17 @@ class MainCommand:
             with open(self.config_filepath, 'r') as fh:
                 loaded = yaml.safe_load(fh)
 
-                self.groups = copy.copy(loaded['groups'])
-                self.ws = copy.copy(loaded['ws'])
+                if 'groups' in loaded:
+                    self.groups = copy.copy(loaded['groups'])
+
+                if 'ws' in loaded:
+                    self.ws = copy.copy(loaded['ws'])
+
+                if 'redstar_queue' in loaded:
+                    self.rs_q = copy.copy(loaded['redstar_queue'])
+
+                if 'redstar_queue_lastmsg_id' in loaded:
+                    self.rs_q_lastmsg_id = loaded['redstar_queue_lastmsg_id']
 
                 self.flag_config_dirty = False
         except Exception:
@@ -248,7 +257,9 @@ class MainCommand:
         with open(self.config_filepath, 'w') as fh:
             yaml.dump({
                 'groups': self.groups,
-                'ws': self.ws
+                'ws': self.ws,
+                'redstar_queue': self.rs_q,
+                'redstar_queue_lastmsg_id': self.rs_q_lastmsg_id
             }, fh)
 
             self.flag_config_dirty = False
