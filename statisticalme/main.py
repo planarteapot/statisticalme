@@ -117,14 +117,19 @@ class SmeClient(discord.Client):
                 await mainc.on_unused_message(message)
 
         if return_message_list is not None:
+            if len(return_message_list) == 1:
+                rarg = return_message_list[0]
+                if rarg[:23] == 'dented-control-message:':
+                    return_message_list.pop()
+
+                    if rarg[22:] == ':quit':
+                        await self.close()
+                        sys.exit(0)
+
             if len(return_message_list) > 0:
-                if return_message_list[0] == 'dented-control-message:quit':
-                    await self.close()
-                    sys.exit(0)
-                else:
-                    for mm in return_message_list:
-                        if len(mm) > 0:
-                            await message.channel.send(mm)
+                for mm in return_message_list:
+                    if len(mm) > 0:
+                        await message.channel.send(mm)
 
     async def on_ready(self):
         logger.info('Client event on_ready')
