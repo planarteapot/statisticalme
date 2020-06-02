@@ -1978,6 +1978,26 @@ class MainCommand:
 
         return return_list
 
+    async def command_queue_in(self, params):
+        return_list = []
+
+        return return_list
+
+    async def command_queue_out(self, params):
+        return_list = []
+
+        return return_list
+
+    async def command_queue_refresh(self, params):
+        return_list = []
+
+        return return_list
+
+    def nicommand_queue_draw(self, params):
+        return_list = []
+
+        return return_list
+
     async def command_score(self, params):
         return_list = []
 
