@@ -2047,7 +2047,7 @@ class MainCommand:
 
             # Othwrewise use native rs level
             if rs_q_level is None:
-                rs_q_level = self.player_tech_get(q_player_id, 'rs')
+                rs_q_level = int(self.player_tech_get(q_player_id, 'rs'))
 
             if rs_q_level is None:
                 return_list.append('Please give an RS level, or set your RS tech level')
