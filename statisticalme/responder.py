@@ -78,6 +78,13 @@ class MainCommand:
         self.timeparse_match4 = re.compile(r'(\d+)d(\d+)h(\d+)m')
         self.ws_name_match = re.compile(r'-([a-zA-Z]+\d*)$')
 
+        self.redstar_channel_name = 'red-star'
+        self.redstar_channel_id = 0
+        self.rs_q = list()
+        self.rs_q_lastmsg_id = 0
+        self.rs_q_msg_ob = None
+        self.rs_q_old_content = ''
+
         # Load configuration/non-pilot data
         self.config_filepath = 'var/config.yaml'
         self.flag_config_dirty = False
@@ -125,10 +132,6 @@ class MainCommand:
 
         self.weights = dict()
         self.weights['wspoints200302'] = sme_scores.import_weights('wspoints200302')
-
-        self.rs_q = list()
-        self.rs_q_lastmsg_id = 0
-        self.rs_q_msg_ob = None
 
         self.temp_rolemap = dict()
         # self.temp_rolemap = {  # Previous RS role mappings
