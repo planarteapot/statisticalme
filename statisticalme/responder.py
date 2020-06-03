@@ -246,6 +246,9 @@ class MainCommand:
                 if 'ws' in loaded:
                     self.ws = copy.copy(loaded['ws'])
 
+                if 'redstar_channel_id' in loaded:
+                    self.redstar_channel_id = loaded['redstar_channel_id']
+
                 if 'redstar_queue' in loaded:
                     self.rs_q = copy.copy(loaded['redstar_queue'])
 
@@ -261,6 +264,7 @@ class MainCommand:
             yaml.dump({
                 'groups': self.groups,
                 'ws': self.ws,
+                'redstar_channel_id': self.redstar_channel_id,
                 'redstar_queue': self.rs_q,
                 'redstar_queue_lastmsg_id': self.rs_q_lastmsg_id
             }, fh)
