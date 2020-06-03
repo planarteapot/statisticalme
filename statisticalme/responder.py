@@ -217,9 +217,7 @@ class MainCommand:
         self.time_now = self.sme_time_now()
         self.group_refresh_all()
         self.opportunistic_save()
-
-        if len(self.ws) > 0:
-            self.background_update_all.start()
+        self.opportunistic_background_update_start()
 
     def set_discord_client(self, p_discord_client):
         self.discord_client = p_discord_client
@@ -1161,8 +1159,7 @@ class MainCommand:
             return_list.append('WhiteStar {} added'.format(ws_name))
             self.flag_config_dirty = True
 
-            if len(self.ws) == 1:
-                self.background_update_all.start()
+            self.opportunistic_background_update_start()
 
         return return_list
 
@@ -1191,8 +1188,7 @@ class MainCommand:
 
             del(self.ws[ws_name])
 
-            if len(self.ws) == 0:
-                self.background_update_all.stop()
+            self.opportunistic_background_update_stop()
 
             return_list.append('WhiteStar {} removed'.format(ws_name))
             self.flag_config_dirty = True
