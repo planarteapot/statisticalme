@@ -409,12 +409,14 @@ class MainCommand:
 
     def auth_redstar(self):
         allowed = False
-        if self.group_contains_member('dev', self.current_author.id):
-            allowed = True
-        elif self.group_contains_member('auth_chief', self.current_author.id):
-            allowed = True
-        elif self.group_contains_member('auth_redstar', self.current_author.id):
-            allowed = True
+
+        if self.current_channel.name == self.redstar_channel_name:
+            if self.group_contains_member('dev', self.current_author.id):
+                allowed = True
+            elif self.group_contains_member('auth_chief', self.current_author.id):
+                allowed = True
+            elif self.group_contains_member('auth_redstar', self.current_author.id):
+                allowed = True
 
         return allowed
 
