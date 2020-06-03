@@ -2036,6 +2036,13 @@ class MainCommand:
     async def command_queue_refresh(self, params):
         return_list = []
 
+        q_player_id = self.current_author.id
+
+        if q_player_id > 0:
+            self.rs_q_msg_ob = None
+
+            return_list.append('dented-control-message:delete-original-message')
+
         return return_list
 
     def nicommand_queue_draw(self, params):
