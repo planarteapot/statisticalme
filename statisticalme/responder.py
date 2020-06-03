@@ -1074,7 +1074,8 @@ class MainCommand:
 
     @tasks.loop(seconds=5.0)
     async def background_update_all(self):
-        # logger.debug('MEGAFONE background_update_all, count {} ws'.format(len(self.ws)))
+        # logger.debug('MEGAFONE background_update_all, counts: ws {wc}, rq {rq}'.format(wc=len(self.ws),
+        #              rq=len(self.rs_q)))
 
         self.time_now = self.sme_time_now()
 
@@ -1170,6 +1171,42 @@ class MainCommand:
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
                 logger.error('background_update_all Exception processing WhiteStar over ' +
                              ws_name + '\n' + ''.join(tbe.format()))
+
+        # Update Red Star queue
+
+        if len(self.rs_q) > 0:
+            try:
+                rsq_content = self.nicommand_queue_draw(['blah'])
+
+                rs_chan_ob = self.current_guild.get_channel(self.redstar_channel_id)
+
+                if self.rs_q_msg_ob is None:
+                    self.rs_q_old_content = rsq_content
+
+                    # Creating
+                    self.rs_q_msg_ob = await rs_chan_ob.send(rsq_content)
+                else:
+                    if self.rs_q_old_content != rsq_content:
+                        self.rs_q_old_content = rsq_content
+
+                        # Editing
+                        await self.rs_q_msg_ob.edit(content=rsq_content)
+
+                if self.rs_q_msg_ob is not None:
+                    if self.rs_q_lastmsg_id != self.rs_q_msg_ob.id:
+                        if self.rs_q_lastmsg_id != 0:
+                            # Delete old
+                            msg_ob = await rs_chan_ob.fetch_message(self.rs_q_lastmsg_id)
+                            await msg_ob.delete()
+                            self.rs_q_lastmsg_id = 0
+
+                        self.rs_q_lastmsg_id = self.rs_q_msg_ob.id
+
+            except Exception:
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                logger.error('background_update_all Exception processing Red Star queue\n' +
+                             ''.join(tbe.format()))
 
         # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
