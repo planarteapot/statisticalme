@@ -1176,7 +1176,7 @@ class MainCommand:
 
         if len(self.rs_q) > 0:
             try:
-                rsq_content = self.nicommand_queue_draw(['blah'])
+                rsq_content = self.nicommand_queue_draw()
 
                 rs_chan_ob = self.current_guild.get_channel(self.redstar_channel_id)
 
@@ -2088,7 +2088,7 @@ class MainCommand:
 
         return return_list
 
-    def nicommand_queue_draw(self, params):
+    def nicommand_queue_draw(self):
         return_list = []
 
         return return_list
