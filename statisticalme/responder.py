@@ -2060,7 +2060,7 @@ class MainCommand:
                 self.redstar_channel_id = self.current_channel.id
                 self.opportunistic_background_update_start()
 
-                return_list.append('dented-control-message:delete-original-message')
+                self.rs_q_msg_ob = None
 
         return return_list
 
@@ -2074,7 +2074,7 @@ class MainCommand:
                 self.rs_q.remove(q_player_id)
                 self.opportunistic_background_update_stop()
 
-                return_list.append('dented-control-message:delete-original-message')
+                self.rs_q_msg_ob = None
 
         return return_list
 
