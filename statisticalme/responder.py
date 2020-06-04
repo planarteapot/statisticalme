@@ -2052,10 +2052,13 @@ class MainCommand:
             if rs_q_level is None:
                 return_list.append('Please give an RS level, or set your RS tech level')
             else:
+                if q_player_id in self.rs_q:
+                    self.rs_q.remove(q_player_id)
+
                 self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
                 self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
 
-                self.rs_q.append(q_player_id)
+                self.rs_q.append(int(q_player_id))
 
                 self.redstar_channel_id = self.current_channel.id
                 self.opportunistic_background_update_start()
