@@ -1729,9 +1729,9 @@ class MainCommand:
                         mins = int(sec / 60)
                         away_result = away_result + '{}m'.format(mins)
 
-                    away_msg_str = self.player_info_get(pkey, 'away_msg')
-                    if away_msg_str is None:
-                        away_msg_str = ''
+                        away_msg_str = self.player_info_get(pkey, 'away_msg')
+                        if away_msg_str is None:
+                            away_msg_str = ''
 
                 # Use '\U0001F451' for a unicode emoji of Crown.
                 pilot_name = self.member_name_from_id(pkey)
