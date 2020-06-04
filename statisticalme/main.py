@@ -123,6 +123,8 @@ class SmeClient(discord.Client):
                     return_message_list.pop()
                     rarg_command = rarg[23:]
 
+                    if rarg_command == 'no-reply':
+                        pass
                     if rarg_command == 'delete-original-message':
                         await message.delete()
                     elif rarg_command == 'quit':
