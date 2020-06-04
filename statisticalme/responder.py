@@ -2056,6 +2056,8 @@ class MainCommand:
                 self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
 
                 self.rs_q.append(q_player_id)
+
+                self.redstar_channel_id = self.current_channel.id
                 self.opportunistic_background_update_start()
 
                 return_list.append('dented-control-message:delete-original-message')
