@@ -1000,6 +1000,8 @@ class MainCommand:
 
         # Update WhiteStars
 
+        ws_over = list()
+
         for ws_name, ws_struct in self.ws.items():
             try:
                 if 'done' not in ws_struct or not ws_struct['done']:
@@ -1011,6 +1013,7 @@ class MainCommand:
                         ws_struct['done'] = True
                         self.flag_config_dirty = True
                         ws_time_str = 'over'
+                        ws_over.append(ws_name)
                     else:
                         # Resolves to a minute, so add 30s here to cause a round up.
                         ws_time = (nova_time - self.time_now) + timedelta(seconds=30)
@@ -1077,6 +1080,15 @@ class MainCommand:
                 exc_type, exc_value, exc_tb = sys.exc_info()
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
                 logger.error('background_update_all Exception processing WhiteStar ' +
+                             ws_name + '\n' + ''.join(tbe.format()))
+
+        for ws_name in ws_over:
+            try:
+                self.nicommand_ws_remove_impl(ws_name)
+            except Exception:
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                logger.error('background_update_all Exception processing WhiteStar over ' +
                              ws_name + '\n' + ''.join(tbe.format()))
 
         self.opportunistic_save()
