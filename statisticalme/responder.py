@@ -2059,10 +2059,12 @@ class MainCommand:
                 self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
 
                 self.rs_q.append(int(q_player_id))
+                self.flag_config_dirty = True
 
                 self.redstar_channel_id = self.current_channel.id
 
                 self.rs_q_msg_ob = None
+                return_list.append('dented-control-message:no-reply')
 
                 self.opportunistic_background_update_start()
 
@@ -2076,8 +2078,10 @@ class MainCommand:
         if q_player_id > 0:
             if q_player_id in self.rs_q:
                 self.rs_q.remove(q_player_id)
+                self.flag_config_dirty = True
 
                 self.rs_q_msg_ob = None
+                return_list.append('dented-control-message:no-reply')
 
                 self.opportunistic_background_update_start()
 
