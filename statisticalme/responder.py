@@ -1143,17 +1143,24 @@ class MainCommand:
 
         if wsname_match:
             ws_name = wsname_match.group(1)
-            if ws_name in self.ws:
-                ws_struct = self.ws[ws_name]
-                self.group_remove(ws_struct['assist_group'])
+            return_list += self.nicommand_ws_remove_impl(ws_name)
 
-                del(self.ws[ws_name])
+        return return_list
 
-                if len(self.ws) == 0:
-                    self.background_update_all.stop()
+    def nicommand_ws_remove_impl(self, ws_name):
+        return_list = []
 
-                return_list.append('WhiteStar {} removed'.format(ws_name))
-                self.flag_config_dirty = True
+        if ws_name in self.ws:
+            ws_struct = self.ws[ws_name]
+            self.group_remove(ws_struct['assist_group'])
+
+            del(self.ws[ws_name])
+
+            if len(self.ws) == 0:
+                self.background_update_all.stop()
+
+            return_list.append('WhiteStar {} removed'.format(ws_name))
+            self.flag_config_dirty = True
 
         return return_list
 
