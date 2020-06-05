@@ -415,6 +415,8 @@ class MainCommand:
         allowed = False
 
         if self.current_channel.name == self.redstar_channel_name:
+            self.redstar_channel_id = self.current_channel.id
+
             if self.group_contains_member('dev', self.current_author.id):
                 allowed = True
             elif self.group_contains_member('auth_chief', self.current_author.id):
@@ -2060,8 +2062,6 @@ class MainCommand:
 
                 self.rs_q.append(int(q_player_id))
                 self.flag_config_dirty = True
-
-                self.redstar_channel_id = self.current_channel.id
 
                 self.rs_q_msg_ob = None
                 return_list.append('dented-control-message:no-reply')
