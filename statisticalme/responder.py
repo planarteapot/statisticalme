@@ -491,7 +491,7 @@ class MainCommand:
 
     def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 20.3.4'
+        info_str += '\nversion: 20.3.5'
         info_str += '\nchanges:'
         info_str += '\n  - add only show optional away message if away'
         info_str += '\n  - auto remove a ws when over'
