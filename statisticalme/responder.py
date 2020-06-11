@@ -2462,13 +2462,13 @@ class MainCommand:
 
             if flag_detail:
                 olist = list()
-                olist.append('`{nm}` {ac}'.format(nm=self.member_name_from_id(pkey), ac=accum))
-                olist.append('`    :` ' + ', '.join(detail_aa))
-                olist.append('`  mi:` ' + ', '.join(detail_mi))
-                olist.append('`  su:` ' + ', '.join(detail_s1))
-                olist.append('`  su:` ' + ', '.join(detail_s2))
-                olist.append('`  we:` ' + ', '.join(detail_we))
-                olist.append('`  sh:` ' + ', '.join(detail_sh))
+                olist.append('`| {nm}` {ac}'.format(nm=self.member_name_from_id(pkey), ac=accum))
+                olist.append('`|     :` ' + ', '.join(detail_aa))
+                olist.append('`|   mi:` ' + ', '.join(detail_mi))
+                olist.append('`|   su:` ' + ', '.join(detail_s1))
+                olist.append('`|   su:` ' + ', '.join(detail_s2))
+                olist.append('`|   we:` ' + ', '.join(detail_we))
+                olist.append('`|   sh:` ' + ', '.join(detail_sh))
                 return_list.append('\n'.join(olist))
             else:
                 user_list.append([self.member_name_from_id(pkey), accum])
