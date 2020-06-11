@@ -128,6 +128,10 @@ class MainCommand:
         self.weights['wspoints'] = sme_scores.import_weights('wspoints')
         self.weights['wspoints200302'] = sme_scores.import_weights('wspoints200302')
 
+        self.rs_q = list()
+        self.rs_q_lastmsg_id = 0
+        self.rs_q_msg_ob = None
+
         self.temp_rolemap = dict()
         # self.temp_rolemap = {  # Previous RS role mappings
         #     550500946694635522: 475210524024504322,
