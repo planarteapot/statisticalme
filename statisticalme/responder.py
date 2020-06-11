@@ -487,11 +487,11 @@ class MainCommand:
 
     def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 20.3.3'
+        info_str += '\nversion: 20.3.4'
         info_str += '\nchanges:'
-        info_str += '\n  - add optional away message'
-        info_str += '\n  - add away timer maximum of 36hrs'
-        info_str += '\n  - add proper flagship timer'
+        info_str += '\n  - add only show optional away message if away'
+        info_str += '\n  - auto remove a ws when over'
+        info_str += '\n  - consistent appearance for score detail'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
