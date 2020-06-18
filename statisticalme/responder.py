@@ -491,11 +491,10 @@ class MainCommand:
 
     def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 20.3.5'
+        info_str += '\nversion: 20.3.6'
         info_str += '\nchanges:'
-        info_str += '\n  - add only show optional away message if away'
-        info_str += '\n  - auto remove a ws when over'
-        info_str += '\n  - consistent appearance for score detail'
+        info_str += '\n  - fix Cargo Bay Extension 12, to 52'
+        info_str += '\n  - fix cargo of Transport 6, to 8'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
