@@ -370,7 +370,8 @@ class MainCommand:
 
     def auth_chief(self):
         allowed = False
-        if self.group_contains_member('dev', self.current_author.id):
+
+        if self.auth_dev():
             allowed = True
         elif self.group_contains_member('auth_chief', self.current_author.id):
             allowed = True
@@ -379,9 +380,10 @@ class MainCommand:
 
     def auth_watcher(self):
         allowed = False
-        if self.group_contains_member('dev', self.current_author.id):
+
+        if self.auth_dev():
             allowed = True
-        elif self.group_contains_member('auth_chief', self.current_author.id):
+        elif self.auth_chief():
             allowed = True
         elif self.group_contains_member('auth_watcher', self.current_author.id):
             allowed = True
