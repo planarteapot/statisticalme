@@ -80,6 +80,7 @@ class MainCommand:
 
         self.redstar_channel_name = 'red-star'
         self.redstar_channel_id = 0
+        self.rs_chan_ob = None
         self.rs_q = list()
         self.rs_q_lastmsg_id = 0
         self.rs_q_msg_ob = None
@@ -1176,17 +1177,35 @@ class MainCommand:
 
         # Update Red Star queue
 
-        if len(self.rs_q) > 0:
-            try:
-                rsq_content = self.nicommand_queue_draw()
+        try:
+            rsq_content = self.nicommand_queue_draw()
 
-                rs_chan_ob = self.current_guild.get_channel(self.redstar_channel_id)
+            if self.rs_chan_ob is None and self.redstar_channel_id != 0:
+                self.rs_chan_ob = self.current_guild.get_channel(self.redstar_channel_id)
 
+                if self.rs_chan_ob is None:
+                    self.redstar_channel_id = 0
+
+            if self.rs_chan_ob is not None:
                 if self.rs_q_msg_ob is None:
                     self.rs_q_old_content = rsq_content
 
+                    if self.rs_q_lastmsg_id != 0:
+                        try:
+                            # Delete old
+                            msg_ob = await self.rs_chan_ob.fetch_message(self.rs_q_lastmsg_id)
+                            await msg_ob.delete()
+                            self.rs_q_lastmsg_id = 0
+                            self.flag_config_dirty = True
+                        except discord.errors.NotFound:
+                            pass
+
                     # Creating
-                    self.rs_q_msg_ob = await rs_chan_ob.send(rsq_content)
+                    self.rs_q_msg_ob = await self.rs_chan_ob.send(rsq_content)
+
+                    if self.rs_q_msg_ob is not None:
+                        self.rs_q_lastmsg_id = self.rs_q_msg_ob.id
+                        self.flag_config_dirty = True
                 else:
                     if self.rs_q_old_content != rsq_content:
                         self.rs_q_old_content = rsq_content
@@ -1194,21 +1213,11 @@ class MainCommand:
                         # Editing
                         await self.rs_q_msg_ob.edit(content=rsq_content)
 
-                if self.rs_q_msg_ob is not None:
-                    if self.rs_q_lastmsg_id != self.rs_q_msg_ob.id:
-                        if self.rs_q_lastmsg_id != 0:
-                            # Delete old
-                            msg_ob = await rs_chan_ob.fetch_message(self.rs_q_lastmsg_id)
-                            await msg_ob.delete()
-                            self.rs_q_lastmsg_id = 0
-
-                        self.rs_q_lastmsg_id = self.rs_q_msg_ob.id
-
-            except Exception:
-                exc_type, exc_value, exc_tb = sys.exc_info()
-                tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-                logger.error('background_update_all Exception processing Red Star queue\n' +
-                             ''.join(tbe.format()))
+        except Exception:
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+            logger.error('background_update_all Exception processing Red Star queue\n' +
+                         ''.join(tbe.format()))
 
         # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
