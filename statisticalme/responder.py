@@ -420,7 +420,7 @@ class MainCommand:
 
             if self.auth_dev():
                 allowed = True
-            elif self.group_contains_member('auth_chief', self.current_author.id):
+            elif self.auth_watcher():
                 allowed = True
             elif self.group_contains_member('auth_redstar', self.current_author.id):
                 allowed = True
