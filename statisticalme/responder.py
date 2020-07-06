@@ -78,19 +78,20 @@ class MainCommand:
         self.timeparse_match4 = re.compile(r'(\d+)d(\d+)h(\d+)m')
         self.ws_name_match = re.compile(r'-([a-zA-Z]+\d*)$')
 
-        self.redstar_channel_name = 'red-star'
-        self.redstar_channel_id = 0
-        self.rs_chan_ob = None
-        self.rs_q = list()
-        self.rs_q_lastmsg_id = 0
-        self.rs_q_msg_ob = None
-        self.rs_q_old_content = ''
+        # self.redstar_channel_name = 'red-star'
+        # self.redstar_channel_id = 0
+        # self.rs_chan_ob = None
+        # self.rs_q = list()
+        # self.rs_q_lastmsg_id = 0
+        # self.rs_q_msg_ob = None
+        # self.rs_q_old_content = ''
 
         # Load configuration/non-pilot data
         self.config_filepath = 'var/config.yaml'
         self.flag_config_dirty = False
         self.groups = dict()
         self.ws = dict()
+        self.rsq = dict()
         self.config_load()
 
         # Load persistant/pilot data
@@ -247,14 +248,17 @@ class MainCommand:
                 if 'ws' in loaded:
                     self.ws = copy.copy(loaded['ws'])
 
-                if 'redstar_channel_id' in loaded:
-                    self.redstar_channel_id = loaded['redstar_channel_id']
+                if 'rsq' in loaded:
+                    self.rsq = copy.copy(loaded['rsq'])
 
-                if 'redstar_queue' in loaded:
-                    self.rs_q = copy.copy(loaded['redstar_queue'])
+                # if 'redstar_channel_id' in loaded:
+                #     self.redstar_channel_id = loaded['redstar_channel_id']
 
-                if 'redstar_queue_lastmsg_id' in loaded:
-                    self.rs_q_lastmsg_id = loaded['redstar_queue_lastmsg_id']
+                # if 'redstar_queue' in loaded:
+                #     self.rs_q = copy.copy(loaded['redstar_queue'])
+
+                # if 'redstar_queue_lastmsg_id' in loaded:
+                #     self.rs_q_lastmsg_id = loaded['redstar_queue_lastmsg_id']
 
                 self.flag_config_dirty = False
         except Exception:
@@ -265,9 +269,7 @@ class MainCommand:
             yaml.dump({
                 'groups': self.groups,
                 'ws': self.ws,
-                'redstar_channel_id': self.redstar_channel_id,
-                'redstar_queue': self.rs_q,
-                'redstar_queue_lastmsg_id': self.rs_q_lastmsg_id
+                'rsq': self.rsq
             }, fh)
 
             self.flag_config_dirty = False
