@@ -2102,9 +2102,25 @@ class MainCommand:
         return return_list
 
     def nicommand_queue_draw(self):
-        return_list = []
+        olist = list()
 
-        return return_list
+        if len(self.rs_q) > 0:
+            user_list = []
+
+            for pkey in self.rs_q:
+                user_list.append(self.member_name_from_id(pkey))
+
+            user_list.sort(key=lambda x: x[0], reverse=True)
+
+            logger.debug('MEGAFONE user_list {}'.format(user_list))
+            olist.append('`| ` ' + ', '.join(user_list))
+
+        if len(olist) <= 0:
+            olist.append('`| ` wow such empty')
+
+        rsq_content = '`| RS Q`\n' + '\n'.join(olist)
+
+        return rsq_content
 
     async def command_score(self, params):
         return_list = []
