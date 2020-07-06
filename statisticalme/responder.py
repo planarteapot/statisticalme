@@ -418,7 +418,7 @@ class MainCommand:
         if self.current_channel.name == self.redstar_channel_name:
             self.redstar_channel_id = self.current_channel.id
 
-            if self.group_contains_member('dev', self.current_author.id):
+            if self.auth_dev():
                 allowed = True
             elif self.group_contains_member('auth_chief', self.current_author.id):
                 allowed = True
