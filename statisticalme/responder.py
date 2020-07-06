@@ -1130,38 +1130,43 @@ class MainCommand:
         if other_list and wsname_match:
             ws_name = wsname_match.group(1)
 
-            control_role = 0
-            assist_group = ''
-            if len(role_list) >= 1:
-                control_role = role_list[0]
-                assist_group = 'ws_{}_assist'.format(ws_name)
-                self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
+            nova_timedelta = self.timedelta_from_strings(other_list)
 
-            all_role = 0
-            if len(role_list) >= 2:
-                all_role = role_list[1]
+            if nova_timedelta < timedelta(hours=1) or nova_timedelta > timedelta(days=5):
+                return_list.append('Error: Nova time out of good range')
+            else:
+                control_role = 0
+                assist_group = ''
+                if len(role_list) >= 1:
+                    control_role = role_list[0]
+                    assist_group = 'ws_{}_assist'.format(ws_name)
+                    self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
 
-            nova_time = self.time_now + self.timedelta_from_strings(other_list)
+                all_role = 0
+                if len(role_list) >= 2:
+                    all_role = role_list[1]
 
-            self.ws[ws_name] = {
-                # inputs
-                'control_role': control_role,
-                'all_role': all_role,
-                'nova_time': self.sme_time_as_string(nova_time),
-                # other state
-                'old_content': '',
-                'assist_group': assist_group,
-                'channel': self.current_channel.id,
-                'message': 0,
-                'greens': {},
-                'reds': {},
-                'done': False
-            }
+                nova_time = self.time_now + nova_timedelta
 
-            return_list.append('WhiteStar {} added'.format(ws_name))
-            self.flag_config_dirty = True
+                self.ws[ws_name] = {
+                    # inputs
+                    'control_role': control_role,
+                    'all_role': all_role,
+                    'nova_time': self.sme_time_as_string(nova_time),
+                    # other state
+                    'old_content': '',
+                    'assist_group': assist_group,
+                    'channel': self.current_channel.id,
+                    'message': 0,
+                    'greens': {},
+                    'reds': {},
+                    'done': False
+                }
 
-            self.opportunistic_background_update_start()
+                return_list.append('WhiteStar {} added'.format(ws_name))
+                self.flag_config_dirty = True
+
+                self.opportunistic_background_update_start()
 
         return return_list
 
