@@ -2043,24 +2043,67 @@ class MainCommand:
     async def command_queue_add(self, params):
         return_list = []
 
-        who_list_scratch = list()
-        other_list = list()
-        role_list = list()
-        self.parse_who(params, who_list_scratch, role_list=role_list, other=other_list)
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+
+            self.rsq[rsq_chan_id] = {
+                # inputs (none)
+                # other state
+                'name': self.current_channel.name,
+                'old_content': '',
+                'message': 0,
+                'pilots': []
+            }
+
+            rsq_struct = self.rsq[rsq_chan_id]
+
+            return_list.append('RS Queue {} added'.format(rsq_struct['name']))
+            self.flag_config_dirty = True
+
+            self.opportunistic_background_update_start()
 
         return return_list
 
     async def command_queue_remove(self, params):
         return_list = []
 
-        who_list_scratch = list()
-        role_list = list()
-        self.parse_who(params, who_list_scratch, role_list=role_list)
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+            return_list += self.nicommand_queue_remove_impl(rsq_chan_id)
+
+        return return_list
+
+    def nicommand_queue_remove_impl(self, rsq_chan_id):
+        return_list = []
+
+        if rsq_chan_id in self.rsq:
+            rsq_struct = self.rsq[rsq_chan_id]
+
+            del(self.rsq[rsq_chan_id])
+
+            self.opportunistic_background_update_stop()
+
+            return_list.append('RS Queue {} removed'.format(rsq_struct['name']))
+            self.flag_config_dirty = True
 
         return return_list
 
     async def command_queue_list(self, params):
         return_list = []
+
+        rsq_strlist = []
+
+        for rsq_chan_id, _ in self.rsq.items():
+            rsq_strlist.append('\t<#{cid}>'.format(cid=rsq_chan_id))
+
+        if not rsq_strlist:
+            rsq_strlist = ['\tempty']
+
+        return_list = ['RS Queue list:\n' + '\n'.join(rsq_strlist)]
 
         return return_list
 
