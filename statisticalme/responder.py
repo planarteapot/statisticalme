@@ -1063,7 +1063,7 @@ class MainCommand:
         if len(self.ws) > 0:
             needed = True
 
-        if len(self.rs_q) > 0 or (self.rs_q_msg_ob is not None) or self.rs_q_lastmsg_id != 0:
+        if len(self.rsq) > 0:
             needed = True
 
         return needed
