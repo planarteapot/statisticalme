@@ -420,9 +420,7 @@ class MainCommand:
     def auth_redstar(self):
         allowed = False
 
-        if self.current_channel.name == self.redstar_channel_name:
-            self.redstar_channel_id = self.current_channel.id
-
+        if int(self.current_channel.id) in self.rsq:
             if self.auth_dev():
                 allowed = True
             elif self.auth_watcher():
