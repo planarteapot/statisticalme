@@ -2110,75 +2110,97 @@ class MainCommand:
     async def command_queue_in(self, params):
         return_list = []
 
-        who_list_good = list()
-        other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        rsq_chan_id = self.current_channel.id
 
-        q_player_id = self.current_author.id
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
 
-        if q_player_id > 0:
-            rs_q_level = None
+            if rsq_chan_id in self.rsq:
+                rsq_struct = self.rsq[rsq_chan_id]
 
-            # First check for last rs level played
-            rs_q_level_str = self.player_info_get(q_player_id, 'rs_q_level')
-            if rs_q_level_str is not None and is_int(rs_q_level_str):
-                rs_q_level = int(rs_q_level_str)
+                who_list_good = list()
+                other_list = list()
+                return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
 
-            # If rs level given, use that (instead)
-            if len(other_list) > 0 and is_int(other_list[0]):
-                rs_q_level = int(other_list[0])
+                q_player_id = self.current_author.id
 
-            # Othwrewise use native rs level
-            if rs_q_level is None:
-                rs_q_level = int(self.player_tech_get(q_player_id, 'rs'))
+                if q_player_id > 0:
+                    rs_q_level = None
 
-            if rs_q_level is None:
-                return_list.append('Please give an RS level, or set your RS tech level')
-            else:
-                if q_player_id in self.rs_q:
-                    self.rs_q.remove(q_player_id)
+                    # First check for last rs level played
+                    rs_q_level_str = self.player_info_get(q_player_id, 'rs_q_level')
+                    if rs_q_level_str is not None and is_int(rs_q_level_str):
+                        rs_q_level = int(rs_q_level_str)
 
-                self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
-                self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
+                    # If rs level given, use that (instead)
+                    if len(other_list) > 0 and is_int(other_list[0]):
+                        rs_q_level = int(other_list[0])
 
-                self.rs_q.append(int(q_player_id))
-                self.flag_config_dirty = True
+                    # Othwrewise use native rs level
+                    if rs_q_level is None:
+                        rs_q_level = int(self.player_tech_get(q_player_id, 'rs'))
 
-                self.rs_q_msg_ob = None
-                return_list.append('dented-control-message:no-reply')
+                    if rs_q_level is None:
+                        return_list.append('Please give an RS level, or set your RS tech level')
+                    else:
+                        pilot_list = rsq_struct['pilots']
 
-                self.opportunistic_background_update_start()
+                        if q_player_id in pilot_list:
+                            pilot_list.remove(q_player_id)
+
+                        self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
+                        self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
+
+                        pilot_list.append(int(q_player_id))
+                        self.flag_config_dirty = True
+
+                        return_list.append('dented-control-message:no-reply')
+
+                        self.opportunistic_background_update_start()
 
         return return_list
 
     async def command_queue_out(self, params):
         return_list = []
 
-        q_player_id = self.current_author.id
+        rsq_chan_id = self.current_channel.id
 
-        if q_player_id > 0:
-            if q_player_id in self.rs_q:
-                self.rs_q.remove(q_player_id)
-                self.flag_config_dirty = True
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
 
-                self.rs_q_msg_ob = None
-                return_list.append('dented-control-message:no-reply')
+            if rsq_chan_id in self.rsq:
+                rsq_struct = self.rsq[rsq_chan_id]
 
-                self.opportunistic_background_update_start()
+                q_player_id = self.current_author.id
+
+                if q_player_id > 0:
+                    pilot_list = rsq_struct['pilots']
+
+                    if q_player_id in pilot_list:
+                        pilot_list.remove(q_player_id)
+                        self.flag_config_dirty = True
+
+                        return_list.append('dented-control-message:no-reply')
+
+                        self.opportunistic_background_update_start()
 
         return return_list
 
     async def command_queue_refresh(self, params):
         return_list = []
 
-        q_player_id = self.current_author.id
+        rsq_chan_id = self.current_channel.id
 
-        if q_player_id > 0:
-            self.rs_q_msg_ob = None
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
 
-            return_list.append('dented-control-message:delete-original-message')
+            if rsq_chan_id in self.rsq:
+                rsq_struct = self.rsq[rsq_chan_id]
+                rsq_struct['old_content'] = ''
 
-            self.opportunistic_background_update_start()
+                return_list.append('dented-control-message:delete-original-message')
+
+                self.opportunistic_background_update_start()
 
         return return_list
 
