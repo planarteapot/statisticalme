@@ -202,9 +202,9 @@ class MainCommand:
         self.subparser_queue.add_command('add', False, self.command_queue_add, auth_fn=self.auth_dev)
         self.subparser_queue.add_command('remove', False, self.command_queue_remove, auth_fn=self.auth_dev)
         self.subparser_queue.add_command('list', False, self.command_queue_list, auth_fn=self.auth_dev)
-        self.subparser_queue.add_command('in', False, self.command_queue_in)
-        self.subparser_queue.add_command('out', False, self.command_queue_out)
-        self.subparser_queue.add_command('refresh', False, self.command_queue_refresh)
+        self.subparser_queue.add_command('in', False, self.command_queue_in, auth_fn=self.auth_redstar)
+        self.subparser_queue.add_command('out', False, self.command_queue_out, auth_fn=self.auth_redstar)
+        self.subparser_queue.add_command('refresh', False, self.command_queue_refresh, auth_fn=self.auth_redstar)
 
         self.ord_parser = sme_paramparse.CommandParse(
             title='StatisticalMe')
@@ -214,7 +214,7 @@ class MainCommand:
         self.ord_parser.add_command('tech', True, self.subparser_tech, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('time', True, self.subparser_time, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
-        self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_redstar)
+        self.ord_parser.add_command('queue', True, self.subparser_queue)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('clear', False, self.command_clear, auth_fn=self.auth_chief)
