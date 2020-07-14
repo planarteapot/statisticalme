@@ -199,6 +199,9 @@ class MainCommand:
 
         self.subparser_queue = sme_paramparse.CommandParse(
             title='StatisticalMe queue')
+        self.subparser_queue.add_command('add', False, self.command_queue_add, auth_fn=self.auth_dev)
+        self.subparser_queue.add_command('remove', False, self.command_queue_remove, auth_fn=self.auth_dev)
+        self.subparser_queue.add_command('list', False, self.command_queue_list, auth_fn=self.auth_dev)
         self.subparser_queue.add_command('in', False, self.command_queue_in)
         self.subparser_queue.add_command('out', False, self.command_queue_out)
         self.subparser_queue.add_command('refresh', False, self.command_queue_refresh)
@@ -2034,6 +2037,30 @@ class MainCommand:
             user_list.sort(key=lambda x: x[1], reverse=True)
 
             return_list += sme_table.draw(['User', 'days since update'], ['l', 'l'], user_list)
+
+        return return_list
+
+    async def command_queue_add(self, params):
+        return_list = []
+
+        who_list_scratch = list()
+        other_list = list()
+        role_list = list()
+        self.parse_who(params, who_list_scratch, role_list=role_list, other=other_list)
+
+        return return_list
+
+    async def command_queue_remove(self, params):
+        return_list = []
+
+        who_list_scratch = list()
+        role_list = list()
+        self.parse_who(params, who_list_scratch, role_list=role_list)
+
+        return return_list
+
+    async def command_queue_list(self, params):
+        return_list = []
 
         return return_list
 
