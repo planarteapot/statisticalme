@@ -1,0 +1,21 @@
+[package]
+name = "statisticalme"
+version = "20.3.6"
+authors = ["Antony <dentad@users.noreply.github.com>"]
+build = "build.rs"
+
+[lib]
+name = "statisticalme"
+crate-type = ["cdylib"]
+
+[profile.release]
+debug = false
+lto = true
+
+[dependencies]
+
+[build-dependencies]
+cbindgen = "*"
+
+[package.metadata.maturin]
+requires-dist = ["cffi"]

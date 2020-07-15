@@ -5,8 +5,8 @@ set -o errexit
 # Wheel prebuild
 
 /bin/rm -rf dist/*
-${HOME}/.venv/sme_deploy/bin/python3 setup.py bdist_wheel
-wheelname=$(ls dist/statisticalme-*-py3-none-any.whl)
+${HOME}/.venv/sme_deploy/bin/maturin build -b cffi --release
+wheelname=$(ls target/wheels/statisticalme-*-py3-none-manylinux1_x86_64.whl)
 echo "Destination wheel name $wheelname"
 
 # Containerize

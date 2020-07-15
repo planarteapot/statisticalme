@@ -1,6 +1,7 @@
 # StatisticalMe specific
 /data
 /var
+/statisticalme/statisticalme
 
 # Byte-compiled / optimized / DLL files
 __pycache__
@@ -15,8 +16,6 @@ __pycache__
 build/
 .eggs/
 *.egg-info/
-# */_native*
-/dist
 
 # pyenv
 .python-version
@@ -27,3 +26,6 @@ build/
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
 #Pipfile.lock
+
+# Rust
+/target
