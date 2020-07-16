@@ -5,8 +5,8 @@ set -o errexit
 # Wheel prebuild
 
 /bin/rm -rf dist/*
-${HOME}/.venv/sme_deploy/bin/maturin build -b cffi --release
-wheelname=$(ls target/wheels/statisticalme-*-py3-none-manylinux1_x86_64.whl)
+${HOME}/.venv/sme_deploy/bin/maturin build --bindings pyo3 --manylinux 2010 --release
+wheelname=$(ls target/wheels/statisticalme-*-cp38-cp38-manylinux2010_x86_64.whl)
 echo "Destination wheel name $wheelname"
 
 # Containerize
