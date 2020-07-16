@@ -2,7 +2,7 @@
 name = "statisticalme"
 version = "20.3.6"
 authors = ["Antony <dentad@users.noreply.github.com>"]
-build = "build.rs"
+edition = "2018"
 
 [lib]
 name = "statisticalme"
@@ -14,8 +14,6 @@ lto = true
 
 [dependencies]
 
-[build-dependencies]
-cbindgen = "*"
-
-[package.metadata.maturin]
-requires-dist = ["cffi"]
+[dependencies.pyo3]
+version = "0.11"
+features = ["extension-module"]
