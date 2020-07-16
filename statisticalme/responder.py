@@ -509,6 +509,7 @@ class MainCommand:
         info_str += '\n  - fix Cargo Bay Extension 12, to 52'
         info_str += '\n  - fix cargo of Transport 6, to 8'
         info_str += '\n  - add a check for nova time range when adding ws'
+        info_str += '\n  - enable Rust helper library build'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
