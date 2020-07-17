@@ -2208,13 +2208,15 @@ class MainCommand:
 
         return return_list
 
-    def nicommand_queue_draw(self):
+    def nicommand_queue_draw(self, rsq_struct):
         olist = list()
 
-        if len(self.rs_q) > 0:
+        pilot_list = rsq_struct['pilots']
+
+        if len(pilot_list) > 0:
             user_list = []
 
-            for pkey in self.rs_q:
+            for pkey in pilot_list:
                 user_list.append(self.member_name_from_id(pkey))
 
             user_list.sort(key=lambda x: x[0], reverse=True)
