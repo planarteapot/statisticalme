@@ -78,14 +78,6 @@ class MainCommand:
         self.timeparse_match4 = re.compile(r'(\d+)d(\d+)h(\d+)m')
         self.ws_name_match = re.compile(r'-([a-zA-Z]+\d*)$')
 
-        # self.redstar_channel_name = 'red-star'
-        # self.redstar_channel_id = 0
-        # self.rs_chan_ob = None
-        # self.rs_q = list()
-        # self.rs_q_lastmsg_id = 0
-        # self.rs_q_msg_ob = None
-        # self.rs_q_old_content = ''
-
         # Load configuration/non-pilot data
         self.config_filepath = 'var/config.yaml'
         self.flag_config_dirty = False
@@ -253,15 +245,6 @@ class MainCommand:
 
                 if 'rsq' in loaded:
                     self.rsq = copy.copy(loaded['rsq'])
-
-                # if 'redstar_channel_id' in loaded:
-                #     self.redstar_channel_id = loaded['redstar_channel_id']
-
-                # if 'redstar_queue' in loaded:
-                #     self.rs_q = copy.copy(loaded['redstar_queue'])
-
-                # if 'redstar_queue_lastmsg_id' in loaded:
-                #     self.rs_q_lastmsg_id = loaded['redstar_queue_lastmsg_id']
 
                 self.flag_config_dirty = False
         except Exception:
@@ -1086,7 +1069,6 @@ class MainCommand:
         self.time_now = self.sme_time_now()
 
         # Update WhiteStars
-
         ws_over = list()
 
         for ws_name, ws_struct in self.ws.items():
@@ -1175,11 +1157,10 @@ class MainCommand:
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-                logger.error('background_update_all Exception processing WhiteStar over ' +
+                logger.error('background_update_all Exception removing WhiteStar ' +
                              ws_name + '\n' + ''.join(tbe.format()))
 
         # Update Red Star queue
-
         rsq_invalid = list()
 
         for rsq_chan_id, rsq_struct in self.rsq.items():
