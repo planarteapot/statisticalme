@@ -510,6 +510,7 @@ class MainCommand:
         info_str += '\n  - fix cargo of Transport 6, to 8'
         info_str += '\n  - add a check for nova time range when adding ws'
         info_str += '\n  - enable Rust helper library build'
+        info_str += '\n  - let everyone change ship timers'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
@@ -1311,8 +1312,8 @@ class MainCommand:
 
                 ws_reds = ws_struct['reds']
 
-                if not self.auth_chief():
-                    who_list_good = [self.current_author.id]
+                # if not self.auth_chief():
+                #     who_list_good = [self.current_author.id]
 
                 time_list = list()
                 s_cmd = None
