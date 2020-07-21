@@ -102,6 +102,8 @@ class MainCommand:
         self.groups_next_refresh_all = self.time_now
         self.group_set('dev', ' '.join(['<@!{mid}>'.format(mid=mm) for mm in dev_author_list]))
 
+        self.messages_out = list()
+
         # if not 'ok_channels' in self.config:
         self.ok_channels = ok_channels.split(',')
         #     self.config['ok_channels'] = self.ok_channels
@@ -436,12 +438,24 @@ class MainCommand:
             # Contains string msg to send
             await self.current_author.send(self.current_author_msg)
 
+        if len(self.messages_out) > 0:
+            await self.send_out_messages()
+
         self.current_author = None
         self.current_channel = None
 
         self.opportunistic_save()
 
         return return_list
+
+    def queue_msg_for_send_out(self, who_ob, msg_str):
+        self.messages_out.append((who_ob, msg_str))
+
+    async def send_out_messages(self):
+        while len(self.messages_out) > 0:
+            who_ob, msg_str = self.messages_out.pop()
+            if (who_ob is not None) and (msg_str is not None) and (len(msg_str) > 0):
+                await who_ob.send(msg_str)
 
     def dev_command_metachan_add(self, params):
         return_list = []
