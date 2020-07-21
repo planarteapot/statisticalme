@@ -402,8 +402,6 @@ class MainCommand:
         self.current_author = p_author
         self.current_channel = p_channel
 
-        self.current_author_msg = None
-
         try:
             if self.groups_next_refresh_all < self.time_now:
                 self.group_refresh_all()
@@ -433,10 +431,6 @@ class MainCommand:
                 return_list = ['Sorry about that chief']
             else:
                 return_list = ['Oh crap']
-
-        if self.current_author_msg is not None:
-            # Contains string msg to send
-            await self.current_author.send(self.current_author_msg)
 
         if len(self.messages_out) > 0:
             await self.send_out_messages()
@@ -2279,7 +2273,7 @@ class MainCommand:
     def command_msgme(self, params):
         return_list = []
 
-        self.current_author_msg = 'You rang?'
+        self.queue_msg_for_send_out(self.current_author, 'You rang?')
 
         return_list.append('OK')
 
