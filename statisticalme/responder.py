@@ -432,6 +432,7 @@ class MainCommand:
             else:
                 return_list = ['Oh crap']
 
+        # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
             await self.send_out_messages()
 
@@ -1138,6 +1139,10 @@ class MainCommand:
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
                 logger.error('background_update_all Exception processing WhiteStar over ' +
                              ws_name + '\n' + ''.join(tbe.format()))
+
+        # Opportunistic send out messages queued
+        if len(self.messages_out) > 0:
+            await self.send_out_messages()
 
         self.opportunistic_save()
 
