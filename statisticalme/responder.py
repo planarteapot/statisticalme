@@ -1165,18 +1165,14 @@ class MainCommand:
 
         for rsq_chan_id, rsq_struct in self.rsq.items():
             try:
-                rsq_content = self.nicommand_queue_draw(rsq_struct)
+                update_flag = self.nicommand_queue_process(rsq_struct)
 
-                logger.debug('MEGAFONE background_update_all, rsq_content {}'.format(rsq_content))
-
-                if rsq_content != rsq_struct['old_content']:
+                if update_flag:
                     chan_ob = self.current_guild.get_channel(rsq_chan_id)
 
                     if chan_ob is None:
                         rsq_invalid.append((rsq_chan_id, rsq_struct['name']))
                     else:
-                        rsq_struct['old_content'] = rsq_content
-
                         if rsq_struct['message'] != 0:
                             try:
                                 # Delete old
@@ -1188,7 +1184,7 @@ class MainCommand:
                                 pass
 
                         # Creating
-                        msg_ob = await chan_ob.send(rsq_content)
+                        msg_ob = await chan_ob.send(rsq_struct['old_content'])
 
                         if msg_ob is not None:
                             rsq_struct['message'] = msg_ob.id
@@ -2189,7 +2185,8 @@ class MainCommand:
 
         return return_list
 
-    def nicommand_queue_draw(self, rsq_struct):
+    def nicommand_queue_process(self, rsq_struct):
+        update_flag = False
         olist = list()
 
         pilot_list = rsq_struct['pilots']
@@ -2210,7 +2207,11 @@ class MainCommand:
 
         rsq_content = '`| RS Q`\n' + '\n'.join(olist)
 
-        return rsq_content
+        if rsq_content != rsq_struct['old_content']:
+            update_flag = True
+            rsq_struct['old_content'] = rsq_content
+
+        return update_flag
 
     async def command_score(self, params):
         return_list = []
