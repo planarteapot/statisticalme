@@ -32,7 +32,7 @@ class CommandParse():
     def add_command(self, key, object_flag, value, auth_fn=None):
         self.params[normalize_caseless(key)] = [object_flag, value, auth_fn]
 
-    def do_command(self, param_list):
+    async def do_command(self, param_list):
         return_list = []
 
         if len(param_list) >= 1:
@@ -46,9 +46,9 @@ class CommandParse():
                 object_flag, value, auth_fn = self.params[pcommand]
                 if auth_fn is None or auth_fn():
                     if object_flag:
-                        return_list = return_list + value.do_command(pparams)
+                        return_list = return_list + await value.do_command(pparams)
                     else:
-                        return_list = return_list + value(pparams)
+                        return_list = return_list + await value(pparams)
                 else:
                     logger.warning('Command denied')
             else:

@@ -406,7 +406,7 @@ class MainCommand:
             if self.groups_next_refresh_all < self.time_now:
                 self.group_refresh_all()
 
-            return_list = return_list + self.ord_parser.do_command(p_content)
+            return_list = return_list + await self.ord_parser.do_command(p_content)
 
             if len(return_list) < 1:
                 if self.group_contains_member('dev', self.current_author.id):
@@ -452,7 +452,7 @@ class MainCommand:
             if (who_ob is not None) and (msg_str is not None) and (len(msg_str) > 0):
                 await who_ob.send(msg_str)
 
-    def dev_command_metachan_add(self, params):
+    async def dev_command_metachan_add(self, params):
         return_list = []
 
         who_list_good = list()
@@ -474,7 +474,7 @@ class MainCommand:
 
         return return_list
 
-    def dev_command_metachan_remove(self, params):
+    async def dev_command_metachan_remove(self, params):
         return_list = []
 
         who_list_good = list()
@@ -495,14 +495,14 @@ class MainCommand:
 
         return return_list
 
-    def dev_command_metachan_list(self, params):
+    async def dev_command_metachan_list(self, params):
         return_list = []
 
         return_list.append(', '.join([mm for mm in self.meta_channels]))
 
         return return_list
 
-    def dev_command_info(self, params):
+    async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
         info_str += '\nversion: 20.3.6'
         info_str += '\nchanges:'
@@ -524,12 +524,12 @@ class MainCommand:
 
         return [info_str]
 
-    def dev_command_save(self, params):
+    async def dev_command_save(self, params):
         self.config_save()
         self.persdata_save()
         return ['App and pilot data saved']
 
-    def dev_command_roleprint(self, params):
+    async def dev_command_roleprint(self, params):
         return_list = []
 
         who_list = list()
@@ -554,10 +554,10 @@ class MainCommand:
 
         return return_list
 
-    def dev_command_techlist(self, params):
+    async def dev_command_techlist(self, params):
         return ['Valid tech names: ' + ', '.join(teh.tech_keys)]
 
-    def dev_command_quit(self, params):
+    async def dev_command_quit(self, params):
         self.opportunistic_save()
         return ['dented-control-message:quit']
 
@@ -870,7 +870,7 @@ class MainCommand:
 
         self.flag_persdata_dirty = True
 
-    def command_group_add(self, params):
+    async def command_group_add(self, params):
         return_list = []
 
         who_list_scratch = list()
@@ -892,7 +892,7 @@ class MainCommand:
 
         return return_list
 
-    def command_group_remove(self, params):
+    async def command_group_remove(self, params):
         return_list = []
 
         if params:
@@ -905,7 +905,7 @@ class MainCommand:
 
         return return_list
 
-    def command_group_list(self, params):
+    async def command_group_list(self, params):
         return_list = []
 
         group_strs = list()
@@ -1146,7 +1146,7 @@ class MainCommand:
 
         self.opportunistic_save()
 
-    def command_ws_add(self, params):
+    async def command_ws_add(self, params):
         return_list = []
 
         who_list_scratch = list()
@@ -1200,7 +1200,7 @@ class MainCommand:
 
         return return_list
 
-    def command_ws_remove(self, params):
+    async def command_ws_remove(self, params):
         return_list = []
 
         who_list_scratch = list()
@@ -1232,7 +1232,7 @@ class MainCommand:
 
         return return_list
 
-    def command_ws_list(self, params):
+    async def command_ws_list(self, params):
         ws_strlist = []
 
         for ws_name, ws_struct in self.ws.items():
@@ -1268,7 +1268,7 @@ class MainCommand:
 
         return ['WhiteStar list:\n' + '\n'.join(ws_strlist)]
 
-    def command_ws_roles(self, params):
+    async def command_ws_roles(self, params):
         return_list = []
 
         who_list_scratch = list()
@@ -1296,7 +1296,7 @@ class MainCommand:
 
         return return_list
 
-    def command_ws_ship(self, params):
+    async def command_ws_ship(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1543,7 +1543,7 @@ class MainCommand:
         return ['{:.11}'.format(pilot_name), '{:1.1} {:>5}'.format(b_ship, b_delay),
                 '{:1.1} {:>5}'.format(s_ship, s_delay)]
 
-    def command_tech_set(self, params):
+    async def command_tech_set(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1587,7 +1587,7 @@ class MainCommand:
 
         return return_list
 
-    def command_tech_report(self, params):
+    async def command_tech_report(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1625,7 +1625,7 @@ class MainCommand:
 
         return return_list
 
-    def command_tech_list(self, params):
+    async def command_tech_list(self, params):
         # sometimes known as !gt or tech get
         return_list = []
 
@@ -1705,7 +1705,7 @@ class MainCommand:
 
         return tz
 
-    def command_time_set(self, params):
+    async def command_time_set(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1737,7 +1737,7 @@ class MainCommand:
 
         return return_list
 
-    def command_time_get(self, params):
+    async def command_time_get(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1760,7 +1760,7 @@ class MainCommand:
 
         return return_list
 
-    def command_time_list(self, params, ws_info=None):
+    async def command_time_list(self, params, ws_info=None):
         return_list = []
 
         who_list_good = list()
@@ -1852,7 +1852,7 @@ class MainCommand:
 
         return return_list
 
-    def command_time_away(self, params):
+    async def command_time_away(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1895,7 +1895,7 @@ class MainCommand:
 
         return return_list
 
-    def command_time_back(self, params):
+    async def command_time_back(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1913,7 +1913,7 @@ class MainCommand:
 
         return return_list
 
-    def command_pilot_lastup(self, params):
+    async def command_pilot_lastup(self, params):
         return_list = []
 
         who_list_good = list()
@@ -1957,7 +1957,7 @@ class MainCommand:
 
         return return_list
 
-    def command_score(self, params):
+    async def command_score(self, params):
         return_list = []
 
         who_list_good = list()
@@ -2275,7 +2275,7 @@ class MainCommand:
 
         return return_list
 
-    def command_msgme(self, params):
+    async def command_msgme(self, params):
         return_list = []
 
         self.queue_msg_for_send_out(self.current_author, 'You rang?')
