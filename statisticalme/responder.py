@@ -215,6 +215,7 @@ class MainCommand:
         # self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
+        self.ord_parser.add_command('clear', False, self.command_clear, auth_fn=self.auth_chief)
 
         self.current_author = None
         self.current_channel = None
@@ -2281,6 +2282,19 @@ class MainCommand:
         self.queue_msg_for_send_out(self.current_author, 'You rang?')
 
         return_list.append('OK')
+
+        return return_list
+
+    async def command_clear(self, params):
+        return_list = []
+
+        who_list_good = list()
+        other_list = list()
+        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+
+        await self.current_channel.purge(limit=5)
+
+        return_list.append('OK, I think')
 
         return return_list
 
