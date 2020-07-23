@@ -1167,6 +1167,10 @@ class MainCommand:
             try:
                 update_flag = self.nicommand_queue_process(rsq_struct)
 
+                # Opportunistic send out messages queued (extra check)
+                if len(self.messages_out) > 0:
+                    await self.send_out_messages()
+
                 if update_flag:
                     chan_ob = self.current_guild.get_channel(rsq_chan_id)
 
