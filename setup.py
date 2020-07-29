@@ -21,7 +21,7 @@ from setuptools import setup
 
 setup(
     name='statisticalme',
-    version='20.3.6',
+    version='20.3.7',
     entry_points={"console_scripts": ["statisticalme = statisticalme.main:main_function"]},
     packages=['statisticalme'],
     include_package_data=True,

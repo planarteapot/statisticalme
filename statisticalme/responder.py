@@ -505,7 +505,7 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 20.3.6'
+        info_str += '\nversion: 20.3.7'
         info_str += '\nchanges:'
         info_str += '\n  - score changes'
         info_str += '\n  - add Remote Bomb'
@@ -521,6 +521,8 @@ class MainCommand:
         info_str += '\n  - add a check for nova time range when adding ws'
         info_str += '\n  - enable Rust helper library build'
         info_str += '\n  - let everyone change ship timers'
+        info_str += '\n  - delete ship timer command, if successful'
+        info_str += '\n  - add !sme clear for message clearing'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
