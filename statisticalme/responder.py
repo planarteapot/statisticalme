@@ -1377,7 +1377,6 @@ class MainCommand:
                                 if s_enemy not in ws_reds:
                                     ws_reds[s_enemy] = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
                                     self.flag_config_dirty = True
-                                    return_list.append('OK')
                             else:
                                 return_list.append('Crap: Need enemy name with !, like: !Ralph')
                         elif s_cmd == 'remove':
@@ -1385,7 +1384,6 @@ class MainCommand:
                                 if s_enemy in ws_reds:
                                     del(ws_reds[s_enemy])
                                     self.flag_config_dirty = True
-                                    return_list.append('OK')
                             else:
                                 return_list.append('Crap: Need enemy name with !, like: !Ralph')
                         else:
@@ -1454,8 +1452,6 @@ class MainCommand:
                                     ws_greens[s_friend] = pilot_data
 
                                 self.flag_config_dirty = True
-
-                                return_list.append('OK')
                     else:
                         return_list.append('Crap: Need command, one of: {}'.format(
                             ['in', 'out', 'dead', 'timer', 'add', 'remove']))
