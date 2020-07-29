@@ -1458,6 +1458,9 @@ class MainCommand:
                         return_list.append('Crap: Need command, one of: {}'.format(
                             ['in', 'out', 'dead', 'timer', 'add', 'remove']))
 
+        if len(return_list) < 1:
+            return_list.append('dented-control-message:delete-original-message')
+
         return return_list
 
     def nicommand_ws_shiplist(self, params, ws_info=None):
