@@ -1377,7 +1377,7 @@ class MainCommand:
                                     self.flag_config_dirty = True
                                     return_list.append('OK')
                             else:
-                                return_list.append('Crap: Need enemy name with !, like: !Avid')
+                                return_list.append('Crap: Need enemy name with !, like: !Ralph')
                         elif s_cmd == 'remove':
                             if s_enemy is not None:
                                 if s_enemy in ws_reds:
@@ -1385,7 +1385,7 @@ class MainCommand:
                                     self.flag_config_dirty = True
                                     return_list.append('OK')
                             else:
-                                return_list.append('Crap: Need enemy name with !, like: !Avid')
+                                return_list.append('Crap: Need enemy name with !, like: !Ralph')
                         else:
                             if s_shiptype is not None:
                                 given_time = self.timedelta_from_strings(time_list)
