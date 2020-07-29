@@ -2292,9 +2292,65 @@ class MainCommand:
         other_list = list()
         return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
 
-        await self.current_channel.purge(limit=5)
+        count_clear = 1
+        flag_all = False
+        count_after = 2
 
-        return_list.append('OK, I think')
+        other_count = 0
+        while other_count < len(other_list):
+            oo = other_list[other_count]
+
+            if oo == '+all':
+                pass
+                # flag_all = True
+            elif oo == '+keep':
+                count_after = 1
+                if (other_count + 1) < len(other_list) and is_int(other_list[other_count + 1]):
+                    count_after = int(other_list[other_count + 1])
+                    other_count += 1
+
+                    if count_after > 10:
+                        return_list.append('Error: wont keep more than {}'.format(count_after))
+                        count_clear = 0
+                        flag_all = False
+                        count_after = 0
+
+                    if count_after < 0:
+                        count_after = 0
+            elif is_int(oo):
+                count_clear = int(oo)
+
+            other_count += 1
+
+        # logger.debug('MEGAFONE count_clear {}'.format(count_clear))
+        # logger.debug('MEGAFONE flag_all {}'.format(flag_all))
+        # logger.debug('MEGAFONE count_after {}'.format(count_after))
+
+        found_after = None
+        if count_after > 0:
+            old_msgs = await self.current_channel.history(limit=int(count_after + 1), oldest_first=True).flatten()
+
+            if count_after >= len(old_msgs):
+                count_clear = 0
+                flag_all = False
+                count_after = 0
+            else:
+                found_after = old_msgs[count_after - 1]
+
+        if flag_all:
+            pass
+            # logger.debug('MEGAFONE mark .5')
+            # chunk_size = 96
+            # keep_going = True
+            # while keep_going:
+            #     old_msgs = await self.current_channel.purge(limit=chunk_size, after=found_after)
+            #     if len(old_msgs) < chunk_size:
+            #         keep_going = False
+        if count_clear > 0:
+            await self.current_channel.purge(limit=count_clear + 1, after=found_after)
+
+        if len(return_list) < 1:
+            return_list.append('dented-control-message:no-reply')
 
         return return_list
 
