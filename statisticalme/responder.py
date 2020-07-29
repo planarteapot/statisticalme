@@ -1092,7 +1092,7 @@ class MainCommand:
                     if all_role > 0:
                         all_role_str = '<@&{rid}>'.format(rid=all_role)
 
-                        newcont2 = self.command_time_list([all_role_str], ws_info=ws_struct)
+                        newcont2 = await self.command_time_list([all_role_str], ws_info=ws_struct)
                         if newcont2 and newcont2[0][:3] == '```':
                             new_content += newcont2[0][3:-3]
 
