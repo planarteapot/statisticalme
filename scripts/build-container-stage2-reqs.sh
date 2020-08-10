@@ -2,7 +2,7 @@
 
 set -o errexit
 
-cont=$(buildah from sme-base:latest)
+cont=$(buildah from python3-base:latest)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" $cont
 
