@@ -6,9 +6,8 @@ cont=$(buildah from python3-base:latest)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" $cont
 
-buildah run $cont mkdir -p /opt/statisticalme /opt/statisticalme/data /opt/statisticalme/var
-
-buildah copy $cont requirements.txt /opt/statisticalme
+buildah run $cont mkdir -p /opt
+buildah copy $cont requirements.txt /opt
 
 buildah config --env 'DEBIAN_FRONTEND=noninteractive' $cont
 
@@ -21,7 +20,7 @@ buildah config --env 'PATH=/root/venv-sme/bin:$PATH' $cont
 buildah config --env 'VIRTUAL_ENV=/root/venv-sme' $cont
 
 buildah run $cont pip3 install --no-use-pep517 wheel
-buildah run $cont pip3 install --no-use-pep517 --requirement /opt/statisticalme/requirements.txt
+buildah run $cont pip3 install --no-use-pep517 --requirement /opt/requirements.txt
 
 buildah run $cont apt-get -y purge python-dev-is-python3 python3-dev python-pip-whl make gcc g++ libxml2-dev libxslt1-dev zlib1g-dev patch
 
@@ -29,6 +28,6 @@ buildah run $cont apt-get -y autoremove
 buildah run $cont apt-get clean
 buildah run $cont find /var/lib/apt/lists -type f -not -empty -delete
 
-buildah run $cont rm -f /opt/statisticalme/requirements.txt
+buildah run $cont rm -f /opt/requirements.txt
 
 buildah commit --format docker $cont sme-reqs:latest
