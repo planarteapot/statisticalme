@@ -33,7 +33,6 @@ from . import sme_table
 from . import sme_tech
 import traceback
 import yaml
-from .statisticalme import sum_as_string
 
 
 logger = logging.getLogger('StatisticalMe')
@@ -65,8 +64,6 @@ def is_float(value):
 class MainCommand:
     def __init__(self, dev_author_list, ok_channels):
         logger.debug('MainCommand __init__')
-
-        logger.debug('MEGAFONE Rust query: {}'.format(sum_as_string(50, 2)))
 
         self.time_now = self.sme_time_now()
         self.time_up = self.time_now
