@@ -2134,7 +2134,7 @@ class MainCommand:
                             pilot_list.remove(q_player_id)
 
                         self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
-                        self.player_info_set(q_player_id, 'rs_q_time', self.time_now)
+                        self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
 
                         pilot_list.append(int(q_player_id))
                         self.flag_config_dirty = True
