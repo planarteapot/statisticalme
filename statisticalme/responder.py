@@ -2128,22 +2128,24 @@ class MainCommand:
                     if rs_q_level is None:
                         return_list.append('Please give an RS level, or set your RS tech level')
                     else:
-                        pilot_list = rsq_struct['pilots']
-
-                        if q_player_id in pilot_list:
-                            pilot_list.remove(q_player_id)
-
-                        self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
-                        self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
-
-                        pilot_list.append(int(q_player_id))
-                        self.flag_config_dirty = True
-
+                        self.nicommand_queue_in_impl(rsq_struct, q_player_id, rs_q_level)
                         return_list.append('dented-control-message:no-reply')
 
-                        self.opportunistic_background_update_start()
-
         return return_list
+
+    def nicommand_queue_in_impl(self, rsq_struct, q_player_id, rs_q_level):
+        if q_player_id > 0:
+            pilot_list = rsq_struct['pilots']
+
+            if q_player_id not in pilot_list:
+                pilot_list.append(int(q_player_id))
+
+            self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
+            self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
+
+            self.flag_config_dirty = True
+
+            self.opportunistic_background_update_start()
 
     async def command_queue_out(self, params):
         return_list = []
