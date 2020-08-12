@@ -2154,22 +2154,20 @@ class MainCommand:
             rsq_chan_id = int(rsq_chan_id)
 
             if rsq_chan_id in self.rsq:
-                rsq_struct = self.rsq[rsq_chan_id]
-
-                q_player_id = self.current_author.id
-
-                if q_player_id > 0:
-                    pilot_list = rsq_struct['pilots']
-
-                    if q_player_id in pilot_list:
-                        pilot_list.remove(q_player_id)
-                        self.flag_config_dirty = True
-
-                        return_list.append('dented-control-message:no-reply')
-
-                        self.opportunistic_background_update_start()
+                self.nicommand_queue_out_impl(self.rsq[rsq_chan_id], self.current_author.id)
+                return_list.append('dented-control-message:no-reply')
 
         return return_list
+
+    def nicommand_queue_out_impl(self, rsq_struct, q_player_id):
+        if q_player_id > 0:
+            pilot_list = rsq_struct['pilots']
+
+            if q_player_id in pilot_list:
+                pilot_list.remove(q_player_id)
+                self.flag_config_dirty = True
+
+                self.opportunistic_background_update_start()
 
     async def command_queue_refresh(self, params):
         return_list = []
