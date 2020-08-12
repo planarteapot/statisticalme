@@ -2028,13 +2028,35 @@ class MainCommand:
     async def command_queue_add(self, params):
         return_list = []
 
+        who_list_good = list()
+        other_list = list()
+        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+
+        q_level_lo = 0
+        q_level_hi = 0
+
+        if len(other_list) >= 2:
+            if is_int(other_list[0]):
+                q_level_lo = int(other_list[0])
+
+                if q_level_lo < 2 or q_level_lo > 12:
+                    q_level_lo = 0
+
+            if is_int(other_list[1]):
+                q_level_hi = int(other_list[1])
+
+                if q_level_hi < q_level_lo or q_level_hi > 12:
+                    q_level_hi = 0
+
         rsq_chan_id = self.current_channel.id
 
-        if rsq_chan_id is not None and rsq_chan_id > 0:
+        if rsq_chan_id is not None and rsq_chan_id > 0 and q_level_lo > 0 and q_level_hi > 0:
             rsq_chan_id = int(rsq_chan_id)
 
             self.rsq[rsq_chan_id] = {
-                # inputs (none)
+                # inputs
+                'level_lo': q_level_lo,
+                'level_hi': q_level_hi,
                 # other state
                 'name': self.current_channel.name,
                 'old_content': '',
