@@ -72,6 +72,7 @@ class MainCommand:
 
         self.aiohttp_session = aiohttp.ClientSession()
 
+        self.bot_self = None
         self.discord_client = None
         self.current_guild = None
 
@@ -227,6 +228,9 @@ class MainCommand:
 
     def set_discord_client(self, p_discord_client):
         self.discord_client = p_discord_client
+
+    def set_bot_self(self, p_bot):
+        self.bot_self = p_bot
 
     def set_guild(self, p_guild):
         self.current_guild = p_guild
