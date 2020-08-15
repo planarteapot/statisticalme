@@ -1165,7 +1165,12 @@ class MainCommand:
 
         for rsq_chan_id, rsq_struct in self.rsq.items():
             try:
-                update_flag = self.nicommand_queue_process(rsq_struct)
+                chan_ob = self.current_guild.get_channel(rsq_chan_id)
+
+                if chan_ob is None:
+                    invalid_flag = True
+
+                update_flag = self.nicommand_queue_process(chan_ob, rsq_struct)
 
                 # Opportunistic send out messages queued (extra check)
                 if len(self.messages_out) > 0:
@@ -2211,7 +2216,7 @@ class MainCommand:
 
         return return_list
 
-    def nicommand_queue_process(self, rsq_struct):
+    def nicommand_queue_process(self, chan_ob, rsq_struct):
         update_flag = False
         olist = list()
 
