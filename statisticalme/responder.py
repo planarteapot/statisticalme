@@ -1168,36 +1168,13 @@ class MainCommand:
                 chan_ob = self.current_guild.get_channel(rsq_chan_id)
 
                 if chan_ob is None:
-                    invalid_flag = True
-
-                update_flag = self.nicommand_queue_process(chan_ob, rsq_struct)
+                    rsq_invalid.append((rsq_chan_id, rsq_struct['name']))
+                else:
+                    await self.nicommand_queue_process(chan_ob, rsq_struct)
 
                 # Opportunistic send out messages queued (extra check)
                 if len(self.messages_out) > 0:
                     await self.send_out_messages()
-
-                if update_flag:
-                    chan_ob = self.current_guild.get_channel(rsq_chan_id)
-
-                    if chan_ob is None:
-                        rsq_invalid.append((rsq_chan_id, rsq_struct['name']))
-                    else:
-                        if rsq_struct['message'] != 0:
-                            try:
-                                # Delete old
-                                msg_ob = await chan_ob.fetch_message(rsq_struct['message'])
-                                await msg_ob.delete()
-                                rsq_struct['message'] = 0
-                                self.flag_config_dirty = True
-                            except discord.errors.NotFound:
-                                pass
-
-                        # Creating
-                        msg_ob = await chan_ob.send(rsq_struct['old_content'])
-
-                        if msg_ob is not None:
-                            rsq_struct['message'] = msg_ob.id
-                            self.flag_config_dirty = True
 
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
@@ -2216,8 +2193,7 @@ class MainCommand:
 
         return return_list
 
-    def nicommand_queue_process(self, chan_ob, rsq_struct):
-        update_flag = False
+    async def nicommand_queue_process(self, chan_ob, rsq_struct):
         olist = list()
 
         pilot_list = rsq_struct['pilots']
@@ -2241,8 +2217,6 @@ class MainCommand:
         if rsq_content != rsq_struct['old_content']:
             update_flag = True
             rsq_struct['old_content'] = rsq_content
-
-        return update_flag
 
     async def command_score(self, params):
         return_list = []
