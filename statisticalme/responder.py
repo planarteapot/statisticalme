@@ -2194,29 +2194,110 @@ class MainCommand:
         return return_list
 
     async def nicommand_queue_process(self, chan_ob, rsq_struct):
-        olist = list()
+        emoji_bytes = [
+            b'2\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_2:'
+            b'3\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_3:'
+            b'4\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_4:'
+            b'5\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_5:'
+            b'6\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_6:'
+            b'7\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_7:'
+            b'8\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_8:'
+            b'9\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_9:'
+            b'\xf0\x9f\x94\x9f',            # ':keycap_10:'
+            b'\xe2\x80\xbc\xef\xb8\x8f',    # ':double_exclamation_mark_selector:'
+            b'\xe2\x81\x89\xef\xb8\x8f',    # ':exclamation_question_mark_selector:'
+        ]
 
-        pilot_list = rsq_struct['pilots']
+        rs_q_range = range(rsq_struct['level_lo'], rsq_struct['level_hi'] + 1)
 
-        if len(pilot_list) > 0:
-            user_list = []
+        # get current message object
+        msg_ob = None
+        if rsq_struct['message'] != 0:
+            try:
+                # get old message object
+                msg_ob = await chan_ob.fetch_message(rsq_struct['message'])
+            except discord.errors.NotFound:
+                pass
 
-            for pkey in pilot_list:
-                user_list.append(self.member_name_from_id(pkey))
+        # if no current message object, create one
+        if msg_ob is None:
+            # Creating blank message
+            qlist1 = ['`| ` **RS Queue**', '`| ` `!in`, `!out` or react']
 
-            user_list.sort(key=lambda x: x[0], reverse=True)
+            for rs_q_level in rs_q_range:
+                qlist1.append('`| {qn:2d}` _-- react_ {qe} _--_'.format(qn=rs_q_level, qe=emoji_bytes[rs_q_level - 2].decode('utf-8')))
 
-            logger.debug('MEGAFONE user_list {}'.format(user_list))
-            olist.append('`| ` ' + ', '.join(user_list))
+            rsq_content = '\n'.join(qlist1)
+            msg_ob = await chan_ob.send(rsq_content)
 
-        if len(olist) <= 0:
-            olist.append('`| ` wow such empty')
+            if msg_ob is not None:
+                rsq_struct['old_content'] = rsq_content
+                rsq_struct['message'] = msg_ob.id
+                self.flag_config_dirty = True
 
-        rsq_content = '`| RS Q`\n' + '\n'.join(olist)
+                for rs_q_level in rs_q_range:
+                    await msg_ob.add_reaction(emoji_bytes[rs_q_level - 2].decode('utf-8'))
 
-        if rsq_content != rsq_struct['old_content']:
-            update_flag = True
-            rsq_struct['old_content'] = rsq_content
+        if msg_ob is not None:
+            # convert message reactions
+            emoji_remove_list = list()
+            for reac in msg_ob.reactions:
+                rs_q_level = 0
+                if type(reac.emoji) == str:
+                    try:
+                        rs_q_level = 2 + emoji_bytes.index(reac.emoji.encode('utf-8'))
+                    except ValueError:
+                        pass
+
+                if rs_q_level in rs_q_range:
+                    users = await reac.users().flatten()
+                    for user in users:
+                        if user.id == self.bot_self.id:
+                            pass
+                        else:
+                            q_player_id = user.id
+                            self.nicommand_queue_in_impl(rsq_struct, q_player_id, rs_q_level)
+                            await msg_ob.remove_reaction(emoji_bytes[rs_q_level - 2].decode('utf-8'), user)
+                else:
+                    emoji_remove_list.append(reac.emoji)
+
+            for emo in emoji_remove_list:
+                await msg_ob.clear_reaction(emo)
+
+            # collate data from internal truth
+            pilot_list = rsq_struct['pilots'].copy()
+            int_level_lists = [set() for x in range(13)]  # pilots in queue from internal truth
+
+            if len(pilot_list) > 0:
+                for q_player_id in pilot_list:
+                    rs_q_level = self.player_info_get(q_player_id, 'rs_q_level')
+
+                    # TODO test here for timeout...?, and if so, remove
+
+                    if rs_q_level in rs_q_range:
+                        int_level_lists[rs_q_level].add(q_player_id)
+
+            # logger.debug('MEGAFONE i list: {}'.format(int_level_lists))
+
+            # TODO sift int_, removing groups of 4 and msg the group, updating rsq pilot list
+
+            # update text - from int_ sets
+            qlist1 = ['`| ` **RS Queue**', '`| ` `!in`, `!out` or react']
+
+            for rs_q_level in rs_q_range:
+                if bool(int_level_lists[rs_q_level]):
+                    who_list_good = sorted(int_level_lists[rs_q_level])
+                    qlist1.append('`| {qn:2d}` {pl}'.format(qn=rs_q_level, pl=', '.join([self.member_name_from_id(wh) for wh in who_list_good])))
+                else:
+                    qlist1.append('`| {qn:2d}` _-- react_ {qe} _--_'.format(qn=rs_q_level, qe=emoji_bytes[rs_q_level - 2].decode('utf-8')))
+
+            rsq_content = '\n'.join(qlist1)
+
+            if rsq_content != rsq_struct['old_content']:
+                rsq_struct['old_content'] = rsq_content
+                self.flag_config_dirty = True
+
+                msg_ob = await msg_ob.edit(content=rsq_content)
 
     async def command_score(self, params):
         return_list = []
