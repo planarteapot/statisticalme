@@ -38,10 +38,6 @@ import yaml
 logger = logging.getLogger('StatisticalMe')
 teh = sme_tech.TechHandler()
 
-# hadesbotty_author = 'HadesBotty#6950'
-# StatisticalMe#7265
-# HadesBotty#6950
-
 bs_support_count = [0, 0, 1, 2, 3, 4, 5]
 
 
