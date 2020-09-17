@@ -83,6 +83,7 @@ class MainCommand:
         self.flag_config_dirty = False
         self.groups = dict()
         self.ws = dict()
+        self.rsq = dict()
         self.config_load()
 
         # Load persistant/pilot data
@@ -125,10 +126,6 @@ class MainCommand:
 
         self.weights = dict()
         self.weights['wspoints200302'] = sme_scores.import_weights('wspoints200302')
-
-        self.rs_q = list()
-        self.rs_q_lastmsg_id = 0
-        self.rs_q_msg_ob = None
 
         self.temp_rolemap = dict()
         # self.temp_rolemap = {  # Previous RS role mappings
@@ -192,11 +189,14 @@ class MainCommand:
             title='StatisticalMe pilot')
         self.subparser_pilot.add_command('lastup', False, self.command_pilot_lastup)
 
-        # self.subparser_queue = sme_paramparse.CommandParse(
-        #     title='StatisticalMe queue')
-        # self.subparser_queue.add_command('in', False, self.command_queue_in)
-        # self.subparser_queue.add_command('out', False, self.command_queue_out)
-        # self.subparser_queue.add_command('list', False, self.command_queue_list)
+        self.subparser_queue = sme_paramparse.CommandParse(
+            title='StatisticalMe queue')
+        self.subparser_queue.add_command('add', False, self.command_queue_add, auth_fn=self.auth_dev)
+        self.subparser_queue.add_command('remove', False, self.command_queue_remove, auth_fn=self.auth_dev)
+        self.subparser_queue.add_command('list', False, self.command_queue_list, auth_fn=self.auth_dev)
+        self.subparser_queue.add_command('in', False, self.command_queue_in, auth_fn=self.auth_redstar)
+        self.subparser_queue.add_command('out', False, self.command_queue_out, auth_fn=self.auth_redstar)
+        self.subparser_queue.add_command('refresh', False, self.command_queue_refresh, auth_fn=self.auth_redstar)
 
         self.ord_parser = sme_paramparse.CommandParse(
             title='StatisticalMe')
@@ -206,7 +206,7 @@ class MainCommand:
         self.ord_parser.add_command('tech', True, self.subparser_tech, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('time', True, self.subparser_time, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
-        # self.ord_parser.add_command('queue', True, self.subparser_queue, auth_fn=self.auth_watcher)
+        self.ord_parser.add_command('queue', True, self.subparser_queue)
         self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
         self.ord_parser.add_command('clear', False, self.command_clear, auth_fn=self.auth_chief)
@@ -237,8 +237,14 @@ class MainCommand:
             with open(self.config_filepath, 'r') as fh:
                 loaded = yaml.safe_load(fh)
 
-                self.groups = copy.copy(loaded['groups'])
-                self.ws = copy.copy(loaded['ws'])
+                if 'groups' in loaded:
+                    self.groups = copy.copy(loaded['groups'])
+
+                if 'ws' in loaded:
+                    self.ws = copy.copy(loaded['ws'])
+
+                if 'rsq' in loaded:
+                    self.rsq = copy.copy(loaded['rsq'])
 
                 self.flag_config_dirty = False
         except Exception:
@@ -248,7 +254,8 @@ class MainCommand:
         with open(self.config_filepath, 'w') as fh:
             yaml.dump({
                 'groups': self.groups,
-                'ws': self.ws
+                'ws': self.ws,
+                'rsq': self.rsq
             }, fh)
 
             self.flag_config_dirty = False
@@ -390,6 +397,19 @@ class MainCommand:
             allowed = True
         elif self.group_contains_member('auth_watcher', self.current_author.id):
             allowed = True
+
+        return allowed
+
+    def auth_redstar(self):
+        allowed = False
+
+        if int(self.current_channel.id) in self.rsq:
+            if self.auth_dev():
+                allowed = True
+            elif self.auth_watcher():
+                allowed = True
+            elif self.group_contains_member('auth_redstar', self.current_author.id):
+                allowed = True
 
         return allowed
 
@@ -1026,7 +1046,7 @@ class MainCommand:
         if len(self.ws) > 0:
             needed = True
 
-        if len(self.rs_q) > 0:
+        if len(self.rsq) > 0:
             needed = True
 
         return needed
@@ -1041,14 +1061,14 @@ class MainCommand:
             self.background_update_all.stop()
             self.background_update_started = False
 
-    @tasks.loop(seconds=5.0)
+    @tasks.loop(seconds=6.0)
     async def background_update_all(self):
-        # logger.debug('MEGAFONE background_update_all, count {} ws'.format(len(self.ws)))
+        # logger.debug('MEGAFONE background_update_all, counts: ws {wc}, rsq {rq}'.format(wc=len(self.ws),
+        #              rq=len(self.rsq)))
 
         self.time_now = self.sme_time_now()
 
         # Update WhiteStars
-
         ws_over = list()
 
         for ws_name, ws_struct in self.ws.items():
@@ -1137,8 +1157,39 @@ class MainCommand:
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-                logger.error('background_update_all Exception processing WhiteStar over ' +
+                logger.error('background_update_all Exception removing WhiteStar ' +
                              ws_name + '\n' + ''.join(tbe.format()))
+
+        # Update Red Star queue
+        rsq_invalid = list()
+
+        for rsq_chan_id, rsq_struct in self.rsq.items():
+            try:
+                chan_ob = self.current_guild.get_channel(rsq_chan_id)
+
+                if chan_ob is None:
+                    rsq_invalid.append((rsq_chan_id, rsq_struct['name']))
+                else:
+                    await self.nicommand_queue_process(chan_ob, rsq_struct)
+
+                # Opportunistic send out messages queued (extra check)
+                if len(self.messages_out) > 0:
+                    await self.send_out_messages()
+
+            except Exception:
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                logger.error('background_update_all Exception processing RS queue' +
+                             rsq_struct['name'] + '\n' + ''.join(tbe.format()))
+
+        for rsq_chan_id, rsq_name in rsq_invalid:
+            try:
+                self.nicommand_queue_remove_impl(rsq_chan_id)
+            except Exception:
+                exc_type, exc_value, exc_tb = sys.exc_info()
+                tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+                logger.error('background_update_all Exception removing RS queue ' +
+                             rsq_name + '\n' + ''.join(tbe.format()))
 
         # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
@@ -1955,6 +2006,298 @@ class MainCommand:
             return_list += sme_table.draw(['User', 'days since update'], ['l', 'l'], user_list)
 
         return return_list
+
+    async def command_queue_add(self, params):
+        return_list = []
+
+        who_list_good = list()
+        other_list = list()
+        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+
+        q_level_lo = 0
+        q_level_hi = 0
+
+        if len(other_list) >= 2:
+            if is_int(other_list[0]):
+                q_level_lo = int(other_list[0])
+
+                if q_level_lo < 2 or q_level_lo > 12:
+                    q_level_lo = 0
+
+            if is_int(other_list[1]):
+                q_level_hi = int(other_list[1])
+
+                if q_level_hi < q_level_lo or q_level_hi > 12:
+                    q_level_hi = 0
+
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0 and q_level_lo > 0 and q_level_hi > 0:
+            rsq_chan_id = int(rsq_chan_id)
+
+            self.rsq[rsq_chan_id] = {
+                # inputs
+                'level_lo': q_level_lo,
+                'level_hi': q_level_hi,
+                # other state
+                'name': self.current_channel.name,
+                'old_content': '',
+                'message': 0,
+                'pilots': []
+            }
+
+            rsq_struct = self.rsq[rsq_chan_id]
+
+            return_list.append('RS Queue {} added'.format(rsq_struct['name']))
+            self.flag_config_dirty = True
+
+            self.opportunistic_background_update_start()
+
+        return return_list
+
+    async def command_queue_remove(self, params):
+        return_list = []
+
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+            return_list += self.nicommand_queue_remove_impl(rsq_chan_id)
+
+        return return_list
+
+    def nicommand_queue_remove_impl(self, rsq_chan_id):
+        return_list = []
+
+        if rsq_chan_id in self.rsq:
+            rsq_struct = self.rsq[rsq_chan_id]
+
+            del(self.rsq[rsq_chan_id])
+
+            self.opportunistic_background_update_stop()
+
+            return_list.append('RS Queue {} removed'.format(rsq_struct['name']))
+            self.flag_config_dirty = True
+
+        return return_list
+
+    async def command_queue_list(self, params):
+        return_list = []
+
+        rsq_strlist = []
+
+        for rsq_chan_id, _ in self.rsq.items():
+            rsq_strlist.append('\t<#{cid}>'.format(cid=rsq_chan_id))
+
+        if not rsq_strlist:
+            rsq_strlist = ['\tempty']
+
+        return_list = ['RS Queue list:\n' + '\n'.join(rsq_strlist)]
+
+        return return_list
+
+    async def command_queue_in(self, params):
+        return_list = []
+
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+
+            if rsq_chan_id in self.rsq:
+                rsq_struct = self.rsq[rsq_chan_id]
+
+                who_list_good = list()
+                other_list = list()
+                return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+
+                q_player_id = self.current_author.id
+
+                if q_player_id > 0:
+                    rs_q_level = None
+
+                    # First check for last rs level played
+                    rs_q_level_str = self.player_info_get(q_player_id, 'rs_q_level')
+                    if rs_q_level_str is not None and is_int(rs_q_level_str):
+                        rs_q_level = int(rs_q_level_str)
+
+                    # If rs level given, use that (instead)
+                    if len(other_list) > 0 and is_int(other_list[0]):
+                        rs_q_level = int(other_list[0])
+
+                    # Othwrewise use native rs level
+                    if rs_q_level is None:
+                        rs_q_level = int(self.player_tech_get(q_player_id, 'rs'))
+
+                    if rs_q_level is None:
+                        return_list.append('Please give an RS level, or set your RS tech level')
+                    else:
+                        self.nicommand_queue_in_impl(rsq_struct, q_player_id, rs_q_level)
+                        return_list.append('dented-control-message:no-reply')
+
+        return return_list
+
+    def nicommand_queue_in_impl(self, rsq_struct, q_player_id, rs_q_level):
+        if q_player_id > 0:
+            pilot_list = rsq_struct['pilots']
+
+            if q_player_id not in pilot_list:
+                pilot_list.append(int(q_player_id))
+
+            self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
+            self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
+
+            self.flag_config_dirty = True
+
+            self.opportunistic_background_update_start()
+
+    async def command_queue_out(self, params):
+        return_list = []
+
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+
+            if rsq_chan_id in self.rsq:
+                self.nicommand_queue_out_impl(self.rsq[rsq_chan_id], self.current_author.id)
+                return_list.append('dented-control-message:no-reply')
+
+        return return_list
+
+    def nicommand_queue_out_impl(self, rsq_struct, q_player_id):
+        if q_player_id > 0:
+            pilot_list = rsq_struct['pilots']
+
+            if q_player_id in pilot_list:
+                pilot_list.remove(q_player_id)
+                self.flag_config_dirty = True
+
+                self.opportunistic_background_update_start()
+
+    async def command_queue_refresh(self, params):
+        return_list = []
+
+        rsq_chan_id = self.current_channel.id
+
+        if rsq_chan_id is not None and rsq_chan_id > 0:
+            rsq_chan_id = int(rsq_chan_id)
+
+            if rsq_chan_id in self.rsq:
+                rsq_struct = self.rsq[rsq_chan_id]
+                rsq_struct['old_content'] = ''
+
+                return_list.append('dented-control-message:delete-original-message')
+
+                self.opportunistic_background_update_start()
+
+        return return_list
+
+    async def nicommand_queue_process(self, chan_ob, rsq_struct):
+        emoji_bytes = [
+            b'2\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_2:'
+            b'3\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_3:'
+            b'4\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_4:'
+            b'5\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_5:'
+            b'6\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_6:'
+            b'7\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_7:'
+            b'8\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_8:'
+            b'9\xef\xb8\x8f\xe2\x83\xa3',   # ':keycap_9:'
+            b'\xf0\x9f\x94\x9f',            # ':keycap_10:'
+            b'\xe2\x80\xbc\xef\xb8\x8f',    # ':double_exclamation_mark_selector:'
+            b'\xe2\x81\x89\xef\xb8\x8f',    # ':exclamation_question_mark_selector:'
+        ]
+
+        rs_q_range = range(rsq_struct['level_lo'], rsq_struct['level_hi'] + 1)
+
+        # get current message object
+        msg_ob = None
+        if rsq_struct['message'] != 0:
+            try:
+                # get old message object
+                msg_ob = await chan_ob.fetch_message(rsq_struct['message'])
+            except discord.errors.NotFound:
+                pass
+
+        # if no current message object, create one
+        if msg_ob is None:
+            # Creating blank message
+            qlist1 = ['`| ` **RS Queue**', '`| ` `!in`, `!out` or react']
+
+            for rs_q_level in rs_q_range:
+                qlist1.append('`| {qn:2d}` _-- react_ {qe} _--_'.format(qn=rs_q_level, qe=emoji_bytes[rs_q_level - 2].decode('utf-8')))
+
+            rsq_content = '\n'.join(qlist1)
+            msg_ob = await chan_ob.send(rsq_content)
+
+            if msg_ob is not None:
+                rsq_struct['old_content'] = rsq_content
+                rsq_struct['message'] = msg_ob.id
+                self.flag_config_dirty = True
+
+                for rs_q_level in rs_q_range:
+                    await msg_ob.add_reaction(emoji_bytes[rs_q_level - 2].decode('utf-8'))
+
+        if msg_ob is not None:
+            # convert message reactions
+            emoji_remove_list = list()
+            for reac in msg_ob.reactions:
+                rs_q_level = 0
+                if type(reac.emoji) == str:
+                    try:
+                        rs_q_level = 2 + emoji_bytes.index(reac.emoji.encode('utf-8'))
+                    except ValueError:
+                        pass
+
+                if rs_q_level in rs_q_range:
+                    users = await reac.users().flatten()
+                    for user in users:
+                        if user.id == self.bot_self.id:
+                            pass
+                        else:
+                            q_player_id = user.id
+                            self.nicommand_queue_in_impl(rsq_struct, q_player_id, rs_q_level)
+                            await msg_ob.remove_reaction(emoji_bytes[rs_q_level - 2].decode('utf-8'), user)
+                else:
+                    emoji_remove_list.append(reac.emoji)
+
+            for emo in emoji_remove_list:
+                await msg_ob.clear_reaction(emo)
+
+            # collate data from internal truth
+            pilot_list = rsq_struct['pilots'].copy()
+            int_level_lists = [set() for x in range(13)]  # pilots in queue from internal truth
+
+            if len(pilot_list) > 0:
+                for q_player_id in pilot_list:
+                    rs_q_level = self.player_info_get(q_player_id, 'rs_q_level')
+
+                    # TODO test here for timeout...?, and if so, remove
+
+                    if rs_q_level in rs_q_range:
+                        int_level_lists[rs_q_level].add(q_player_id)
+
+            # logger.debug('MEGAFONE i list: {}'.format(int_level_lists))
+
+            # TODO sift int_, removing groups of 4 and msg the group, updating rsq pilot list
+
+            # update text - from int_ sets
+            qlist1 = ['`| ` **RS Queue**', '`| ` `!in`, `!out` or react']
+
+            for rs_q_level in rs_q_range:
+                if bool(int_level_lists[rs_q_level]):
+                    who_list_good = sorted(int_level_lists[rs_q_level])
+                    qlist1.append('`| {qn:2d}` {pl}'.format(qn=rs_q_level, pl=', '.join([self.member_name_from_id(wh) for wh in who_list_good])))
+                else:
+                    qlist1.append('`| {qn:2d}` _-- react_ {qe} _--_'.format(qn=rs_q_level, qe=emoji_bytes[rs_q_level - 2].decode('utf-8')))
+
+            rsq_content = '\n'.join(qlist1)
+
+            if rsq_content != rsq_struct['old_content']:
+                rsq_struct['old_content'] = rsq_content
+                self.flag_config_dirty = True
+
+                msg_ob = await msg_ob.edit(content=rsq_content)
 
     async def command_score(self, params):
         return_list = []
