@@ -522,24 +522,9 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 20.3.7'
+        info_str += '\nversion: 20.4.0'
         info_str += '\nchanges:'
-        info_str += '\n  - score changes'
-        info_str += '\n  - add Remote Bomb'
-        info_str += '\n  - add Credit Cap'
-        info_str += '\n  - add optional away message'
-        info_str += '\n  - add away timer maximum of 36hrs'
-        info_str += '\n  - add proper flagship timer'
-        info_str += '\n  - add only show optional away message if away'
-        info_str += '\n  - auto remove a ws when over'
-        info_str += '\n  - consistent appearance for score detail'
-        info_str += '\n  - fix Cargo Bay Extension 12, to 52'
-        info_str += '\n  - fix cargo of Transport 6, to 8'
-        info_str += '\n  - add a check for nova time range when adding ws'
-        info_str += '\n  - enable Rust helper library build'
-        info_str += '\n  - let everyone change ship timers'
-        info_str += '\n  - delete ship timer command, if successful'
-        info_str += '\n  - add !sme clear for message clearing'
+        info_str += '\n  - add tech Relic Drone'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
