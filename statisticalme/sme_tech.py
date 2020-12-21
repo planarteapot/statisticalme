@@ -70,7 +70,7 @@ class TechHandler:
             'shipmentcomputer': ['computer', 'comp', 'shipcomp', 'shipcomputer'],
             'tradeboost': ['tboost'],
             'tradeburst': ['burst', 'tburst'],
-            'shipmentdrone': ['sdrone', 'shipdrone'],
+            'shipmentdrone': ['sd', 'sdrone', 'shipdrone'],
             'shipmentbeam': ['beam', 'sbeam'],
             'relicdrone': ['rd', 'rdrone', 'reldrone'],
 
@@ -82,7 +82,7 @@ class TechHandler:
             'miningunity': ['munity'],
             'genesis': ['gen'],
             'hydrogenrocket': ['hrocket', 'hydrorocket'],
-            'miningdrone': ['mdrone', 'minedrone'],
+            'miningdrone': ['md', 'mdrone', 'minedrone'],
 
             # weapon
             'battery': ['batt'],
