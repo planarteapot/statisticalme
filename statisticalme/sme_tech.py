@@ -33,22 +33,22 @@ class TechHandler:
             # 5 trade
             'cargobayextension', 'shipmentcomputer', 'tradeboost', 'rush',
             'tradeburst', 'shipmentdrone', 'offload', 'shipmentbeam',
-            'entrust', 'dispatch', 'recall',
+            'entrust', 'dispatch', 'recall', 'relicdrone',
 
-            # 16 mining
+            # 17 mining
             'miningboost', 'hydrogenbayextension', 'enrich', 'remotemining',
             'hydrogenupload', 'miningunity', 'crunch', 'genesis',
             'hydrogenrocket', 'miningdrone',
 
-            # 26 weapon
+            # 27 weapon
             'battery', 'laser', 'massbattery',
             'duallaser', 'barrage', 'dart',
 
-            # 32 shield
+            # 33 shield
             'deltashield', 'passiveshield', 'omegashield',
             'mirrorshield', 'blastshield', 'areashield',
 
-            # 38 support
+            # 39 support
             'emp', 'teleport', 'redstarlifeextender', 'remoterepair',
             'timewarp', 'unity', 'sanctuary', 'stealth',
             'fortify', 'impulse', 'alpharocket', 'salvage',
@@ -72,6 +72,7 @@ class TechHandler:
             'tradeburst': ['burst', 'tburst'],
             'shipmentdrone': ['sdrone', 'shipdrone'],
             'shipmentbeam': ['beam', 'sbeam'],
+            'relicdrone': ['rd', 'rdrone', 'reldrone'],
 
             # mining
             'miningboost': ['mboost'],
@@ -124,22 +125,22 @@ class TechHandler:
             # 5 trade
             'Cargo Bay Extension', 'Shipment Computer', 'Trade Boost', 'Rush',
             'Trade Burst', 'Shipment Drone', 'Offload', 'Shipment Beam',
-            'Entrust', 'Dispatch', 'Recall',
+            'Entrust', 'Dispatch', 'Recall', 'Relic Drone',
 
-            # 16 mining
+            # 17 mining
             'Mining Boost', 'Hydrogen Bay Extension', 'Enrich', 'Remote Mining',
             'Hydrogen Upload', 'Mining Unity', 'Crunch', 'Genesis',
             'Hydrogen Rocket', 'Mining Drone',
 
-            # 26 weapon
+            # 27 weapon
             'Battery', 'Laser', 'Mass Battery',
             'Dual Laser', 'Barrage', 'Dart',
 
-            # 32 shield
+            # 33 shield
             'Delta Shield', 'Passive Shield', 'Omega Shield',
             'Mirror Shield', 'Blast Shield', 'Area Shield',
 
-            # 38 support
+            # 39 support
             'EMP', 'Teleport', 'Red Star Life Extender', 'Remote Repair',
             'Time Warp', 'Unity', 'Sanctuary', 'Stealth',
             'Fortify', 'Impulse', 'Alpha Rocket', 'Salvage',
@@ -150,11 +151,11 @@ class TechHandler:
 
         self.other_range = (0, 2)
         self.ships_range = (2, 5)
-        self.trade_range = (5, 16)
-        self.mining_range = (16, 26)
-        self.weapon_range = (26, 32)
-        self.shield_range = (32, 38)
-        self.support_range = (38, 62)
+        self.trade_range = (5, 17)
+        self.mining_range = (17, 27)
+        self.weapon_range = (27, 33)
+        self.shield_range = (33, 39)
+        self.support_range = (39, 63)
 
         # tech key or tech alias to tech index
         self.tech_key_index = dict()
