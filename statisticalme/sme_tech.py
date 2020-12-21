@@ -58,7 +58,7 @@ class TechHandler:
             ]
 
         self.tech_key_aliases = {
-            'redstarscanner': ['rs', 'rscanner', 'rsscanner', 'scanner', 'redstar'],
+            'redstarscanner': ['rs', 'rss', 'rscanner', 'rsscanner', 'scanner', 'redstar'],
             'creditcapacity': ['cc', 'credcap', 'creditcap'],
 
             # ships
