@@ -2533,6 +2533,7 @@ class MainCommand:
                 if len(shieldtech) > 0:
                     shieldtech.sort(key=lambda x: x[1], reverse=True)
                     gotmain = False
+                    gotareadelta = False
                     st2 = list()
 
                     for ss in shieldtech:
@@ -2543,37 +2544,30 @@ class MainCommand:
                                 st2.append(ss)
                                 gotmain = True
 
-                        else:
+                        elif skey in ['areashield', 'deltashield']:
+                            if not gotareadelta:
+                                st2.append(ss)
+                                gotareadelta = True
+                            else:
+                                st2.append([skey, ss[1] * 0.5])
+
+                        elif skey in ['blastshield']:
                             st2.append(ss)
 
-                    shi = 3
-                    if shi > len(st2):
-                        shi = len(st2)
+                    fscore = float(0.0)
 
-                    if 0 < shi:
-                        iscore = float(st2[0][1])
-                        fscore = iscore
+                    for ss in st2:
+                        iscore = float(ss[1])
+                        fscore += iscore
                         if flag_detail:
-                            detail_sh.append('{tn} {ts}'.format(tn=st2[0][0], ts=iscore))
+                            detail_sh.append('{tn} {ts}'.format(tn=ss[0], ts=iscore))
 
-                        if 1 < shi:
-                            iscore = float(st2[1][1]) * 0.75
-                            fscore += iscore
-                            if flag_detail:
-                                detail_sh.append('{tn} {ts}'.format(tn=st2[1][0], ts=iscore))
-
-                            if 2 < shi:
-                                iscore = float(st2[2][1]) * 0.5
-                                fscore += iscore
-                                if flag_detail:
-                                    detail_sh.append('{tn} {ts}'.format(tn=st2[2][0], ts=iscore))
-
-                        faccum.append(fscore)
+                    faccum.append(fscore)
 
                 #
                 faccum.append(0.5)
                 accum = int(math.floor(math.fsum(faccum)))
-            else if flag_wspoints200302:
+            elif flag_wspoints200302:
                 faccum = list()
                 detail_aa = []
                 detail_mi = []
