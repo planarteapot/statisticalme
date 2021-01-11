@@ -601,9 +601,6 @@ class MainCommand:
         return name
 
     def member_from_name(self, p_name):
-        while p_name[0] == '@':
-            p_name = p_name[1:]
-
         memb = None
 
         if self.current_guild is not None:
@@ -620,9 +617,6 @@ class MainCommand:
         return role
 
     def role_from_name(self, p_name):
-        while p_name[0] in '@$':
-            p_name = p_name[1:]
-
         role = None
 
         if self.current_guild is not None:
@@ -705,23 +699,23 @@ class MainCommand:
                         for memb in role.members:
                             if memb.id not in who_set:
                                 who_set.append(memb.id)
-            elif value[0] == '@':
-                memb = self.member_from_name(value)
+            elif value[0:2] == '?!':
+                memb = self.member_from_name(value[2:])
                 if memb is not None:
                     if memb_list is not None:
                         memb_list.append(memb.id)
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
-                else:
-                    role = self.role_from_name(value)
-                    if role is not None:
-                        if role_list is not None:
-                            role_list.append(role.id)
-                        else:
-                            for memb in role.members:
-                                if memb.id not in who_set:
-                                    who_set.append(memb.id)
+            elif value[0:2] == '?&':
+                role = self.role_from_name(value[2:])
+                if role is not None:
+                    if role_list is not None:
+                        role_list.append(role.id)
+                    else:
+                        for memb in role.members:
+                            if memb.id not in who_set:
+                                who_set.append(memb.id)
             else:
                 if other is not None:
                     other.append(value)
