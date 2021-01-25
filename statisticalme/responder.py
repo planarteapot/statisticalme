@@ -62,6 +62,9 @@ class MainCommand:
     def __init__(self, dev_author_list, ok_channels):
         logger.debug('MainCommand __init__')
 
+        self.dev_author_list = dev_author_list
+        self.ok_channels = ok_channels.split(',')
+
         smer.library_init()
 
         self.time_now = self.sme_time_now()
@@ -101,12 +104,6 @@ class MainCommand:
         self.group_set('dev', ' '.join(['<@!{mid}>'.format(mid=mm) for mm in dev_author_list]))
 
         self.messages_out = list()
-
-        # if not 'ok_channels' in self.config:
-        self.ok_channels = ok_channels.split(',')
-        #     self.config['ok_channels'] = self.ok_channels
-        # else:
-        #     self.ok_channels = self.config['ok_channels']
 
         # if not 'meta_channels' in self.config:
         self.meta_channels = dict()
@@ -652,14 +649,21 @@ class MainCommand:
     def group_refresh(self, group_name):
         if group_name in self.groups:
             grp = self.groups[group_name]
-            grp['members'] = list()
-            self.parse_who(grp['defn'].split(' '), grp['members'])
+            if group_name == 'dev':
+                grp['members'] = copy.copy(self.dev_author_list)
+            else:
+                grp['members'] = list()
+                self.parse_who(grp['defn'].split(' '), grp['members'])
+
             self.flag_config_dirty = True
 
     def group_refresh_all(self):
-        for _, grp in self.groups.items():
-            grp['members'] = list()
-            self.parse_who(grp['defn'].split(' '), grp['members'])
+        for group_name, grp in self.groups.items():
+            if group_name == 'dev':
+                grp['members'] = copy.copy(self.dev_author_list)
+            else:
+                grp['members'] = list()
+                self.parse_who(grp['defn'].split(' '), grp['members'])
 
         self.flag_config_dirty = True
         self.groups_next_refresh_all = self.time_now + timedelta(seconds=20)
