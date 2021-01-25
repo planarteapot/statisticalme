@@ -148,7 +148,13 @@ class SmeClient(discord.Client):
 
 
 def main_function():
-    client = SmeClient()
+    intents = discord.Intents.default()
+    intents.typing = False
+    intents.presences = False
+    intents.reactions = False
+    intents.members = True
+
+    client = SmeClient(intents=intents)
     mainc.set_discord_client(client)
 
     logger.info('Calling discord Client.run')
