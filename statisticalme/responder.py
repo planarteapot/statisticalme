@@ -940,7 +940,7 @@ class MainCommand:
         return return_list
 
     def timedelta_as_string(self, timedelta_s, show_sec=False):
-        timedelta_ob = datetime.timestamp(timedelta_s)
+        timedelta_ob = timedelta(seconds=timedelta_s)
         outp = list()
 
         if timedelta_ob.days >= 1:
@@ -967,7 +967,7 @@ class MainCommand:
         return ' '.join(outp)
 
     def timedelta_as_string2(self, timedelta_s):
-        timedelta_ob = datetime.timestamp(timedelta_s)
+        timedelta_ob = timedelta(seconds=timedelta_s)
         part_d = 0
         part_h = 0
         part_m = 0
@@ -1813,7 +1813,7 @@ class MainCommand:
                 t_sorting = timedelta()
                 tz = self.tz_from_str(self.player_info_get(pkey, 'timezone'))
                 if tz is not None:
-                    ta = datetime.timestamp(self.time_now).astimezone(tz)
+                    ta = datetime.fromtimestamp(self.time_now, pytz.utc).astimezone(tz)
                     timestr = ta.strftime('%a %H:%M')
                     t_sorting = ta.utcoffset()
 
