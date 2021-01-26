@@ -67,7 +67,7 @@ class MainCommand:
 
         smer.library_init()
 
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
         self.time_up = self.time_now
 
         self.background_update_started = False
@@ -218,7 +218,7 @@ class MainCommand:
         logger.info('object MainCommand built')
 
     def post_guild_init(self):
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
         self.group_refresh_all()
         self.opportunistic_save()
         self.opportunistic_background_update_start()
@@ -417,7 +417,7 @@ class MainCommand:
     async def on_message(self, p_content, p_author, p_channel):
         return_list = []
 
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
         self.current_author = p_author
         self.current_channel = p_channel
 
@@ -1057,7 +1057,7 @@ class MainCommand:
         # logger.debug('MEGAFONE background_update_all, counts: ws {wc}, rsq {rq}'.format(wc=len(self.ws),
         #              rq=len(self.rsq)))
 
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
 
         # Update WhiteStars
         ws_over = list()
@@ -1718,9 +1718,6 @@ class MainCommand:
                                           user_list, flag_csv=flag_csv)
 
         return return_list
-
-    def sme_time_now(self):
-        return datetime.utcnow().replace(tzinfo=pytz.utc)
 
     def sme_time_as_string(self, time_ob):
         _timefmt = '%Y-%m-%d %H:%M:%S %Z%z'
