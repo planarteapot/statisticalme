@@ -1067,7 +1067,7 @@ class MainCommand:
         for ws_name, ws_struct in self.ws.items():
             try:
                 if 'done' not in ws_struct or not ws_struct['done']:
-                    nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+                    nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
                     ws_time_str = ""
 
@@ -1226,7 +1226,7 @@ class MainCommand:
                     # inputs
                     'control_role': control_role,
                     'all_role': all_role,
-                    'nova_time': self.sme_time_as_string(nova_time),
+                    'nova_time': smer.sme_time_as_string(nova_time),
                     # other state
                     'old_content': '',
                     'assist_group': assist_group,
@@ -1282,7 +1282,7 @@ class MainCommand:
         for ws_name, ws_struct in self.ws.items():
             str_list = []
 
-            nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+            nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
             ws_time_str = ""
 
@@ -1354,7 +1354,7 @@ class MainCommand:
             ws_name = wsname_match.group(1)
             if ws_name in self.ws:
                 ws_struct = self.ws[ws_name]
-                nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+                nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
                 # two dicts, one 'green' keyed by pilotid, one 'red' keyed by string
                 # in each case storing a 4 string tuple:
@@ -1465,7 +1465,7 @@ class MainCommand:
                                 if open_time > nova_time:
                                     open_time = nova_time
 
-                                open_time_str = self.sme_time_as_string(open_time)
+                                open_time_str = smer.sme_time_as_string(open_time)
 
                                 if s_enemy is not None:
                                     if s_enemy in ws_reds:
@@ -1552,7 +1552,7 @@ class MainCommand:
         b_delay = ''
         b_until_str = pilot_data['bdelay']
         if b_until_str is not None and len(b_until_str) > 2:
-            away_until = self.sme_time_from_string(b_until_str)
+            away_until = smer.sme_time_from_string(b_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
                 b_delay = self.timedelta_as_string2(td + 15)
@@ -1567,7 +1567,7 @@ class MainCommand:
         s_delay = ''
         s_until_str = pilot_data['sdelay']
         if s_until_str is not None and len(s_until_str) > 2:
-            away_until = self.sme_time_from_string(s_until_str)
+            away_until = smer.sme_time_from_string(s_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
                 s_delay = self.timedelta_as_string2(td + 15)
@@ -1609,7 +1609,7 @@ class MainCommand:
                     self.player_info_set(
                         who, 'last_name', self.member_name_from_id(who))
 
-                    from_str = self.sme_time_as_string(self.time_now)
+                    from_str = smer.sme_time_as_string(self.time_now)
                     self.player_info_set(who, 'last_tech_update', from_str)
 
                     for what, val in zip(what_list_good, value_list):
@@ -1721,14 +1721,6 @@ class MainCommand:
 
         return return_list
 
-    def sme_time_as_string(self, time_ob):
-        _timefmt = '%Y-%m-%d %H:%M:%S %Z%z'
-        return time_ob.strftime(_timefmt)
-
-    def sme_time_from_string(self, time_str):
-        _timefmt = '%Y-%m-%d %H:%M:%S %Z%z'
-        return datetime.strptime(time_str, _timefmt).replace(tzinfo=pytz.utc)
-
     def tz_from_str(self, tzstr):
         tz = None
         if isinstance(tzstr, str):
@@ -1829,7 +1821,7 @@ class MainCommand:
                 away_msg_str = ''
                 away_until_str = self.player_info_get(pkey, 'away_until')
                 if away_until_str is not None and len(away_until_str) > 2:
-                    away_until = self.sme_time_from_string(away_until_str)
+                    away_until = smer.sme_time_from_string(away_until_str)
                     if self.time_now < away_until:
                         td = away_until - self.time_now
                         if td.days >= 1:
@@ -1917,11 +1909,11 @@ class MainCommand:
             delay = float(other_list[0])
 
             if delay <= 36.0:
-                from_str = self.sme_time_as_string(self.time_now)
+                from_str = smer.sme_time_as_string(self.time_now)
                 self.player_info_set(away_player_id, 'away_from', from_str)
 
                 until_time = self.time_now + (delay * 3600)
-                until_str = self.sme_time_as_string(until_time)
+                until_str = smer.sme_time_as_string(until_time)
                 self.player_info_set(away_player_id, 'away_until', until_str)
 
                 if len(other_list) >= 2:
@@ -1981,7 +1973,7 @@ class MainCommand:
                 lup_result = float(0.0)
                 lup_was_str = self.player_info_get(pkey, 'last_tech_update')
                 if lup_was_str is not None and len(lup_was_str) > 2:
-                    lup_was = self.sme_time_from_string(lup_was_str)
+                    lup_was = smer.sme_time_from_string(lup_was_str)
                     if self.time_now > lup_was:
                         td = self.time_now - lup_was
                         if td.days >= 1:
@@ -2135,7 +2127,7 @@ class MainCommand:
                 pilot_list.append(int(q_player_id))
 
             self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
-            self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
+            self.player_info_set(q_player_id, 'rs_q_time', smer.sme_time_as_string(self.time_now))
 
             self.flag_config_dirty = True
 
