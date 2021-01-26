@@ -666,7 +666,7 @@ class MainCommand:
                 self.parse_who(grp['defn'].split(' '), grp['members'])
 
         self.flag_config_dirty = True
-        self.groups_next_refresh_all = self.time_now + timedelta(seconds=20)
+        self.groups_next_refresh_all = self.time_now + 20
 
     def group_contains_member(self, group_name, memb_id):
         found = False
@@ -993,7 +993,7 @@ class MainCommand:
         return tstr
 
     def timedelta_from_strings(self, other_list):
-        timed = timedelta(days=0)
+        timed = 0
 
         for other in other_list:
             try1_match = self.timeparse_match1.search(other)
@@ -1002,30 +1002,30 @@ class MainCommand:
                 m_control = try1_match.group(2)
 
                 if m_control == 'd':
-                    timed += timedelta(days=m_id)
+                    timed += m_id * 24 * 3600
                 elif m_control == 'h':
-                    timed += timedelta(hours=m_id)
+                    timed += m_id * 3600
                 elif m_control == 'm':
-                    timed += timedelta(minutes=m_id)
+                    timed += m_id * 60
                 else:
                     break
             else:
                 try4_match = self.timeparse_match4.search(other)
                 if try4_match:
-                    timed += timedelta(days=int(try4_match.group(1)))
-                    timed += timedelta(hours=int(try4_match.group(2)))
-                    timed += timedelta(minutes=int(try4_match.group(3)))
+                    timed += int(try4_match.group(1)) * 24 * 3600
+                    timed += int(try4_match.group(2)) * 3600
+                    timed += int(try4_match.group(3)) * 60
                 else:
                     try2_match = self.timeparse_match2.search(other)
                     if try2_match:
-                        timed += timedelta(days=int(try2_match.group(1)))
-                        timed += timedelta(hours=int(try2_match.group(2)))
-                        timed += timedelta(minutes=int(try2_match.group(3)))
+                        timed += int(try2_match.group(1)) * 24 * 3600
+                        timed += int(try2_match.group(2)) * 3600
+                        timed += int(try2_match.group(3)) * 60
                     else:
                         try3_match = self.timeparse_match3.search(other)
                         if try3_match:
-                            timed += timedelta(hours=int(try3_match.group(2)))
-                            timed += timedelta(minutes=int(try3_match.group(3)))
+                            timed += int(try3_match.group(2)) * 3600
+                            timed += int(try3_match.group(3)) * 60
                         else:
                             break
 
@@ -1076,7 +1076,7 @@ class MainCommand:
                         ws_over.append(ws_name)
                     else:
                         # Resolves to a minute, so add 30s here to cause a round up.
-                        ws_time = (nova_time - self.time_now) + timedelta(seconds=30)
+                        ws_time = (nova_time - self.time_now) + 30
                         ws_time_str = self.timedelta_as_string(ws_time)
 
                     new_content = '```\nNova time {}\n'.format(ws_time_str)
@@ -1204,7 +1204,7 @@ class MainCommand:
 
             nova_timedelta = self.timedelta_from_strings(other_list)
 
-            if nova_timedelta < timedelta(hours=1) or nova_timedelta > timedelta(days=5):
+            if nova_timedelta < (1 * 60) or nova_timedelta > (5 * 24 * 3600):
                 return_list.append('Error: Nova time out of good range')
             else:
                 control_role = 0
@@ -1288,7 +1288,7 @@ class MainCommand:
                 ws_time_str = 'over'
             else:
                 # Resolves to a minute, so add 30s here to cause a round up.
-                ws_time = (nova_time - self.time_now) + timedelta(seconds=30)
+                ws_time = (nova_time - self.time_now) + 30
                 ws_time_str = self.timedelta_as_string(ws_time)
 
             str_list.append('\t{:3}, Nova time: {}'.format(ws_name, ws_time_str))
@@ -1430,7 +1430,7 @@ class MainCommand:
                                 given_time = self.timedelta_from_strings(time_list)
                                 if len(time_list) == 0:
                                     s_timertype = 'hence'
-                                    given_time = timedelta(seconds=0)
+                                    given_time = 0
 
                                 open_time = None
                                 pilot_data = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
@@ -1453,12 +1453,12 @@ class MainCommand:
                                             open_time = nova_time - given_time
 
                                 if s_cmd == 'in':
-                                    open_time += timedelta(hours=2)
+                                    open_time += 2 * 3600
                                 elif s_cmd == 'dead':
                                     if s_flagship:
-                                        open_time += timedelta(hours=16)
+                                        open_time += 16 * 3600
                                     else:
-                                        open_time += timedelta(hours=18)
+                                        open_time += 18 * 3600
 
                                 if open_time > nova_time:
                                     open_time = nova_time
@@ -1553,7 +1553,7 @@ class MainCommand:
             away_until = self.sme_time_from_string(b_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
-                b_delay = self.timedelta_as_string2(td + timedelta(seconds=15))
+                b_delay = self.timedelta_as_string2(td + 15)
             else:
                 pilot_data['bdelay'] = ''
                 self.flag_config_dirty = True
@@ -1568,7 +1568,7 @@ class MainCommand:
             away_until = self.sme_time_from_string(s_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
-                s_delay = self.timedelta_as_string2(td + timedelta(seconds=15))
+                s_delay = self.timedelta_as_string2(td + 15)
             else:
                 pilot_data['sdelay'] = ''
                 self.flag_config_dirty = True
@@ -1918,7 +1918,7 @@ class MainCommand:
                 from_str = self.sme_time_as_string(self.time_now)
                 self.player_info_set(away_player_id, 'away_from', from_str)
 
-                until_time = self.time_now + timedelta(hours=delay)
+                until_time = self.time_now + (delay * 3600)
                 until_str = self.sme_time_as_string(until_time)
                 self.player_info_set(away_player_id, 'away_until', until_str)
 
