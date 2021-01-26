@@ -22,7 +22,10 @@ pub fn sme_time_as_string(time_ob: u32) -> PyResult<String> {
 
 #[pyfunction]
 pub fn sme_time_from_string(time_str: &PyString) -> PyResult<u32> {
-    Ok(DateTime::parse_from_str(&time_str.to_string_lossy(), _TIMEFMT).unwrap().timestamp() as u32)
+    match DateTime::parse_from_str(&time_str.to_string_lossy(), _TIMEFMT) {
+        Ok(dt) => Ok(dt.timestamp() as u32),
+        Err(_) => Ok(0)
+    }
 }
 
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
