@@ -13,5 +13,5 @@ debug = false
 lto = true
 
 [dependencies]
-pyo3 = { version = "0.12.4", features = ["extension-module"] }
+pyo3 = { version = "0.13", features = ["extension-module"] }
 chrono = "0.4"
