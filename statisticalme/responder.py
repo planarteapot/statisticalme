@@ -939,15 +939,30 @@ class MainCommand:
 
         return return_list
 
+    def timedelta_to_days_secs(self, timedelta_s):
+        td_days = 0
+        td_secs = 0
+
+        if timedelta_s > 0:
+            td = int(timedelta_s)
+
+            td_days = int(td / int(86400))
+            if td_days > 0:
+                td -= td_days * int(86400)
+
+            td_secs = td
+
+        return (td_days, td_secs)
+
     def timedelta_as_string(self, timedelta_s, show_sec=False):
-        timedelta_ob = timedelta(seconds=timedelta_s)
+        (td_days, td_secs) = self.timedelta_to_days_secs(timedelta_s)
         outp = list()
 
-        if timedelta_ob.days >= 1:
-            outp.append(str(timedelta_ob.days) + 'd')
+        if td_days >= 1:
+            outp.append(str(td_days) + 'd')
 
-        if timedelta_ob.seconds >= 1:
-            sec = int(timedelta_ob.seconds)
+        if td_secs >= 1:
+            sec = int(td_secs)
             hr = int(int(sec) / int(3600))
             if hr >= 1:
                 outp.append(str(hr) + 'h')
@@ -967,16 +982,16 @@ class MainCommand:
         return ' '.join(outp)
 
     def timedelta_as_string2(self, timedelta_s):
-        timedelta_ob = timedelta(seconds=timedelta_s)
+        (td_days, td_secs) = self.timedelta_to_days_secs(timedelta_s)
         part_d = 0
         part_h = 0
         part_m = 0
 
-        if timedelta_ob.days >= 1:
-            part_d = int(timedelta_ob.days)
+        if td_days >= 1:
+            part_d = int(td_days)
 
-        if timedelta_ob.seconds >= 1:
-            sec = int(timedelta_ob.seconds)
+        if td_secs >= 1:
+            sec = int(td_secs)
 
             part_h = int(int(sec) / int(3600))
             if part_h >= 1:
@@ -1975,11 +1990,11 @@ class MainCommand:
                 if lup_was_str is not None and len(lup_was_str) > 2:
                     lup_was = smer.sme_time_from_string(lup_was_str)
                     if self.time_now > lup_was:
-                        td = self.time_now - lup_was
-                        if td.days >= 1:
-                            lup_result = lup_result + float(td.days)
+                        (td_days, td_secs) = self.timedelta_to_days_secs(self.time_now - lup_was)
+                        if td_days >= 1:
+                            lup_result = lup_result + float(td_days)
 
-                        lup_result = lup_result + float(td.seconds) / float(86400.0)
+                        lup_result = lup_result + float(td_secs) / float(86400.0)
 
                 user_list.append([self.member_name_from_id(pkey), lup_result])
 
