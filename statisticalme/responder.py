@@ -1071,14 +1071,14 @@ class MainCommand:
 
                     ws_time_str = ""
 
-                    if nova_time < self.time_now:
+                    if (nova_time + 30) < self.time_now:
                         ws_struct['done'] = True
                         self.flag_config_dirty = True
                         ws_time_str = 'over'
                         ws_over.append(ws_name)
                     else:
                         # Resolves to a minute, so add 30s here to cause a round up.
-                        ws_time = (nova_time - self.time_now) + 30
+                        ws_time = nova_time + 30 - self.time_now
                         ws_time_str = self.timedelta_as_string(ws_time)
 
                     new_content = '```\nNova time {}\n'.format(ws_time_str)
@@ -1286,11 +1286,11 @@ class MainCommand:
 
             ws_time_str = ""
 
-            if nova_time < self.time_now:
+            if (nova_time + 30) < self.time_now:
                 ws_time_str = 'over'
             else:
                 # Resolves to a minute, so add 30s here to cause a round up.
-                ws_time = (nova_time - self.time_now) + 30
+                ws_time = nova_time + 30 - self.time_now
                 ws_time_str = self.timedelta_as_string(ws_time)
 
             str_list.append('\t{:3}, Nova time: {}'.format(ws_name, ws_time_str))
