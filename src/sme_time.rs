@@ -1,11 +1,10 @@
 use pyo3::prelude::*;
-use pyo3::types::{PyString};
 use pyo3::wrap_pyfunction;
 
 use chrono::prelude::*;
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDateTime, Utc};
 
-static _TIMEFMT: &str = "%Y-%m-%d %H:%M:%S %Z%z";
+static _TIMEFMT: &str = "%Y-%m-%d %H:%M:%S";
 
 pub fn mod_init() {
 }
@@ -24,12 +23,16 @@ pub fn sme_time_as_string(time_ob: u32) -> PyResult<String> {
     Ok(sme_time_as_string_impl(time_ob))
 }
 
-#[pyfunction]
-pub fn sme_time_from_string(time_str: &PyString) -> PyResult<u32> {
-    match DateTime::parse_from_str(&time_str.to_string_lossy(), _TIMEFMT) {
-        Ok(dt) => Ok(dt.timestamp() as u32),
-        Err(_) => Ok(0)
+fn sme_time_from_string_impl(time_str: &str) -> u32 {
+    match NaiveDateTime::parse_from_str(&time_str[0..19], _TIMEFMT) {
+        Ok(dt) => dt.timestamp() as u32,
+        Err(_) => 0
     }
+}
+
+#[pyfunction]
+pub fn sme_time_from_string(time_str: &str) -> PyResult<u32> {
+    Ok(sme_time_from_string_impl(time_str))
 }
 
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
