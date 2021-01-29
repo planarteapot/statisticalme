@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This file is part of StatisticalMe discord bot.
 #
 # Copyright 2019-2020 by Antony Suter.
@@ -16,15 +18,7 @@
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from setuptools import setup
+import setuptools
 
-
-setup(
-    name='statisticalme',
-    version='20.4.2',
-    entry_points={"console_scripts": ["statisticalme = statisticalme.main:main_function"]},
-    packages=['statisticalme'],
-    include_package_data=True,
-    zip_safe=False,
-    platforms='any'
-)
+if __name__ == "__main__":
+    setuptools.setup()

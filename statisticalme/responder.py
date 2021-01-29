@@ -17,7 +17,7 @@
 
 import sys
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from discord.ext import tasks
 from .sme_utils import normalize_caseless
 import aiohttp
@@ -33,6 +33,7 @@ from . import sme_table
 from . import sme_tech
 import traceback
 import yaml
+import statisticalme.statisticalme as smer
 
 
 logger = logging.getLogger('StatisticalMe')
@@ -64,7 +65,9 @@ class MainCommand:
         self.dev_author_list = dev_author_list
         self.ok_channels = ok_channels.split(',')
 
-        self.time_now = self.sme_time_now()
+        smer.library_init()
+
+        self.time_now = smer.sme_time_now()
         self.time_up = self.time_now
 
         self.background_update_started = False
@@ -215,7 +218,7 @@ class MainCommand:
         logger.info('object MainCommand built')
 
     def post_guild_init(self):
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
         self.group_refresh_all()
         self.opportunistic_save()
         self.opportunistic_background_update_start()
@@ -414,7 +417,7 @@ class MainCommand:
     async def on_message(self, p_content, p_author, p_channel):
         return_list = []
 
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
         self.current_author = p_author
         self.current_channel = p_channel
 
@@ -663,7 +666,7 @@ class MainCommand:
                 self.parse_who(grp['defn'].split(' '), grp['members'])
 
         self.flag_config_dirty = True
-        self.groups_next_refresh_all = self.time_now + timedelta(seconds=20)
+        self.groups_next_refresh_all = self.time_now + 20
 
     def group_contains_member(self, group_name, memb_id):
         found = False
@@ -936,14 +939,30 @@ class MainCommand:
 
         return return_list
 
-    def timedelta_as_string(self, timedelta_ob, show_sec=False):
+    def timedelta_to_days_secs(self, timedelta_s):
+        td_days = 0
+        td_secs = 0
+
+        if timedelta_s > 0:
+            td = int(timedelta_s)
+
+            td_days = int(td / int(86400))
+            if td_days > 0:
+                td -= td_days * int(86400)
+
+            td_secs = td
+
+        return (td_days, td_secs)
+
+    def timedelta_as_string(self, timedelta_s, show_sec=False):
+        (td_days, td_secs) = self.timedelta_to_days_secs(timedelta_s)
         outp = list()
 
-        if timedelta_ob.days >= 1:
-            outp.append(str(timedelta_ob.days) + 'd')
+        if td_days >= 1:
+            outp.append(str(td_days) + 'd')
 
-        if timedelta_ob.seconds >= 1:
-            sec = int(timedelta_ob.seconds)
+        if td_secs >= 1:
+            sec = int(td_secs)
             hr = int(int(sec) / int(3600))
             if hr >= 1:
                 outp.append(str(hr) + 'h')
@@ -962,16 +981,17 @@ class MainCommand:
 
         return ' '.join(outp)
 
-    def timedelta_as_string2(self, timedelta_ob):
+    def timedelta_as_string2(self, timedelta_s):
+        (td_days, td_secs) = self.timedelta_to_days_secs(timedelta_s)
         part_d = 0
         part_h = 0
         part_m = 0
 
-        if timedelta_ob.days >= 1:
-            part_d = int(timedelta_ob.days)
+        if td_days >= 1:
+            part_d = int(td_days)
 
-        if timedelta_ob.seconds >= 1:
-            sec = int(timedelta_ob.seconds)
+        if td_secs >= 1:
+            sec = int(td_secs)
 
             part_h = int(int(sec) / int(3600))
             if part_h >= 1:
@@ -990,7 +1010,7 @@ class MainCommand:
         return tstr
 
     def timedelta_from_strings(self, other_list):
-        timed = timedelta(days=0)
+        timed = 0
 
         for other in other_list:
             try1_match = self.timeparse_match1.search(other)
@@ -999,30 +1019,30 @@ class MainCommand:
                 m_control = try1_match.group(2)
 
                 if m_control == 'd':
-                    timed += timedelta(days=m_id)
+                    timed += m_id * 24 * 3600
                 elif m_control == 'h':
-                    timed += timedelta(hours=m_id)
+                    timed += m_id * 3600
                 elif m_control == 'm':
-                    timed += timedelta(minutes=m_id)
+                    timed += m_id * 60
                 else:
                     break
             else:
                 try4_match = self.timeparse_match4.search(other)
                 if try4_match:
-                    timed += timedelta(days=int(try4_match.group(1)))
-                    timed += timedelta(hours=int(try4_match.group(2)))
-                    timed += timedelta(minutes=int(try4_match.group(3)))
+                    timed += int(try4_match.group(1)) * 24 * 3600
+                    timed += int(try4_match.group(2)) * 3600
+                    timed += int(try4_match.group(3)) * 60
                 else:
                     try2_match = self.timeparse_match2.search(other)
                     if try2_match:
-                        timed += timedelta(days=int(try2_match.group(1)))
-                        timed += timedelta(hours=int(try2_match.group(2)))
-                        timed += timedelta(minutes=int(try2_match.group(3)))
+                        timed += int(try2_match.group(1)) * 24 * 3600
+                        timed += int(try2_match.group(2)) * 3600
+                        timed += int(try2_match.group(3)) * 60
                     else:
                         try3_match = self.timeparse_match3.search(other)
                         if try3_match:
-                            timed += timedelta(hours=int(try3_match.group(2)))
-                            timed += timedelta(minutes=int(try3_match.group(3)))
+                            timed += int(try3_match.group(2)) * 3600
+                            timed += int(try3_match.group(3)) * 60
                         else:
                             break
 
@@ -1054,7 +1074,7 @@ class MainCommand:
         # logger.debug('MEGAFONE background_update_all, counts: ws {wc}, rsq {rq}'.format(wc=len(self.ws),
         #              rq=len(self.rsq)))
 
-        self.time_now = self.sme_time_now()
+        self.time_now = smer.sme_time_now()
 
         # Update WhiteStars
         ws_over = list()
@@ -1062,18 +1082,18 @@ class MainCommand:
         for ws_name, ws_struct in self.ws.items():
             try:
                 if 'done' not in ws_struct or not ws_struct['done']:
-                    nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+                    nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
                     ws_time_str = ""
 
-                    if nova_time < self.time_now:
+                    if (nova_time + 30) < self.time_now:
                         ws_struct['done'] = True
                         self.flag_config_dirty = True
                         ws_time_str = 'over'
                         ws_over.append(ws_name)
                     else:
                         # Resolves to a minute, so add 30s here to cause a round up.
-                        ws_time = (nova_time - self.time_now) + timedelta(seconds=30)
+                        ws_time = nova_time + 30 - self.time_now
                         ws_time_str = self.timedelta_as_string(ws_time)
 
                     new_content = '```\nNova time {}\n'.format(ws_time_str)
@@ -1201,7 +1221,7 @@ class MainCommand:
 
             nova_timedelta = self.timedelta_from_strings(other_list)
 
-            if nova_timedelta < timedelta(hours=1) or nova_timedelta > timedelta(days=5):
+            if nova_timedelta < (1 * 60) or nova_timedelta > (5 * 24 * 3600):
                 return_list.append('Error: Nova time out of good range')
             else:
                 control_role = 0
@@ -1221,7 +1241,7 @@ class MainCommand:
                     # inputs
                     'control_role': control_role,
                     'all_role': all_role,
-                    'nova_time': self.sme_time_as_string(nova_time),
+                    'nova_time': smer.sme_time_as_string(nova_time),
                     # other state
                     'old_content': '',
                     'assist_group': assist_group,
@@ -1277,15 +1297,15 @@ class MainCommand:
         for ws_name, ws_struct in self.ws.items():
             str_list = []
 
-            nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+            nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
             ws_time_str = ""
 
-            if nova_time < self.time_now:
+            if (nova_time + 30) < self.time_now:
                 ws_time_str = 'over'
             else:
                 # Resolves to a minute, so add 30s here to cause a round up.
-                ws_time = (nova_time - self.time_now) + timedelta(seconds=30)
+                ws_time = nova_time + 30 - self.time_now
                 ws_time_str = self.timedelta_as_string(ws_time)
 
             str_list.append('\t{:3}, Nova time: {}'.format(ws_name, ws_time_str))
@@ -1349,7 +1369,7 @@ class MainCommand:
             ws_name = wsname_match.group(1)
             if ws_name in self.ws:
                 ws_struct = self.ws[ws_name]
-                nova_time = self.sme_time_from_string(ws_struct['nova_time'])
+                nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
 
                 # two dicts, one 'green' keyed by pilotid, one 'red' keyed by string
                 # in each case storing a 4 string tuple:
@@ -1427,7 +1447,7 @@ class MainCommand:
                                 given_time = self.timedelta_from_strings(time_list)
                                 if len(time_list) == 0:
                                     s_timertype = 'hence'
-                                    given_time = timedelta(seconds=0)
+                                    given_time = 0
 
                                 open_time = None
                                 pilot_data = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
@@ -1450,17 +1470,17 @@ class MainCommand:
                                             open_time = nova_time - given_time
 
                                 if s_cmd == 'in':
-                                    open_time += timedelta(hours=2)
+                                    open_time += 2 * 3600
                                 elif s_cmd == 'dead':
                                     if s_flagship:
-                                        open_time += timedelta(hours=16)
+                                        open_time += 16 * 3600
                                     else:
-                                        open_time += timedelta(hours=18)
+                                        open_time += 18 * 3600
 
                                 if open_time > nova_time:
                                     open_time = nova_time
 
-                                open_time_str = self.sme_time_as_string(open_time)
+                                open_time_str = smer.sme_time_as_string(open_time)
 
                                 if s_enemy is not None:
                                     if s_enemy in ws_reds:
@@ -1547,10 +1567,10 @@ class MainCommand:
         b_delay = ''
         b_until_str = pilot_data['bdelay']
         if b_until_str is not None and len(b_until_str) > 2:
-            away_until = self.sme_time_from_string(b_until_str)
+            away_until = smer.sme_time_from_string(b_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
-                b_delay = self.timedelta_as_string2(td + timedelta(seconds=15))
+                b_delay = self.timedelta_as_string2(td + 15)
             else:
                 pilot_data['bdelay'] = ''
                 self.flag_config_dirty = True
@@ -1562,10 +1582,10 @@ class MainCommand:
         s_delay = ''
         s_until_str = pilot_data['sdelay']
         if s_until_str is not None and len(s_until_str) > 2:
-            away_until = self.sme_time_from_string(s_until_str)
+            away_until = smer.sme_time_from_string(s_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
-                s_delay = self.timedelta_as_string2(td + timedelta(seconds=15))
+                s_delay = self.timedelta_as_string2(td + 15)
             else:
                 pilot_data['sdelay'] = ''
                 self.flag_config_dirty = True
@@ -1604,7 +1624,7 @@ class MainCommand:
                     self.player_info_set(
                         who, 'last_name', self.member_name_from_id(who))
 
-                    from_str = self.sme_time_as_string(self.time_now)
+                    from_str = smer.sme_time_as_string(self.time_now)
                     self.player_info_set(who, 'last_tech_update', from_str)
 
                     for what, val in zip(what_list_good, value_list):
@@ -1716,17 +1736,6 @@ class MainCommand:
 
         return return_list
 
-    def sme_time_now(self):
-        return datetime.utcnow().replace(tzinfo=pytz.utc)
-
-    def sme_time_as_string(self, time_ob):
-        _timefmt = '%Y-%m-%d %H:%M:%S %Z%z'
-        return time_ob.strftime(_timefmt)
-
-    def sme_time_from_string(self, time_str):
-        _timefmt = '%Y-%m-%d %H:%M:%S %Z%z'
-        return datetime.strptime(time_str, _timefmt).replace(tzinfo=pytz.utc)
-
     def tz_from_str(self, tzstr):
         tz = None
         if isinstance(tzstr, str):
@@ -1816,18 +1825,18 @@ class MainCommand:
 
             for pkey in who_list_good:
                 timestr = 'timeless'
-                t_sorting = timedelta()
+                t_sorting = 0
                 tz = self.tz_from_str(self.player_info_get(pkey, 'timezone'))
                 if tz is not None:
-                    ta = self.time_now.astimezone(tz)
+                    ta = datetime.fromtimestamp(self.time_now, pytz.utc).astimezone(tz)
                     timestr = ta.strftime('%a %H:%M')
-                    t_sorting = ta.utcoffset()
+                    t_sorting = ta.utcoffset().total_seconds()
 
                 away_result = ''
                 away_msg_str = ''
                 away_until_str = self.player_info_get(pkey, 'away_until')
                 if away_until_str is not None and len(away_until_str) > 2:
-                    away_until = self.sme_time_from_string(away_until_str)
+                    away_until = smer.sme_time_from_string(away_until_str)
                     if self.time_now < away_until:
                         td = away_until - self.time_now
                         if td.days >= 1:
@@ -1915,11 +1924,11 @@ class MainCommand:
             delay = float(other_list[0])
 
             if delay <= 36.0:
-                from_str = self.sme_time_as_string(self.time_now)
+                from_str = smer.sme_time_as_string(self.time_now)
                 self.player_info_set(away_player_id, 'away_from', from_str)
 
-                until_time = self.time_now + timedelta(hours=delay)
-                until_str = self.sme_time_as_string(until_time)
+                until_time = self.time_now + (delay * 3600)
+                until_str = smer.sme_time_as_string(until_time)
                 self.player_info_set(away_player_id, 'away_until', until_str)
 
                 if len(other_list) >= 2:
@@ -1979,13 +1988,13 @@ class MainCommand:
                 lup_result = float(0.0)
                 lup_was_str = self.player_info_get(pkey, 'last_tech_update')
                 if lup_was_str is not None and len(lup_was_str) > 2:
-                    lup_was = self.sme_time_from_string(lup_was_str)
+                    lup_was = smer.sme_time_from_string(lup_was_str)
                     if self.time_now > lup_was:
-                        td = self.time_now - lup_was
-                        if td.days >= 1:
-                            lup_result = lup_result + float(td.days)
+                        (td_days, td_secs) = self.timedelta_to_days_secs(self.time_now - lup_was)
+                        if td_days >= 1:
+                            lup_result = lup_result + float(td_days)
 
-                        lup_result = lup_result + float(td.seconds) / float(86400.0)
+                        lup_result = lup_result + float(td_secs) / float(86400.0)
 
                 user_list.append([self.member_name_from_id(pkey), lup_result])
 
@@ -2133,7 +2142,7 @@ class MainCommand:
                 pilot_list.append(int(q_player_id))
 
             self.player_info_set(q_player_id, 'rs_q_level', rs_q_level)
-            self.player_info_set(q_player_id, 'rs_q_time', self.sme_time_as_string(self.time_now))
+            self.player_info_set(q_player_id, 'rs_q_time', smer.sme_time_as_string(self.time_now))
 
             self.flag_config_dirty = True
 
