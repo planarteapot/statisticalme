@@ -17,7 +17,7 @@
 
 import sys
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from discord.ext import tasks
 from .sme_utils import normalize_caseless
 import aiohttp
@@ -1825,12 +1825,12 @@ class MainCommand:
 
             for pkey in who_list_good:
                 timestr = 'timeless'
-                t_sorting = timedelta()
+                t_sorting = 0
                 tz = self.tz_from_str(self.player_info_get(pkey, 'timezone'))
                 if tz is not None:
                     ta = datetime.fromtimestamp(self.time_now, pytz.utc).astimezone(tz)
                     timestr = ta.strftime('%a %H:%M')
-                    t_sorting = ta.utcoffset()
+                    t_sorting = ta.utcoffset().total_seconds()
 
                 away_result = ''
                 away_msg_str = ''
