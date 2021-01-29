@@ -42,3 +42,19 @@ pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod sme_time_tests {
+    use super::*;
+
+    #[test]
+    fn test_sme_time_as_string() {
+        assert_eq!(sme_time_as_string_impl(1608594507_u32), "2020-12-21 23:48:27");
+    }
+
+    #[test]
+    fn test_sme_time_from_string() {
+        let dtstamp = sme_time_from_string_impl("2020-12-21 23:48:26");
+        assert_eq!(dtstamp, 1608594506_u32);
+    }
+}
