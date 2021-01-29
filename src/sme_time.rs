@@ -15,9 +15,13 @@ pub fn sme_time_now() -> PyResult<u32> {
     Ok(Utc::now().timestamp() as u32)
 }
 
+fn sme_time_as_string_impl(time_ob: u32) -> String {
+    Utc.timestamp(time_ob as i64, 0).format(_TIMEFMT).to_string()
+}
+
 #[pyfunction]
 pub fn sme_time_as_string(time_ob: u32) -> PyResult<String> {
-    Ok(Utc.timestamp(time_ob as i64, 0).format(_TIMEFMT).to_string())
+    Ok(sme_time_as_string_impl(time_ob))
 }
 
 #[pyfunction]
