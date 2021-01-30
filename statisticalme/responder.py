@@ -1834,11 +1834,11 @@ class MainCommand:
                 if away_until_str is not None and len(away_until_str) > 2:
                     away_until = smer.sme_time_from_string(away_until_str)
                     if self.time_now < away_until:
-                        td = away_until - self.time_now
-                        if td.days >= 1:
-                            away_result = away_result + '{}d '.format(td.days)
+                        (td_days, td_secs) = self.timedelta_to_days_secs(away_until - self.time_now)
+                        if td_days >= 1:
+                            away_result = away_result + '{}d '.format(td_days)
 
-                        sec = td.seconds
+                        sec = td_secs
                         if sec >= 3600:
                             hrs = int(sec / 3600)
                             away_result = away_result + '{}h '.format(hrs)
