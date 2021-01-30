@@ -1237,7 +1237,7 @@ class MainCommand:
                     # inputs
                     'control_role': control_role,
                     'all_role': all_role,
-                    'nova_time': smer.sme_time_as_string(nova_time),
+                    'nova_time': smer.sme_time_as_string(int(nova_time)),
                     # other state
                     'old_content': '',
                     'assist_group': assist_group,
@@ -1476,7 +1476,7 @@ class MainCommand:
                                 if open_time > nova_time:
                                     open_time = nova_time
 
-                                open_time_str = smer.sme_time_as_string(open_time)
+                                open_time_str = smer.sme_time_as_string(int(open_time))
 
                                 if s_enemy is not None:
                                     if s_enemy in ws_reds:
@@ -1924,7 +1924,7 @@ class MainCommand:
                 self.player_info_set(away_player_id, 'away_from', from_str)
 
                 until_time = self.time_now + (delay * 3600)
-                until_str = smer.sme_time_as_string(until_time)
+                until_str = smer.sme_time_as_string(int(until_time))
                 self.player_info_set(away_player_id, 'away_until', until_str)
 
                 if len(other_list) >= 2:
