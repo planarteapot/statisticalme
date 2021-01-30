@@ -523,7 +523,7 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 21.0.0'
+        info_str += '\nversion: 21.0.1'
         # info_str += '\nchanges:'
         # info_str += '\n  - rustify time handling'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
