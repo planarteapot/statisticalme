@@ -3,6 +3,8 @@ use pyo3::wrap_pyfunction;
 
 use chrono::prelude::*;
 use chrono::{NaiveDateTime, Utc};
+use chrono::{NaiveDateTime, Utc, TimeZone};
+use chrono_tz::Tz;
 
 static _TIMEFMT: &str = "%Y-%m-%d %H:%M:%S";
 
@@ -35,10 +37,20 @@ pub fn sme_time_from_string(time_str: &str) -> PyResult<u32> {
     Ok(sme_time_from_string_impl(time_str))
 }
 
+pub fn sme_time_is_valid_timezone_impl(tz_str: &str) -> bool {
+    tz_str.parse::<Tz>().is_ok()
+}
+
+#[pyfunction]
+pub fn sme_time_is_valid_timezone(tz_str: &str) -> PyResult<bool> {
+    Ok(sme_time_is_valid_timezone_impl(tz_str))
+}
+
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(sme_time_now))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_as_string))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_from_string))?;
+    m.add_wrapped(wrap_pyfunction!(sme_time_is_valid_timezone))?;
 
     Ok(())
 }
@@ -56,5 +68,15 @@ mod sme_time_tests {
     fn test_sme_time_from_string() {
         let dtstamp = sme_time_from_string_impl("2020-12-21 23:48:26");
         assert_eq!(dtstamp, 1608594506_u32);
+    }
+
+    #[test]
+    fn test_sme_time_is_valid_timezone_succeed() {
+        assert!(sme_time_is_valid_timezone_impl("America/New_York"));
+    }
+
+    #[test]
+    fn test_sme_time_is_valid_timezone_fail() {
+        assert!(!sme_time_is_valid_timezone_impl("MiddleEarth/Hobbiton"));
     }
 }
