@@ -1,14 +1,21 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
-use chrono::prelude::*;
-use chrono::{NaiveDateTime, Utc};
-use chrono::{NaiveDateTime, Utc, TimeZone};
+// use chrono::prelude::*;
+use chrono::{NaiveDateTime, Utc, TimeZone, Offset, LocalResult};
 use chrono_tz::Tz;
 
 static _TIMEFMT: &str = "%Y-%m-%d %H:%M:%S";
+static _TIMEFMTSHORT: &str = "%a %H:%M";
 
 pub fn mod_init() {
+}
+
+#[derive(PartialEq, Debug)]
+pub struct SmeAsTzResult {
+    time_str: String,
+    sorting_factor: i32,
+    valid: bool,
 }
 
 #[pyfunction]
@@ -38,7 +45,22 @@ pub fn sme_time_from_string(time_str: &str) -> PyResult<u32> {
 }
 
 pub fn sme_time_is_valid_timezone_impl(tz_str: &str) -> bool {
-    tz_str.parse::<Tz>().is_ok()
+    match tz_str.parse::<Tz>() {
+        Ok(_) => true,
+        Err(_) => {
+            if tz_str.len() >= 4 {
+                let prefix = tz_str[..3].to_lowercase();
+
+                match prefix.as_str() {
+                    "utc" | "gmt" => tz_str[3..].parse::<f32>().is_ok(),
+                    "fof" => tz_str[3..].parse::<i32>().is_ok(),
+                    _ => false
+                }
+            } else {
+                false
+            }
+        }
+    }
 }
 
 #[pyfunction]
@@ -46,6 +68,54 @@ pub fn sme_time_is_valid_timezone(tz_str: &str) -> PyResult<bool> {
     Ok(sme_time_is_valid_timezone_impl(tz_str))
 }
 
+pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<SmeAsTzResult> {
+    match tz_str.parse::<Tz>() {
+        Ok(tz) => {
+            let dt = match Utc.timestamp_opt(time_ob as i64, 0) {
+                LocalResult::Single(sdt) => Some(sdt),
+                LocalResult::Ambiguous(adt, _) => Some(adt),
+                _ => None
+            }?.with_timezone(&tz);
+
+            Some(SmeAsTzResult{
+                time_str: dt.format(_TIMEFMTSHORT).to_string(),
+                sorting_factor: dt.offset().fix().local_minus_utc(),
+                valid: true
+            })
+        },
+        Err(_) => {
+            if tz_str.len() >= 4 {
+                let prefix = tz_str[..3].to_lowercase();
+
+                let offset: i32 = match prefix.as_str() {  // seconds
+                    "utc" | "gmt" => Some((tz_str[3..].parse::<f32>().ok()? * 3600_f32 + 0.5_f32) as i32),
+                    "fof" => Some(tz_str[3..].parse::<i32>().ok()? * 60_i32),
+                    _ => None
+                }?;
+
+                match offset {
+                    // Check the offset in seconds is within -12hr ... 12hr
+                    -43200..=43200 => {
+                        let dt = match Utc.timestamp_opt(time_ob as i64 + offset as i64, 0) {
+                            LocalResult::Single(sdt) => Some(sdt),
+                            LocalResult::Ambiguous(adt, _) => Some(adt),
+                            _ => None
+                        }?;
+
+                        Some(SmeAsTzResult{
+                            time_str: dt.format(_TIMEFMTSHORT).to_string(),
+                            sorting_factor: dt.offset().fix().local_minus_utc(),
+                            valid: true
+                        })
+                    },
+                    _ => None
+                }
+            } else {
+                None
+            }
+        }
+    }
+}
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(sme_time_now))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_as_string))?;
@@ -78,5 +148,14 @@ mod sme_time_tests {
     #[test]
     fn test_sme_time_is_valid_timezone_fail() {
         assert!(!sme_time_is_valid_timezone_impl("MiddleEarth/Hobbiton"));
+    }
+
+    #[test]
+    fn test_sme_time_convert_to_timezone_tz_succeed() {
+        assert_eq!(sme_time_convert_to_timezone_impl(1608594507_u32, "America/New_York"), Some(SmeAsTzResult{
+            time_str: "Mon 18:48".to_string(),
+            sorting_factor: -18000,
+            valid: true
+        }))
     }
 }
