@@ -185,6 +185,7 @@ class MainCommand:
         self.subparser_time.add_command('list', False, self.command_time_list)
         self.subparser_time.add_command('away', False, self.command_time_away)
         self.subparser_time.add_command('back', False, self.command_time_back)
+        self.subparser_time.add_command('checkin', False, self.command_time_checkin)
 
         self.subparser_pilot = sme_paramparse.CommandParse(
             title='StatisticalMe pilot')
@@ -523,9 +524,10 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 21.0.1'
-        # info_str += '\nchanges:'
+        info_str += '\nversion: 21.0.2'
+        info_str += '\nchanges:'
         # info_str += '\n  - rustify time handling'
+        info_str += '\n  - checkin'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
@@ -1953,6 +1955,55 @@ class MainCommand:
             self.player_info_set(self.current_author.id, 'away_msg', '')
 
             return_list.append('OK')
+
+        return return_list
+
+    async def command_time_checkin(self, params):
+        return_list = []
+        return_ok = False
+
+        who_list_good = list()
+        return_list = return_list + self.parse_who(params, who_list_good)
+
+        if not self.auth_chief():
+            who_list_good = list()
+            return_list.append('Only for chiefs')
+
+        if len(who_list_good) > 0:
+            delay = 1
+            from_str = smer.sme_time_as_string(self.time_now)
+            until_str = smer.sme_time_as_string(int(self.time_now + (delay * 3600)))
+            instigator_name = self.member_name_from_id(self.current_author.id)
+            who_list_away = list()
+
+            for pkey in who_list_good:
+                flag_away = False
+                away_until_str = self.player_info_get(pkey, 'away_until')
+                if away_until_str is not None and len(away_until_str) > 2:
+                    away_until = smer.sme_time_from_string(away_until_str)
+                    if self.time_now < away_until:
+                        flag_away = True
+
+                if flag_away:
+                    who_list_away.append(pkey)
+                else:
+                    return_ok = True
+                    self.player_info_set(pkey, 'checkin_from', from_str)
+                    self.player_info_set(pkey, 'checkin_by', until_str)
+
+                    memb = self.member_from_id(pkey)
+                    if memb is not None:
+                        self.queue_msg_for_send_out(memb, '{in_name} wants you to check in during the next hour'.format(in_name=instigator_name))
+
+            if who_list_away:
+                name_list = [self.member_name_from_id(pkey) for pkey in who_list_away]
+                if len(name_list) > 1:
+                    return_list.append(', '.join(name_list) + ' are all away')
+                else:
+                    return_list.append(name_list[0] + ' is away')
+
+            if return_ok and not return_list:
+                return_list.append('OK')
 
         return return_list
 
