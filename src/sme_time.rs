@@ -11,13 +11,6 @@ static _TIMEFMTSHORT: &str = "%a %H:%M";
 pub fn mod_init() {
 }
 
-#[derive(PartialEq, Debug)]
-pub struct SmeAsTzResult {
-    time_str: String,
-    sorting_factor: i32,
-    valid: bool,
-}
-
 pub fn sme_time_now_impl() -> u32 {
     Utc::now().timestamp() as u32
 }
