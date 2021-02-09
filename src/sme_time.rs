@@ -68,7 +68,11 @@ pub fn sme_time_is_valid_timezone(tz_str: &str) -> PyResult<bool> {
     Ok(sme_time_is_valid_timezone_impl(tz_str))
 }
 
-pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<SmeAsTzResult> {
+fn format_tz_result(time_str: &String, sorting_factor: i32) -> String {
+    format!("{}{},{}", &time_str[..2], &time_str[3..], sorting_factor)
+}
+
+pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<String> {
     match tz_str.parse::<Tz>() {
         Ok(tz) => {
             let dt = match Utc.timestamp_opt(time_ob as i64, 0) {
@@ -77,11 +81,7 @@ pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<S
                 _ => None
             }?.with_timezone(&tz);
 
-            Some(SmeAsTzResult{
-                time_str: dt.format(_TIMEFMTSHORT).to_string(),
-                sorting_factor: dt.offset().fix().local_minus_utc(),
-                valid: true
-            })
+            Some(format_tz_result(&dt.format(_TIMEFMTSHORT).to_string(), dt.offset().fix().local_minus_utc()))
         },
         Err(_) => {
             if tz_str.len() >= 4 {
@@ -102,11 +102,7 @@ pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<S
                             _ => None
                         }?;
 
-                        Some(SmeAsTzResult{
-                            time_str: dt.format(_TIMEFMTSHORT).to_string(),
-                            sorting_factor: dt.offset().fix().local_minus_utc(),
-                            valid: true
-                        })
+                        Some(format_tz_result(&dt.format(_TIMEFMTSHORT).to_string(), offset))
                     },
                     _ => None
                 }
@@ -116,11 +112,21 @@ pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<S
         }
     }
 }
+
+#[pyfunction]
+pub fn sme_time_convert_to_timezone(time_ob: u32, tz_str: &str) -> PyResult<String> {
+    Ok(match sme_time_convert_to_timezone_impl(time_ob, tz_str) {
+        Some(res) => res,
+        None => "".to_string()
+    })
+}
+
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(sme_time_now))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_as_string))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_from_string))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_is_valid_timezone))?;
+    m.add_wrapped(wrap_pyfunction!(sme_time_convert_to_timezone))?;
 
     Ok(())
 }
@@ -152,10 +158,11 @@ mod sme_time_tests {
 
     #[test]
     fn test_sme_time_convert_to_timezone_tz_succeed() {
-        assert_eq!(sme_time_convert_to_timezone_impl(1608594507_u32, "America/New_York"), Some(SmeAsTzResult{
-            time_str: "Mon 18:48".to_string(),
-            sorting_factor: -18000,
-            valid: true
-        }))
+        assert_eq!(sme_time_convert_to_timezone_impl(1608594507_u32, "America/New_York"), Some("Mo 18:48,-18000".to_string()))
+    }
+
+    #[test]
+    fn test_sme_time_convert_to_timezone_offs_succeed() {
+        assert_eq!(sme_time_convert_to_timezone_impl(1608594507_u32, "utc-5"), Some("Mo 18:48,-18000".to_string()))
     }
 }
