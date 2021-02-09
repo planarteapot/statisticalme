@@ -49,7 +49,7 @@ pub fn sme_time_is_valid_timezone_impl(tz_str: &str) -> bool {
                 let prefix = tz_str[..3].to_lowercase();
 
                 match prefix.as_str() {
-                    "utc" | "gmt" => tz_str[3..].parse::<f32>().is_ok(),
+                    "utc" | "gmt" => tz_str[3..].parse::<i32>().is_ok(),
                     "fof" => tz_str[3..].parse::<i32>().is_ok(),
                     _ => false
                 }
