@@ -18,9 +18,13 @@ pub struct SmeAsTzResult {
     valid: bool,
 }
 
+pub fn sme_time_now_impl() -> u32 {
+    Utc::now().timestamp() as u32
+}
+
 #[pyfunction]
 pub fn sme_time_now() -> PyResult<u32> {
-    Ok(Utc::now().timestamp() as u32)
+    Ok(sme_time_now_impl())
 }
 
 fn sme_time_as_string_impl(time_ob: u32) -> String {
