@@ -88,7 +88,7 @@ pub fn sme_time_convert_to_timezone_impl(time_ob: u32, tz_str: &str) -> Option<S
                 let prefix = tz_str[..3].to_lowercase();
 
                 let offset: i32 = match prefix.as_str() {  // seconds
-                    "utc" | "gmt" => Some((tz_str[3..].parse::<f32>().ok()? * 3600_f32 + 0.5_f32) as i32),
+                    "utc" | "gmt" => Some(tz_str[3..].parse::<i32>().ok()? * 3600_i32),
                     "fof" => Some(tz_str[3..].parse::<i32>().ok()? * 60_i32),
                     _ => None
                 }?;
