@@ -33,7 +33,7 @@ pub fn sme_time_as_string(time_ob: u32) -> PyResult<String> {
 }
 
 fn sme_time_from_string_impl(time_str: &str) -> u32 {
-    match NaiveDateTime::parse_from_str(&time_str[0..19], _TIMEFMT) {
+    match NaiveDateTime::parse_from_str(&time_str[..19], _TIMEFMT) {
         Ok(dt) => dt.timestamp() as u32,
         Err(_) => 0
     }
