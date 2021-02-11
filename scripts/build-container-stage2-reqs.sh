@@ -19,8 +19,8 @@ buildah run $cont python3 -m venv /root/venv-sme
 buildah config --env 'PATH=/root/venv-sme/bin:$PATH' $cont
 buildah config --env 'VIRTUAL_ENV=/root/venv-sme' $cont
 
-buildah run $cont pip3 install --no-use-pep517 wheel
-buildah run $cont pip3 install --no-use-pep517 --requirement /opt/requirements.txt
+buildah run $cont pip3 install wheel
+buildah run $cont pip3 install --requirement /opt/requirements.txt
 
 buildah run $cont apt-get -y purge python-dev-is-python3 python3-dev python-pip-whl make gcc g++ libxml2-dev libxslt1-dev zlib1g-dev patch
 

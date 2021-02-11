@@ -13,7 +13,7 @@ ${HOME}/.venv/sme_deploy/bin/maturin develop --binding-crate pyo3
 
 # #
 
-# pip3 install --force --no-use-pep517 "${wheelname}"
+# pip3 install --force "${wheelname}"
 
 export RUST_BACKTRACE=1
 python3 -m statisticalme
