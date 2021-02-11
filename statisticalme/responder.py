@@ -17,7 +17,6 @@
 
 import sys
 
-from datetime import datetime
 from discord.ext import tasks
 from .sme_utils import normalize_caseless
 import aiohttp
@@ -25,7 +24,6 @@ import copy
 import discord
 import logging
 import math
-import pytz
 import re
 from . import sme_paramparse
 from . import sme_scores
@@ -524,10 +522,11 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 21.0.2'
+        info_str += '\nversion: 21.0.3'
         info_str += '\nchanges:'
         # info_str += '\n  - rustify time handling'
         info_str += '\n  - checkin'
+        # info_str += '\n  - rustify timezone handling'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
@@ -1734,22 +1733,6 @@ class MainCommand:
 
         return return_list
 
-    def tz_from_str(self, tzstr):
-        tz = None
-        if isinstance(tzstr, str):
-            try:
-                tz = pytz.timezone(tzstr)
-            except pytz.exceptions.UnknownTimeZoneError:
-                if len(tzstr) >= 4:
-                    prefix = normalize_caseless(tzstr[:3])
-                    if prefix in ['utc', 'gmt']:
-                        tz = pytz.FixedOffset(
-                            int(float(60) * float(tzstr[3:])))
-                    elif prefix == 'fof':
-                        tz = pytz.FixedOffset(int(tzstr[3:]))
-
-        return tz
-
     async def command_time_set(self, params):
         return_list = []
 
@@ -1764,9 +1747,8 @@ class MainCommand:
             who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0:
-            tz = None
             if len(other_list) > 0:
-                tzstr = other_list[0]
+                tzstr = str(other_list[0])
                 prefix = normalize_caseless(tzstr[:3])
                 if prefix in ['utc', 'gmt', 'fof'] and len(other_list) > 1:
                     tzstr = tzstr + other_list[1]
@@ -1774,11 +1756,9 @@ class MainCommand:
                 else:
                     other_list = other_list[1:]
 
-                tz = self.tz_from_str(tzstr)
-
-            if tz is not None:
-                self.player_info_set(who_list_good[0], 'timezone', tzstr)
-                return_list.append('OK')
+                if bool(smer.sme_time_is_valid_timezone(tzstr)):
+                    self.player_info_set(who_list_good[0], 'timezone', tzstr)
+                    return_list.append('OK')
 
         return return_list
 
@@ -1823,12 +1803,13 @@ class MainCommand:
 
             for pkey in who_list_good:
                 timestr = 'timeless'
-                t_sorting = 0
-                tz = self.tz_from_str(self.player_info_get(pkey, 'timezone'))
-                if tz is not None:
-                    ta = datetime.fromtimestamp(self.time_now, pytz.utc).astimezone(tz)
-                    timestr = ta.strftime('%a %H:%M')
-                    t_sorting = ta.utcoffset().total_seconds()
+                t_sorting = int(0)
+                tz_str = self.player_info_get(pkey, 'timezone')
+                if tz_str is not None:
+                    converted0, converted1 = str(smer.sme_time_convert_to_timezone(self.time_now, tz_str)).split(',')
+                    if len(converted0) > 0 and len(converted1) > 0:
+                        timestr = str(converted0)
+                        t_sorting = int(converted1)
 
                 away_result = ''
                 away_msg_str = ''
