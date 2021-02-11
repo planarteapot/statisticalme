@@ -17,7 +17,6 @@
 
 import sys
 
-from datetime import datetime
 from discord.ext import tasks
 from .sme_utils import normalize_caseless
 import aiohttp
@@ -25,7 +24,6 @@ import copy
 import discord
 import logging
 import math
-import pytz
 import re
 from . import sme_paramparse
 from . import sme_scores
@@ -1733,22 +1731,6 @@ class MainCommand:
                                           user_list, flag_csv=flag_csv)
 
         return return_list
-
-    def tz_from_str(self, tzstr):
-        tz = None
-        if isinstance(tzstr, str):
-            try:
-                tz = pytz.timezone(tzstr)
-            except pytz.exceptions.UnknownTimeZoneError:
-                if len(tzstr) >= 4:
-                    prefix = normalize_caseless(tzstr[:3])
-                    if prefix in ['utc', 'gmt']:
-                        tz = pytz.FixedOffset(
-                            int(float(60) * float(tzstr[3:])))
-                    elif prefix == 'fof':
-                        tz = pytz.FixedOffset(int(tzstr[3:]))
-
-        return tz
 
     async def command_time_set(self, params):
         return_list = []
