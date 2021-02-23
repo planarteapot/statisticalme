@@ -1806,10 +1806,13 @@ class MainCommand:
                 t_sorting = int(0)
                 tz_str = self.player_info_get(pkey, 'timezone')
                 if tz_str is not None:
-                    converted0, converted1 = str(smer.sme_time_convert_to_timezone(self.time_now, tz_str)).split(',')
-                    if len(converted0) > 0 and len(converted1) > 0:
-                        timestr = str(converted0)
-                        t_sorting = int(converted1)
+                    try:
+                        converted0, converted1 = str(smer.sme_time_convert_to_timezone(self.time_now, tz_str)).split(',')
+                        if len(converted0) > 0 and len(converted1) > 0:
+                            timestr = str(converted0)
+                            t_sorting = int(converted1)
+                    except ValueError:
+                        pass
 
                 away_result = ''
                 away_msg_str = ''
