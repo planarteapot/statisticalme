@@ -522,7 +522,7 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 21.0.3'
+        info_str += '\nversion: 21.0.4'
         info_str += '\nchanges:'
         # info_str += '\n  - rustify time handling'
         info_str += '\n  - checkin'
