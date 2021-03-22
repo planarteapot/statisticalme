@@ -8,7 +8,7 @@ use chrono_tz::Tz;
 static _TIMEFMT: &str = "%Y-%m-%d %H:%M:%S";
 static _TIMEFMTSHORT: &str = "%a %H:%M";
 
-pub fn mod_init() {
+fn mod_init() {
 }
 
 pub fn sme_time_now_impl() -> u32 {
@@ -119,6 +119,8 @@ pub fn sme_time_convert_to_timezone(time_ob: u32, tz_str: &str) -> PyResult<Stri
 }
 
 pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    mod_init();
+
     m.add_wrapped(wrap_pyfunction!(sme_time_now))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_as_string))?;
     m.add_wrapped(wrap_pyfunction!(sme_time_from_string))?;

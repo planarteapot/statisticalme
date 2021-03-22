@@ -63,8 +63,6 @@ class MainCommand:
         self.dev_author_list = dev_author_list
         self.ok_channels = ok_channels.split(',')
 
-        smer.library_init()
-
         self.time_now = smer.sme_time_now()
         self.time_up = self.time_now
 
