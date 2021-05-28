@@ -14,4 +14,6 @@ buildah run $cont apt-get -y autoremove
 buildah run $cont apt-get clean
 buildah run $cont find /var/lib/apt/lists -type f -not -empty -delete
 
+buildah unmount $cont
 buildah commit --format docker $cont python3-base:latest
+buildah rm $cont

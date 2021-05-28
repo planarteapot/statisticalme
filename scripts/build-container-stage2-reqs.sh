@@ -30,4 +30,6 @@ buildah run $cont find /var/lib/apt/lists -type f -not -empty -delete
 
 buildah run $cont rm -f /opt/requirements.txt
 
+buildah unmount $cont
 buildah commit --format docker $cont sme-reqs:latest
+buildah rm $cont
