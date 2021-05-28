@@ -2,9 +2,10 @@
 
 set -o errexit
 
-cont=$(buildah from ubuntu:20.04)
+cont=$(buildah from ubuntu:21.04)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" $cont
+buildah config --env 'DEBIAN_FRONTEND=noninteractive' $cont
 
 buildah run $cont apt-get update
 buildah run $cont apt-get -y full-upgrade --no-install-recommends
