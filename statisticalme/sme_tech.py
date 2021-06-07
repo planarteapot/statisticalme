@@ -53,7 +53,7 @@ class TechHandler:
             'timewarp', 'unity', 'sanctuary', 'stealth',
             'fortify', 'impulse', 'alpharocket', 'salvage',
             'suppress', 'destiny', 'barrier', 'vengeance',
-            'deltarocket', 'leap', 'bond', 'alphadrone',
+            'deltarocket', 'leap', 'bond', 'laserturret', 'alphadrone',
             'suspend', 'omegarocket', 'remotebomb'
             ]
 
@@ -110,6 +110,7 @@ class TechHandler:
             'vengeance': ['veng'],
             'deltarocket': ['dr', 'drocket'],
             'alphadrone': ['ad', 'drone'],
+            'laserturret': ['lt'],
             'suspend': ['sus', 'susp'],
             'omegarocket': ['or'],
             'remotebomb': ['bomb', 'rbomb']
@@ -145,7 +146,7 @@ class TechHandler:
             'Time Warp', 'Unity', 'Sanctuary', 'Stealth',
             'Fortify', 'Impulse', 'Alpha Rocket', 'Salvage',
             'Suppress', 'Destiny', 'Barrier', 'Vengeance',
-            'Delta Rocket', 'Leap', 'Bond', 'Alpha Drone',
+            'Delta Rocket', 'Leap', 'Bond', 'Laser Turret', 'Alpha Drone',
             'Suspend', 'Omega Rocket', 'Remote Bomb'
             ]
 
@@ -155,7 +156,7 @@ class TechHandler:
         self.mining_range = (17, 27)
         self.weapon_range = (27, 33)
         self.shield_range = (33, 39)
-        self.support_range = (39, 63)
+        self.support_range = (39, 64)
 
         # tech key or tech alias to tech index
         self.tech_key_index = dict()
