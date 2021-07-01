@@ -2,7 +2,7 @@
 
 # Run locally.
 
-SMECONTAR_NAME=$(tempfile -s .tar)
+SMECONTAR_NAME=$(mktemp --suffix .tar)
 
 # mkdir -p sme-ocidir
 # rm -rf sme-ocidir/*
