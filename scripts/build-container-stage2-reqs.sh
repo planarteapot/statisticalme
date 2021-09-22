@@ -31,7 +31,7 @@ buildah run "$cont" apt-get -y purge libjs-jquery
 buildah run "$cont" apt-get -y autoremove
 buildah run "$cont" apt-get clean
 buildah run "$cont" dpkg -P apt ubuntu-keyring gpgv
-buildah run "$cont" rm -rf /var/lib/apt
+buildah run "$cont" rm -rf /var/lib/apt /var/log/apt
 
 buildah run "$cont" rm -f /opt/requirements.txt
 
