@@ -121,7 +121,7 @@ class MainCommand:
         logger.debug('ok_channels {}'.format(self.ok_channels))
 
         self.weights = dict()
-        self.weights['200302'] = sme_scores.import_weights('200302')
+        self.weights['210918'] = sme_scores.import_weights('210918')
         self.weights['201206'] = sme_scores.import_weights('201206')
 
         self.temp_rolemap = dict()
@@ -2354,9 +2354,9 @@ class MainCommand:
                     flagged_whotruncated = True
                     del who_list_good[4:]
 
-        flag_wspoints200302 = False
-        if score_key == '200302':
-            flag_wspoints200302 = True
+        flag_wspoints210918 = False
+        if score_key == '210918':
+            flag_wspoints210918 = True
 
         flag_wspoints201206 = False
         if score_key == '201206':
@@ -2608,7 +2608,7 @@ class MainCommand:
                 #
                 faccum.append(0.5)
                 accum = int(math.floor(math.fsum(faccum)))
-            elif flag_wspoints200302:
+            elif flag_wspoints210918:
                 faccum = list()
                 detail_aa = []
                 detail_mi = []
@@ -2617,8 +2617,8 @@ class MainCommand:
                 detail_we = []
                 detail_sh = []
 
-                # relics, entrust, dispatch
-                for tkey in ['relics', 'entrust', 'dispatch', 'dart']:
+                # relics, entrust, dispatch, data, relicdrone
+                for tkey in ['relics', 'entrust', 'dispatch', 'dart', 'relicdrone']:
                     if tkey in ww:
                         tweights = ww[tkey]
                         tval = self.player_tech_get(pkey, tkey)
@@ -2677,7 +2677,7 @@ class MainCommand:
 
                     faccum.append(fscore)
 
-                # support (and trade)
+                # support
                 bslvl = self.player_tech_get(pkey, 'bs')
                 if bslvl >= 2 and bslvl <= 6:
                     scount = bslvl - 1
@@ -2809,6 +2809,7 @@ class MainCommand:
                 if len(shieldtech) > 0:
                     shieldtech.sort(key=lambda x: x[1], reverse=True)
                     gotmain = False
+                    gotareadelta = False
                     st2 = list()
 
                     for ss in shieldtech:
@@ -2819,32 +2820,25 @@ class MainCommand:
                                 st2.append(ss)
                                 gotmain = True
 
-                        else:
+                        elif skey in ['areashield', 'deltashield']:
+                            if not gotareadelta:
+                                st2.append(ss)
+                                gotareadelta = True
+                            else:
+                                st2.append([skey, ss[1] * 0.5])
+
+                        elif skey in ['blastshield']:
                             st2.append(ss)
 
-                    shi = 3
-                    if shi > len(st2):
-                        shi = len(st2)
+                    fscore = float(0.0)
 
-                    if 0 < shi:
-                        iscore = float(st2[0][1])
-                        fscore = iscore
+                    for ss in st2:
+                        iscore = float(ss[1])
+                        fscore += iscore
                         if flag_detail:
-                            detail_sh.append('{tn} {ts}'.format(tn=st2[0][0], ts=iscore))
+                            detail_sh.append('{tn} {ts}'.format(tn=ss[0], ts=iscore))
 
-                        if 1 < shi:
-                            iscore = float(st2[1][1]) * 0.75
-                            fscore += iscore
-                            if flag_detail:
-                                detail_sh.append('{tn} {ts}'.format(tn=st2[1][0], ts=iscore))
-
-                            if 2 < shi:
-                                iscore = float(st2[2][1]) * 0.5
-                                fscore += iscore
-                                if flag_detail:
-                                    detail_sh.append('{tn} {ts}'.format(tn=st2[2][0], ts=iscore))
-
-                        faccum.append(fscore)
+                    faccum.append(fscore)
 
                 #
                 faccum.append(0.5)
