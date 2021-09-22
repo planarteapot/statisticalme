@@ -17,7 +17,7 @@ buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" "$c
 
 buildah run "$cont" mkdir -p /opt/statisticalme /opt/statisticalme/data /opt/statisticalme/var
 
-buildah run --volume $(readlink -f .):/src_sme "$cont" pip install /src_sme/"${wheelname}"
+buildah run --volume "$(readlink -f .):/src_sme" "$cont" pip install /src_sme/"${wheelname}"
 buildah copy "$cont" data/values-*.txt /opt/statisticalme/data
 
 buildah config --workingdir /opt/statisticalme "$cont"
