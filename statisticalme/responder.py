@@ -26,7 +26,6 @@ import logging
 import math
 import re
 from . import sme_paramparse
-from . import sme_scores
 from . import sme_table
 from . import sme_tech
 import traceback
@@ -121,8 +120,14 @@ class MainCommand:
         logger.debug('ok_channels {}'.format(self.ok_channels))
 
         self.weights = dict()
-        self.weights['210918'] = sme_scores.import_weights('210918')
-        self.weights['201206'] = sme_scores.import_weights('201206')
+        try:
+            with open('var/weights.yaml', 'r') as fh:
+                loaded = yaml.safe_load(fh)
+
+                if 'weights' in loaded:
+                    self.weights = copy.copy(loaded['weights'])
+        except Exception:
+            pass
 
         self.temp_rolemap = dict()
         # self.temp_rolemap = {  # Previous RS role mappings
