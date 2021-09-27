@@ -18,7 +18,6 @@ buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" "$c
 buildah run "$cont" mkdir -p /opt/statisticalme /opt/statisticalme/var
 
 buildah run --volume "$(readlink -f .):/src_sme" "$cont" pip install /src_sme/"${wheelname}"
-buildah copy "$cont" var/weights.yaml /opt/statisticalme/var
 
 buildah config --workingdir /opt/statisticalme "$cont"
 buildah config --entrypoint '["python3", "-m", "statisticalme"]' "$cont"
