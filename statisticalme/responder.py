@@ -2341,7 +2341,7 @@ class MainCommand:
         if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
-        score_key = '201206'
+        score_key = '210918'
         flag_detail = False
         flagged_whotruncated = False
         if len(other_list) > 0:
