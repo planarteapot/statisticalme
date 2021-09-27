@@ -2629,6 +2629,10 @@ class MainCommand:
                         tval = self.player_tech_get(pkey, tkey)
                         if tval > 0:
                             score = tweights[tval - 1]
+                            if tkey == 'dart':
+                                # Special bonus for dart
+                                score = 50
+
                             faccum.append(float(score))
                             if flag_detail:
                                 detail_aa.append('{tk} {sc}'.format(tk=tkey, sc=score))
