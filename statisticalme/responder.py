@@ -2742,9 +2742,8 @@ class MainCommand:
 
                 # weapons
                 wl1 = teh.tech_keys_range_weapon()
-                techlist = [t for t in wl1 if t not in ['dart']]
                 weapontech = list()
-                for tkey in techlist:
+                for tkey in wl1:
                     score = 0
                     if tkey in ww:
                         tweights = ww[tkey]
