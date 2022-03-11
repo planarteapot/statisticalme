@@ -1073,26 +1073,33 @@ class MainCommand:
                         self.flag_config_dirty = True
 
                         chan_ob = self.current_guild.get_channel(ws_struct['channel'])
-                        msg_id = ws_struct['message']
+                        if chan_ob is not None:
+                            msg_id = ws_struct['message']
 
-                        msg_ob = None
-                        if msg_id > 0:
-                            try:
-                                msg_ob = await chan_ob.fetch_message(msg_id)
-                            except discord.NotFound:
-                                msg_ob = None
+                            msg_ob = None
+                            if msg_id > 0:
+                                try:
+                                    msg_ob = await chan_ob.fetch_message(msg_id)
+                                except discord.NotFound:
+                                    msg_ob = None
 
-                        if msg_ob is None:
-                            msg_ob = await chan_ob.send(new_content)
-                            msg_id = msg_ob.id
-                            ws_struct['message'] = msg_id
-                            self.flag_config_dirty = True
+                            if msg_ob is None:
+                                msg_ob = await chan_ob.send(new_content)
+                                msg_id = msg_ob.id
+                                ws_struct['message'] = msg_id
+                                self.flag_config_dirty = True
+                            else:
+                                await msg_ob.edit(content=new_content)
+
+                            if 'dirty' in ws_struct:
+                                del(ws_struct['dirty'])
+                                self.flag_config_dirty = True
                         else:
-                            await msg_ob.edit(content=new_content)
-
-                        if 'dirty' in ws_struct:
-                            del(ws_struct['dirty'])
+                            ws_struct['done'] = True
                             self.flag_config_dirty = True
+                            ws_time_str = 'over'
+                            ws_over.append(ws_name)
+
 
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
