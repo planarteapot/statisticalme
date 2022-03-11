@@ -4,7 +4,7 @@ async-timeout==3.0.1
 attrs==19.3.0
 cchardet==2.1.6
 chardet==3.0.4
-discord.py>=1.5,<1.6
+discord.py>=1.7,<1.8
 idna==2.9
 idna-ssl==1.1.0
 multidict==4.7.6
