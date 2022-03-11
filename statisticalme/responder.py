@@ -143,16 +143,9 @@ class MainCommand:
         # self.subparser_config.add_command('set', False, self.dev_command_config_set)
         # self.subparser_config.add_command('get', False, self.dev_command_config_get)
 
-        self.subparser_metachan = sme_paramparse.CommandParse(
-            title='StatisticalMe Dev metachan')
-        self.subparser_metachan.add_command('add', False, self.dev_command_metachan_add)
-        self.subparser_metachan.add_command('remove', False, self.dev_command_metachan_remove)
-        self.subparser_metachan.add_command('list', False, self.dev_command_metachan_list)
-
         self.dev_parser = sme_paramparse.CommandParse(
             title='StatisticalMe Dev')
         # self.dev_parser.add_command('config', True, self.subparser_config)
-        self.dev_parser.add_command('metachan', True, self.subparser_metachan)
         self.dev_parser.add_command('info', False, self.dev_command_info)
         self.dev_parser.add_command('save', False, self.dev_command_save)
         self.dev_parser.add_command('roleprint', False, self.dev_command_roleprint)
@@ -472,56 +465,6 @@ class MainCommand:
             who_ob, msg_str = self.messages_out.pop()
             if (who_ob is not None) and (msg_str is not None) and (len(msg_str) > 0):
                 await who_ob.send(msg_str)
-
-    async def dev_command_metachan_add(self, params):
-        return_list = []
-
-        who_list_good = list()
-        other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
-
-        if len(other_list) >= 2:
-            mchan_key = str(other_list[0])
-            mchan_url = str(other_list[1])
-
-            io_adapter = discord.AsyncWebhookAdapter(self.aiohttp_session)
-            self.meta_channels[mchan_key] = discord.Webhook.from_url(mchan_url, adapter=io_adapter)
-
-            # TODO config vs main
-            # self.config_needssave = True
-            # logger.debug('MEGAFONE meta_channels {}'.format(self.meta_channels))
-
-            return_list.append('Added')
-
-        return return_list
-
-    async def dev_command_metachan_remove(self, params):
-        return_list = []
-
-        who_list_good = list()
-        other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
-
-        if len(other_list) >= 1:
-            mchan_key = str(other_list[0])
-
-            if mchan_key in self.meta_channels:
-                del self.meta_channels[mchan_key]
-                # TODO config vs main
-                # self.config_needssave = True
-
-            # logger.debug('MEGAFONE meta_channels {}'.format(self.meta_channels))
-
-            return_list.append('Removed')
-
-        return return_list
-
-    async def dev_command_metachan_list(self, params):
-        return_list = []
-
-        return_list.append(', '.join([mm for mm in self.meta_channels]))
-
-        return return_list
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
