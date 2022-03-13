@@ -1012,7 +1012,7 @@ class MainCommand:
             self.background_update_all.stop()
             self.background_update_started = False
 
-    @tasks.loop(seconds=6.0)
+    @tasks.loop(seconds=5.0)
     async def background_update_all(self):
         # logger.debug('MEGAFONE background_update_all, counts: ws {wc}, rsq {rq}'.format(wc=len(self.ws),
         #              rq=len(self.rsq)))
