@@ -2,7 +2,7 @@
 
 set -o errexit
 
-cont=$(buildah from ubuntu:21.04)
+cont=$(buildah from ubuntu:21.10)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" "$cont"
 buildah config --env 'DEBIAN_FRONTEND=noninteractive' "$cont"
