@@ -468,9 +468,11 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 21.1.0'
+        info_str += '\nversion: 21.2.0'
         info_str += '\nchanges:'
         info_str += '\n  - WS score 210918'
+        info_str += '\n  - update dependancies'
+        info_str += '\n  - update base to debian 11 (from ubuntu 21.04)'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
