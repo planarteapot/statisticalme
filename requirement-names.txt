@@ -1,1 +1,0 @@
-aiodns,aiohttp,async-timeout,attrs,cchardet,chardet,discord.py,idna,idna-ssl,multidict,pycares,python-dotenv,PyYAML,texttable,typing,typing-extensions,wcwidth,websockets,yarl
