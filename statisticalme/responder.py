@@ -95,7 +95,7 @@ class MainCommand:
         # Even if a dev group is saved and loaded, we do not use it and we overwrite it.
         self.groups_protected = ['dev']
         self.groups_next_refresh_all = self.time_now
-        self.group_set('dev', ' '.join(['<@!{mid}>'.format(mid=mm) for mm in dev_author_list]))
+        self.group_set('dev', ' '.join([f'<@!{mm}>' for mm in dev_author_list]))
 
         self.messages_out = list()
 
@@ -116,7 +116,7 @@ class MainCommand:
         # }
         # self.config['meta_channels'] = self.meta_channels
 
-        logger.debug('ok_channels {}'.format(self.ok_channels))
+        logger.debug(f'{ok_channels=}')
 
         self.weights = dict()
         try:
@@ -272,7 +272,7 @@ class MainCommand:
                                 unk_tech.add(key)
 
                     if len(unk_tech) > 0:
-                        logger.debug('Unknown techs {} in persistant data'.format(unk_tech))
+                        logger.debug(f'Unknown techs {unk_tech} in persistant data')
 
                     self.persdata_save()
 
@@ -298,7 +298,7 @@ class MainCommand:
 
     async def on_unused_message(self, message):
         # if not message.webhook_id is None:
-        #     logger.debug('MEGAFONE message has webhook_id {}'.format(message.webhook_id))
+        #     logger.debug(f'MEGAFONE message has {message.webhook_id=}')
 
         # if not message.author.bot and str(message.channel) in self.meta_channels:
         # if True:
@@ -465,11 +465,11 @@ class MainCommand:
             msg_list = []
             for role_id in role_list:
                 msg_list.append('Role:')
-                msg_list.append('  id: {}'.format(role_id))
+                msg_list.append(f'  id: {role_id}')
 
                 role = self.role_from_id(role_id)
                 if role is not None:
-                    msg_list.append('  name: {}'.format(role.name))
+                    msg_list.append(f'  name: {role.name}')
                     member_names = [self.member_name_from_id(memb.id) for memb in role.members]
                     msg_list.append('  members: ' + ', '.join(member_names))
 
@@ -718,7 +718,7 @@ class MainCommand:
             if teh.get_tech_index(what) >= 0:
                 what_list.append(what)
             else:
-                return_list.append('Tech {} not found'.format(what))
+                return_list.append(f'Tech {what} not found')
 
         return return_list
 
@@ -810,10 +810,10 @@ class MainCommand:
             group_name = other_list[0]
             if group_name not in self.groups_protected:
                 self.group_set(group_name, ' '.join(
-                    ['<@!{mid}>'.format(mid=mm) for mm in memb_list] +
-                    ['<@&{rid}>'.format(rid=rr) for rr in role_list]))
+                    [f'<@!{mm}>' for mm in memb_list] +
+                    [f'<@&{rr}>' for rr in role_list]))
 
-                return_list.append('Group {} added'.format(group_name))
+                return_list.append(f'Group {group_name} added')
                 self.flag_config_dirty = True
 
         return return_list
@@ -826,7 +826,7 @@ class MainCommand:
             if group_name in self.groups and group_name not in self.groups_protected:
                 self.group_remove(group_name)
 
-                return_list.append('Group {} removed'.format(group_name))
+                return_list.append(f'Group {group_name} removed')
                 self.flag_config_dirty = True
 
         return return_list
@@ -1007,7 +1007,7 @@ class MainCommand:
                         ws_time = nova_time + 30 - self.time_now
                         ws_time_str = self.timedelta_as_string(ws_time)
 
-                    new_content = '```\nNova time {}\n'.format(ws_time_str)
+                    new_content = f'```\nNova time {ws_time_str}\n'
 
                     control_role = ws_struct['control_role']
                     all_role = ws_struct['all_role']
@@ -1026,7 +1026,7 @@ class MainCommand:
                         new_content += ', '.join(role_list) + '\n'
 
                     if all_role > 0:
-                        all_role_str = '<@&{rid}>'.format(rid=all_role)
+                        all_role_str = f'<@&{all_role}>'
 
                         newcont2 = await self.command_time_list([all_role_str], ws_info=ws_struct)
                         if newcont2 and newcont2[0][:3] == '```':
@@ -1115,7 +1115,7 @@ class MainCommand:
                 assist_group = ''
                 if len(role_list) >= 1:
                     control_role = role_list[0]
-                    assist_group = 'ws_{}_assist'.format(ws_name)
+                    assist_group = f'ws_{ws_name}_assist'
                     self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
 
                 all_role = 0
@@ -1139,7 +1139,7 @@ class MainCommand:
                     'done': False
                 }
 
-                return_list.append('WhiteStar {} added'.format(ws_name))
+                return_list.append(f'WhiteStar {ws_name} added')
                 self.flag_config_dirty = True
 
                 self.opportunistic_background_update_start()
@@ -1173,7 +1173,7 @@ class MainCommand:
 
             self.opportunistic_background_update_stop()
 
-            return_list.append('WhiteStar {} removed'.format(ws_name))
+            return_list.append(f'WhiteStar {ws_name} removed')
             self.flag_config_dirty = True
 
         return return_list
@@ -1200,12 +1200,12 @@ class MainCommand:
             control_role = ws_struct['control_role']
             if control_role > 0:
                 control_role_ob = self.role_from_id(control_role)
-                str_list.append('leaders: @{}'.format(str(control_role_ob)))
+                str_list.append(f'leaders: @{str(control_role_ob)}')
 
             all_role = ws_struct['all_role']
             if all_role > 0:
                 all_role_ob = self.role_from_id(all_role)
-                str_list.append('pilots: @{}'.format(str(all_role_ob)))
+                str_list.append(f'pilots: @{str(all_role_ob)}')
 
             ws_strlist.append(', '.join(str_list) + ' in <#{cid}>'.format(cid=ws_struct['channel']))
 
@@ -1230,14 +1230,14 @@ class MainCommand:
 
             control_role = role_list[0]
             all_role = role_list[1]
-            assist_group = 'ws_{}_assist'.format(ws_name)
+            assist_group = f'ws_{ws_name}_assist'
 
             ws_struct['control_role'] = control_role
             ws_struct['all_role'] = all_role
             ws_struct['assist_group'] = assist_group
             self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
 
-            return_list.append('WhiteStar roles added to {}'.format(ws_name))
+            return_list.append(f'WhiteStar roles added to {ws_name}')
             self.flag_config_dirty = True
 
         return return_list
@@ -1712,16 +1712,16 @@ class MainCommand:
                     if self.time_now < away_until:
                         (td_days, td_secs) = self.timedelta_to_days_secs(away_until - self.time_now)
                         if td_days >= 1:
-                            away_result = away_result + '{}d '.format(td_days)
+                            away_result = away_result + f'{td_days}d '
 
                         sec = td_secs
                         if sec >= 3600:
                             hrs = int(sec / 3600)
-                            away_result = away_result + '{}h '.format(hrs)
+                            away_result = away_result + f'{hrs}h '
                             sec = sec - hrs * 3600
 
                         mins = int(sec / 60)
-                        away_result = away_result + '{}m'.format(mins)
+                        away_result = away_result + f'{mins}m'
 
                         away_msg_str = self.player_info_get(pkey, 'away_msg')
                         if away_msg_str is None:
@@ -1867,7 +1867,7 @@ class MainCommand:
 
                     memb = self.member_from_id(pkey)
                     if memb is not None:
-                        self.queue_msg_for_send_out(memb, '{in_name} wants you to check in during the next hour'.format(in_name=instigator_name))
+                        self.queue_msg_for_send_out(memb, f'{instigator_name} wants you to check in during the next hour')
 
             if who_list_away:
                 name_list = [self.member_name_from_id(pkey) for pkey in who_list_away]
@@ -1990,7 +1990,7 @@ class MainCommand:
                             score = tweights[tval - 1]
                             faccum.append(float(score))
                             if flag_detail:
-                                detail_aa.append('{tk} {sc}'.format(tk=tkey, sc=score))
+                                detail_aa.append(f'{tkey} {score}')
 
                 # mining
                 otherminingtech = list()
@@ -2513,7 +2513,7 @@ class MainCommand:
                     other_count += 1
 
                     if count_after > 10:
-                        return_list.append('Error: wont keep more than {}'.format(count_after))
+                        return_list.append(f'Error: wont keep more than {count_after}')
                         count_clear = 0
                         flag_all = False
                         count_after = 0
@@ -2525,9 +2525,9 @@ class MainCommand:
 
             other_count += 1
 
-        # logger.debug('MEGAFONE count_clear {}'.format(count_clear))
-        # logger.debug('MEGAFONE flag_all {}'.format(flag_all))
-        # logger.debug('MEGAFONE count_after {}'.format(count_after))
+        # logger.debug(f'MEGAFONE {count_clear=}')
+        # logger.debug(f'MEGAFONE {flag_all=}')
+        # logger.debug(f'MEGAFONE {count_after=}')
 
         found_after = None
         if count_after > 0:
