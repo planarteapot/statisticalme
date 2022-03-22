@@ -65,8 +65,6 @@ class MainCommand:
         self.time_now = smer.sme_time_now()
         self.time_up = self.time_now
 
-        self.background_update_started = False
-
         self.aiohttp_session = aiohttp.ClientSession()
 
         self.bot_self = None
@@ -205,7 +203,7 @@ class MainCommand:
         self.time_now = smer.sme_time_now()
         self.group_refresh_all()
         self.opportunistic_save()
-        self.opportunistic_background_update_start()
+        self.background_update_all.start()
 
     def set_discord_client(self, p_discord_client):
         self.discord_client = p_discord_client
@@ -963,24 +961,6 @@ class MainCommand:
 
         return timed
 
-    def test_background_update_needed(self):
-        needed = False
-
-        if len(self.ws) > 0:
-            needed = True
-
-        return needed
-
-    def opportunistic_background_update_start(self):
-        if not self.background_update_started and self.test_background_update_needed():
-            self.background_update_all.start()
-            self.background_update_started = True
-
-    def opportunistic_background_update_stop(self):
-        if self.background_update_started and not self.test_background_update_needed():
-            self.background_update_all.stop()
-            self.background_update_started = False
-
     @tasks.loop(seconds=5.0)
     async def background_update_all(self):
         # logger.debug('MEGAFONE background_update_all, counts: ws {wc}'.format(wc=len(self.ws)))
@@ -1142,8 +1122,6 @@ class MainCommand:
                 return_list.append(f'WhiteStar {ws_name} added')
                 self.flag_config_dirty = True
 
-                self.opportunistic_background_update_start()
-
         return return_list
 
     async def command_ws_remove(self, params):
@@ -1170,8 +1148,6 @@ class MainCommand:
             self.group_remove(ws_struct['assist_group'])
 
             del(self.ws[ws_name])
-
-            self.opportunistic_background_update_stop()
 
             return_list.append(f'WhiteStar {ws_name} removed')
             self.flag_config_dirty = True
