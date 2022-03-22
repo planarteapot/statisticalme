@@ -148,6 +148,7 @@ class MainCommand:
         self.dev_parser.add_command('save', False, self.dev_command_save)
         self.dev_parser.add_command('roleprint', False, self.dev_command_roleprint)
         self.dev_parser.add_command('techlist', False, self.dev_command_techlist)
+        self.dev_parser.add_command('stathere', False, self.dev_command_stathere)
         self.dev_parser.add_command('quit', False, self.dev_command_quit)
 
         self.subparser_group = sme_paramparse.CommandParse(
@@ -481,6 +482,12 @@ class MainCommand:
             return_list.append('Pardon my liege? No config var name')
 
         return return_list
+
+    async def dev_command_stathere(self, params):
+        self.stat['channel_id'] = self.current_channel.id
+        self.stat['message_id'] = 0
+        self.stat['next_time'] = self.time_now
+        return ['Stat channel set, my liege']
 
     async def dev_command_techlist(self, params):
         return ['Valid tech names: ' + ', '.join(teh.tech_keys)]
@@ -971,6 +978,35 @@ class MainCommand:
         # logger.debug('MEGAFONE background_update_all, counts: ws {wc}'.format(wc=len(self.ws)))
 
         self.time_now = smer.sme_time_now()
+
+        # Stat update
+        try:
+            if 'channel_id' in self.stat and 'next_time' in self.stat:
+                if self.stat['next_time'] < self.time_now:
+                    chan_ob = self.current_guild.get_channel(self.stat['channel_id'])
+                    if chan_ob is not None:
+                        time_str, _ = str(smer.sme_time_convert_to_timezone(self.time_now, 'Australia/Melbourne')).split(',')
+                        new_content = f'```\nBont time: {str(time_str)}\n```'
+
+                        msg_ob = None
+                        if 'message_id' in self.stat and self.stat['message_id'] > 0:
+                            try:
+                                msg_ob = await chan_ob.fetch_message(self.stat['message_id'])
+                            except discord.NotFound:
+                                msg_ob = None
+
+                        if msg_ob is None:
+                            msg_ob = await chan_ob.send(new_content)
+                            self.stat['message_id'] = msg_ob.id
+                        else:
+                            await msg_ob.edit(content=new_content)
+
+                    self.stat['next_time'] = self.time_now + 60
+        except Exception:
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
+            logger.error('background_update_all Exception processing Stat update ' +
+                            ws_name + '\n' + ''.join(tbe.format()))
 
         # Update WhiteStars
         ws_over = list()
