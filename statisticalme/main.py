@@ -114,8 +114,8 @@ class SmeClient(discord.Client):
                 params = shlex.split(message.content)
                 msg_list = await mainc.on_message(pre_list + params[1:], message.author, message.channel)
                 return_message_list = return_message_list + msg_list
-            else:
-                await mainc.on_unused_message(message)
+            # else:
+            #     await mainc.on_unused_message(message)
 
         if return_message_list is not None:
             if len(return_message_list) == 1:
