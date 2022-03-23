@@ -86,12 +86,14 @@ class SmeClient(discord.Client):
         if message.author == self.user:
             return
 
-        logger.info('Client event on_message author={au} channel={ch} content={co}'.format(
-            au=str(message.author), ch=str(message.channel), co=str(message.content)))
+        # logger.info('Client event on_message author={au} channel={ch} content={co}'.format(
+        #     au=str(message.author), ch=str(message.channel), co=str(message.content)))
 
         return_message_list = []
 
         if devecho_match.match(message.clean_content):
+            logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+
             if message.author.id in dev_author_list:
                 msg_list = ['Content:', str(message.content),
                             '```\n' + str(message.content) + '\n```',
@@ -100,6 +102,8 @@ class SmeClient(discord.Client):
                 # print('ECHO msg_list "{}"'.format(msg_list))
                 return_message_list = ['\n'.join(msg_list)]
         elif devping_match.match(message.clean_content):
+            logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+
             if message.author.id in dev_author_list:
                 return_message_list = ['Pong']
         else:
@@ -111,6 +115,8 @@ class SmeClient(discord.Client):
                     break
 
             if pre_list is not None:
+                logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+
                 params = shlex.split(message.content)
                 msg_list = await mainc.on_message(pre_list + params[1:], message.author, message.channel)
                 return_message_list = return_message_list + msg_list
