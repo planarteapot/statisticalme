@@ -985,9 +985,26 @@ class MainCommand:
                 if self.stat['next_time'] < self.time_now:
                     chan_ob = self.current_guild.get_channel(self.stat['channel_id'])
                     if chan_ob is not None:
+                        # Assemble msg
+                        cpuper, memper = smer.sme_pstat_cpumem_percent()
                         time_str, _ = str(smer.sme_time_convert_to_timezone(self.time_now, 'Australia/Melbourne')).split(',')
-                        new_content = f'```\nBont time: {str(time_str)}\n```'
 
+                        if 'stat_list' not in self.stat:
+                            self.stat['stat_list'] = list()
+
+                        stat_list = self.stat['stat_list']
+                        stat_list.append((cpuper, memper, time_str))
+                        if len(stat_list) > 10:
+                            del stat_list[0]
+
+                        # new_content = '```\n' + '\n'.join(sme_table.draw(['CPU', 'Mem', 'Bont time'],
+                        #     ['r', 'r', 'l'],
+                        #     stat_list)) + '```'
+                        new_content = '\n'.join(sme_table.draw(['CPU', 'Mem', 'Bont time'],
+                            ['r', 'r', 'l'],
+                            stat_list))
+
+                        # Display msg
                         msg_ob = None
                         if 'message_id' in self.stat and self.stat['message_id'] > 0:
                             try:
@@ -1001,12 +1018,11 @@ class MainCommand:
                         else:
                             await msg_ob.edit(content=new_content)
 
-                    self.stat['next_time'] = self.time_now + 60
+                    self.stat['next_time'] = self.time_now + 120
         except Exception:
             exc_type, exc_value, exc_tb = sys.exc_info()
             tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-            logger.error('background_update_all Exception processing Stat update ' +
-                            ws_name + '\n' + ''.join(tbe.format()))
+            logger.error('background_update_all Exception processing Stat update\n' + ''.join(tbe.format()))
 
         # Update WhiteStars
         ws_over = list()
