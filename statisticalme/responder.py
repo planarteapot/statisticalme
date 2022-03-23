@@ -99,23 +99,6 @@ class MainCommand:
 
         self.messages_out = list()
 
-        # if not 'meta_channels' in self.config:
-        self.meta_channels = dict()
-        #     self.config['meta_channels'] = self.meta_channels
-        # else:
-        #     self.meta_channels = self.config['meta_channels']
-
-        # if not 'meta_roles' in self.config:
-        #     self.meta_roles = dict()
-        #     self.config['meta_roles'] = self.meta_roles
-        # else:
-        #     self.meta_roles = self.config['meta_roles']
-
-        # self.meta_channels = {
-        #     'general': 'https://discordapp.com/api/webhooks/.../...'
-        # }
-        # self.config['meta_channels'] = self.meta_channels
-
         logger.debug(f'{ok_channels=}')
 
         self.weights = dict()
@@ -295,66 +278,6 @@ class MainCommand:
 
         if self.flag_persdata_dirty:
             self.persdata_save()
-
-    async def on_unused_message(self, message):
-        # if not message.webhook_id is None:
-        #     logger.debug(f'MEGAFONE message has {message.webhook_id=}')
-
-        # if not message.author.bot and str(message.channel) in self.meta_channels:
-        # if True:
-        if message.webhook_id is None and str(message.channel) in self.meta_channels:
-            # print('INFO unused message ' + message.clean_content)
-
-            src_channel_name = str(message.channel)
-            # logger.debug('MEGAFONE channel ' + str(src_channel_name))
-            # mchans = self.config['meta_channels']
-            meta_hook = self.meta_channels[src_channel_name]
-            # logger.debug('MEGAFONE meta_hook ' + str(meta_hook))
-
-            new_str = ''
-            idparse_match = re.compile(r'<@([!&#]?)(\d+)>')
-
-            current_str = message.content
-            current_match = idparse_match.search(current_str)
-
-            while current_match:
-                new_str += current_str[:current_match.start()]
-
-                m_control = current_match.group(1)
-                m_id = int(current_match.group(2))
-                newvalue = ''
-
-                if len(m_control) == 0 or m_control == '!':
-                    # Member
-                    newvalue = '@' + self.member_name_from_id(m_id)
-                elif m_control == '&':
-                    # Role
-                    if m_id in self.temp_rolemap:
-                        newvalue = '<@&{ri}>'.format(ri=self.temp_rolemap[m_id])
-                    else:
-                        role = self.role_from_id(m_id)
-                        if role is not None:
-                            newvalue = role.name
-                elif m_control == '#':
-                    # Channel
-                    chan = self.current_guild.get_channel(m_id)
-                    if chan is not None:
-                        newvalue = chan.name
-
-                new_str += newvalue
-
-                current_str = current_str[current_match.end():]
-                current_match = idparse_match.search(current_str)
-
-            if len(current_str) > 0:
-                new_str += current_str
-
-            try:
-                await meta_hook.send(content=new_str,
-                                     username=self.member_name_from_id(message.author.id),
-                                     avatar_url=str(message.author.avatar_url))
-            except discord.HTTPException as he:
-                logger.error('Metachan webhook send fail: ' + str(he))
 
     def auth_dev(self):
         return self.group_contains_member('dev', self.current_author.id)
