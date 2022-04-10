@@ -2,11 +2,12 @@
 name = "statisticalme"
 version = "21.2.0"
 authors = ["Antony <dentad@users.noreply.github.com>"]
-edition = "2018"
+edition = "2021"
 
 [lib]
 name = "statisticalme"
 crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [profile.release]
 debug = false
