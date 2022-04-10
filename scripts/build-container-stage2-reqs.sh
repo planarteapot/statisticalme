@@ -2,7 +2,7 @@
 
 set -o errexit
 
-cont=$(buildah from python3-base:latest)
+cont=$(buildah from sme-python3-base:latest)
 
 buildah config --label maintainer="Antony <dentad@users.noreply.github.com>" "$cont"
 buildah config --env 'DEBIAN_FRONTEND=noninteractive' "$cont"
@@ -19,8 +19,8 @@ buildah config --env 'PATH=/root/venv-sme/bin:$PATH' "$cont"
 buildah config --env 'VIRTUAL_ENV=/root/venv-sme' "$cont"
 
 buildah run "$cont" python3 -m ensurepip
-buildah run "$cont" pip install -U pip
 buildah run "$cont" pip install wheel
+buildah run "$cont" pip install -U pip
 buildah run "$cont" pip install --requirement /opt/requirements.txt
 buildah run "$cont" rm -rf "/root/.cache" "/root/venv-sme/share/python-wheels"
 

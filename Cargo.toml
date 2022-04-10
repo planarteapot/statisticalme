@@ -1,6 +1,6 @@
 [package]
 name = "statisticalme"
-version = "21.2.0"
+version = "22.0.0"
 authors = ["Antony <dentad@users.noreply.github.com>"]
 edition = "2021"
 
