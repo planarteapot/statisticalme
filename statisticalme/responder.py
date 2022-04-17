@@ -70,7 +70,6 @@ class MainCommand:
         self.aiohttp_session = aiohttp.ClientSession()
 
         self.bot_self = None
-        self.discord_client = None
         self.current_guild = None
 
         self.timeparse_match1 = re.compile(r'(\d+)([dhm])')
@@ -175,9 +174,6 @@ class MainCommand:
         self.group_refresh_all()
         self.opportunistic_save()
         self.opportunistic_background_update_start()
-
-    def set_discord_client(self, p_discord_client):
-        self.discord_client = p_discord_client
 
     def set_bot_self(self, p_bot):
         self.bot_self = p_bot
@@ -418,12 +414,10 @@ class MainCommand:
     def member_from_id(self, p_id):
         memb = None
 
+        # TODO loop thru all guilds, and do not accept someone from outside those
+
         if self.current_guild is not None:
             memb = self.current_guild.get_member(p_id)
-
-        if memb is None:
-            if self.discord_client is not None:
-                memb = self.discord_client.get_user(p_id)
 
         return memb
 

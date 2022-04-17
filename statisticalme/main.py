@@ -159,7 +159,6 @@ def main_function():
     intents.members = True
 
     client = SmeClient(intents=intents)
-    mainc.set_discord_client(client)
 
     logger.info('Calling discord Client.run')
     client.run(os.environ['STATISTICALME_TOKEN'])
