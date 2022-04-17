@@ -69,7 +69,6 @@ class MainCommand:
 
         self.aiohttp_session = aiohttp.ClientSession()
 
-        self.bot_self = None
         self.current_guild = None
 
         self.timeparse_match1 = re.compile(r'(\d+)([dhm])')
@@ -174,9 +173,6 @@ class MainCommand:
         self.group_refresh_all()
         self.opportunistic_save()
         self.opportunistic_background_update_start()
-
-    def set_bot_self(self, p_bot):
-        self.bot_self = p_bot
 
     def set_guild(self, p_guild):
         self.current_guild = p_guild

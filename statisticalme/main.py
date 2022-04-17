@@ -144,7 +144,6 @@ class SmeClient(discord.Client):
         logger.info('Client event on_ready')
 
         logger.info('Logged in as: {}'.format(self.user.name))
-        mainc.set_bot_self(self.user)
 
         logger.info('In guilds: {}'.format(', '.join([str(g) for g in self.guilds])))
         if len(self.guilds) >= 1:
