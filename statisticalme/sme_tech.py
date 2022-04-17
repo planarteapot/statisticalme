@@ -18,137 +18,216 @@
 import logging
 
 
-logger = logging.getLogger('StatisticalMe')
+logger = logging.getLogger("StatisticalMe")
 
 
 class TechHandler:
     def __init__(self):
         self.tech_keys = [
             # 0
-            'redstarscanner', 'creditcapacity',
-
+            "redstarscanner",
+            "creditcapacity",
             # 2 ships
-            'transport', 'miner', 'battleship',
-
+            "transport",
+            "miner",
+            "battleship",
             # 5 trade
-            'cargobayextension', 'shipmentcomputer', 'tradeboost', 'rush',
-            'tradeburst', 'shipmentdrone', 'offload', 'shipmentbeam',
-            'entrust', 'dispatch', 'recall', 'relicdrone',
-
+            "cargobayextension",
+            "shipmentcomputer",
+            "tradeboost",
+            "rush",
+            "tradeburst",
+            "shipmentdrone",
+            "offload",
+            "shipmentbeam",
+            "entrust",
+            "dispatch",
+            "recall",
+            "relicdrone",
             # 17 mining
-            'miningboost', 'hydrogenbayextension', 'enrich', 'remotemining',
-            'hydrogenupload', 'miningunity', 'crunch', 'genesis',
-            'hydrogenrocket', 'miningdrone',
-
+            "miningboost",
+            "hydrogenbayextension",
+            "enrich",
+            "remotemining",
+            "hydrogenupload",
+            "miningunity",
+            "crunch",
+            "genesis",
+            "hydrogenrocket",
+            "miningdrone",
             # 27 weapon
-            'battery', 'laser', 'massbattery',
-            'duallaser', 'barrage', 'dart',
-
+            "battery",
+            "laser",
+            "massbattery",
+            "duallaser",
+            "barrage",
+            "dart",
             # 33 shield
-            'deltashield', 'passiveshield', 'omegashield',
-            'mirrorshield', 'blastshield', 'areashield',
-
+            "deltashield",
+            "passiveshield",
+            "omegashield",
+            "mirrorshield",
+            "blastshield",
+            "areashield",
             # 39 support
-            'emp', 'teleport', 'redstarlifeextender', 'remoterepair',
-            'timewarp', 'unity', 'sanctuary', 'stealth',
-            'fortify', 'impulse', 'alpharocket', 'salvage',
-            'suppress', 'destiny', 'barrier', 'vengeance',
-            'deltarocket', 'leap', 'bond', 'laserturret', 'alphadrone',
-            'suspend', 'omegarocket', 'remotebomb'
-            ]
+            "emp",
+            "teleport",
+            "redstarlifeextender",
+            "remoterepair",
+            "timewarp",
+            "unity",
+            "sanctuary",
+            "stealth",
+            "fortify",
+            "impulse",
+            "alpharocket",
+            "salvage",
+            "suppress",
+            "destiny",
+            "barrier",
+            "vengeance",
+            "deltarocket",
+            "leap",
+            "bond",
+            "laserturret",
+            "alphadrone",
+            "suspend",
+            "omegarocket",
+            "remotebomb",
+        ]
 
         self.tech_key_aliases = {
-            'redstarscanner': ['rs', 'rss', 'rscanner', 'rsscanner', 'scanner', 'redstar'],
-            'creditcapacity': ['cc', 'credcap', 'creditcap'],
-
+            "redstarscanner": [
+                "rs",
+                "rss",
+                "rscanner",
+                "rsscanner",
+                "scanner",
+                "redstar",
+            ],
+            "creditcapacity": ["cc", "credcap", "creditcap"],
             # ships
-            'transport': ['ts', 'transp'],
-            'battleship': ['bs'],
-
+            "transport": ["ts", "transp"],
+            "battleship": ["bs"],
             # trade
-            'cargobayextension': ['cbe', 'cargo', 'cargobay'],
-            'shipmentcomputer': ['computer', 'comp', 'shipcomp', 'shipcomputer'],
-            'tradeboost': ['tboost'],
-            'tradeburst': ['burst', 'tburst'],
-            'shipmentdrone': ['sd', 'sdrone', 'shipdrone'],
-            'shipmentbeam': ['beam', 'sbeam'],
-            'relicdrone': ['rd', 'rdrone', 'reldrone'],
-
+            "cargobayextension": ["cbe", "cargo", "cargobay"],
+            "shipmentcomputer": ["computer", "comp", "shipcomp", "shipcomputer"],
+            "tradeboost": ["tboost"],
+            "tradeburst": ["burst", "tburst"],
+            "shipmentdrone": ["sd", "sdrone", "shipdrone"],
+            "shipmentbeam": ["beam", "sbeam"],
+            "relicdrone": ["rd", "rdrone", "reldrone"],
             # mining
-            'miningboost': ['mboost'],
-            'hydrogenbayextension': ['hbe', 'hydrobay', 'hydrogenbay'],
-            'remotemining': ['remote'],
-            'hydrogenupload': ['upload', 'hupload', 'hydroupload'],
-            'miningunity': ['munity'],
-            'genesis': ['gen'],
-            'hydrogenrocket': ['hrocket', 'hydrorocket'],
-            'miningdrone': ['md', 'mdrone', 'minedrone'],
-
+            "miningboost": ["mboost"],
+            "hydrogenbayextension": ["hbe", "hydrobay", "hydrogenbay"],
+            "remotemining": ["remote"],
+            "hydrogenupload": ["upload", "hupload", "hydroupload"],
+            "miningunity": ["munity"],
+            "genesis": ["gen"],
+            "hydrogenrocket": ["hrocket", "hydrorocket"],
+            "miningdrone": ["md", "mdrone", "minedrone"],
             # weapon
-            'battery': ['batt'],
-            'massbattery': ['mb', 'mass', 'massbatt'],
-            'duallaser': ['dl', 'dual'],
-
+            "battery": ["batt"],
+            "massbattery": ["mb", "mass", "massbatt"],
+            "duallaser": ["dl", "dual"],
             # shield
-            'deltashield': ['delta'],
-            'passiveshield': ['passive'],
-            'omegashield': ['omega'],
-            'mirrorshield': ['mirror'],
-            'blastshield': ['blast'],
-            'areashield': ['area'],
-
+            "deltashield": ["delta"],
+            "passiveshield": ["passive"],
+            "omegashield": ["omega"],
+            "mirrorshield": ["mirror"],
+            "blastshield": ["blast"],
+            "areashield": ["area"],
             # support
-            'teleport': ['tele', 'tp'],
-            'redstarlifeextender': ['rse', 'rsle', 'rsextender'],
-            'remoterepair': ['rr', 'repair'],
-            'timewarp': ['tw', 'warp'],
-            'sanctuary': ['sanc'],
-            'alpharocket': ['ar', 'arocket', 'rocket'],
-            'suppress': ['sup', 'suppres'],
-            'destiny': ['dest'],
-            'barrier': ['bar'],
-            'vengeance': ['veng'],
-            'deltarocket': ['dr', 'drocket'],
-            'alphadrone': ['ad', 'drone'],
-            'laserturret': ['lt'],
-            'suspend': ['sus', 'susp'],
-            'omegarocket': ['or'],
-            'remotebomb': ['bomb', 'rbomb']
-            }
+            "teleport": ["tele", "tp"],
+            "redstarlifeextender": ["rse", "rsle", "rsextender"],
+            "remoterepair": ["rr", "repair"],
+            "timewarp": ["tw", "warp"],
+            "sanctuary": ["sanc"],
+            "alpharocket": ["ar", "arocket", "rocket"],
+            "suppress": ["sup", "suppres"],
+            "destiny": ["dest"],
+            "barrier": ["bar"],
+            "vengeance": ["veng"],
+            "deltarocket": ["dr", "drocket"],
+            "alphadrone": ["ad", "drone"],
+            "laserturret": ["lt"],
+            "suspend": ["sus", "susp"],
+            "omegarocket": ["or"],
+            "remotebomb": ["bomb", "rbomb"],
+        }
 
         self.tech_names = [
             # 0
-            'RedStar Scanner', 'Credit Capacity',
-
+            "RedStar Scanner",
+            "Credit Capacity",
             # 2 ships
-            'Transport', 'Miner', 'Battleship',
-
+            "Transport",
+            "Miner",
+            "Battleship",
             # 5 trade
-            'Cargo Bay Extension', 'Shipment Computer', 'Trade Boost', 'Rush',
-            'Trade Burst', 'Shipment Drone', 'Offload', 'Shipment Beam',
-            'Entrust', 'Dispatch', 'Recall', 'Relic Drone',
-
+            "Cargo Bay Extension",
+            "Shipment Computer",
+            "Trade Boost",
+            "Rush",
+            "Trade Burst",
+            "Shipment Drone",
+            "Offload",
+            "Shipment Beam",
+            "Entrust",
+            "Dispatch",
+            "Recall",
+            "Relic Drone",
             # 17 mining
-            'Mining Boost', 'Hydrogen Bay Extension', 'Enrich', 'Remote Mining',
-            'Hydrogen Upload', 'Mining Unity', 'Crunch', 'Genesis',
-            'Hydrogen Rocket', 'Mining Drone',
-
+            "Mining Boost",
+            "Hydrogen Bay Extension",
+            "Enrich",
+            "Remote Mining",
+            "Hydrogen Upload",
+            "Mining Unity",
+            "Crunch",
+            "Genesis",
+            "Hydrogen Rocket",
+            "Mining Drone",
             # 27 weapon
-            'Battery', 'Laser', 'Mass Battery',
-            'Dual Laser', 'Barrage', 'Dart',
-
+            "Battery",
+            "Laser",
+            "Mass Battery",
+            "Dual Laser",
+            "Barrage",
+            "Dart",
             # 33 shield
-            'Delta Shield', 'Passive Shield', 'Omega Shield',
-            'Mirror Shield', 'Blast Shield', 'Area Shield',
-
+            "Delta Shield",
+            "Passive Shield",
+            "Omega Shield",
+            "Mirror Shield",
+            "Blast Shield",
+            "Area Shield",
             # 39 support
-            'EMP', 'Teleport', 'Red Star Life Extender', 'Remote Repair',
-            'Time Warp', 'Unity', 'Sanctuary', 'Stealth',
-            'Fortify', 'Impulse', 'Alpha Rocket', 'Salvage',
-            'Suppress', 'Destiny', 'Barrier', 'Vengeance',
-            'Delta Rocket', 'Leap', 'Bond', 'Laser Turret', 'Alpha Drone',
-            'Suspend', 'Omega Rocket', 'Remote Bomb'
-            ]
+            "EMP",
+            "Teleport",
+            "Red Star Life Extender",
+            "Remote Repair",
+            "Time Warp",
+            "Unity",
+            "Sanctuary",
+            "Stealth",
+            "Fortify",
+            "Impulse",
+            "Alpha Rocket",
+            "Salvage",
+            "Suppress",
+            "Destiny",
+            "Barrier",
+            "Vengeance",
+            "Delta Rocket",
+            "Leap",
+            "Bond",
+            "Laser Turret",
+            "Alpha Drone",
+            "Suspend",
+            "Omega Rocket",
+            "Remote Bomb",
+        ]
 
         self.other_range = (0, 2)
         self.ships_range = (2, 5)
@@ -170,7 +249,7 @@ class TechHandler:
             for la in la_val:
                 self.tech_key_index[la] = int(li)
 
-        logger.info('object TechHandler built')
+        logger.info("object TechHandler built")
 
     # @staticmethod
     # def index_dict_from_list(p_list):
@@ -186,64 +265,64 @@ class TechHandler:
 
         if tech in self.tech_key_index:
             li = self.tech_key_index[tech]
-        elif tech == 'relics':
+        elif tech == "relics":
             li = 9900
-        elif tech == 'totalcargo':
+        elif tech == "totalcargo":
             li = 9901
 
         return li
 
     def get_tech_name(self, tech):
-        tname = ''
+        tname = ""
 
         tindex = self.get_tech_index(tech)
         if tindex >= 0 and tindex < 9900:
             tname = self.tech_names[tindex]
         elif tindex == 9900:
-            tname = 'Relics'
+            tname = "Relics"
         elif tindex == 9901:
-            tname = 'Total Cargo'
+            tname = "Total Cargo"
 
         return tname
 
     def tech_keys_range_other(self):
-        return self.tech_keys[self.other_range[0]:self.other_range[1]]
+        return self.tech_keys[self.other_range[0] : self.other_range[1]]
 
     def tech_keys_range_ships(self):
-        return self.tech_keys[self.ships_range[0]:self.ships_range[1]]
+        return self.tech_keys[self.ships_range[0] : self.ships_range[1]]
 
     def tech_keys_range_trade(self):
-        return self.tech_keys[self.trade_range[0]:self.trade_range[1]]
+        return self.tech_keys[self.trade_range[0] : self.trade_range[1]]
 
     def tech_keys_range_mining(self):
-        return self.tech_keys[self.mining_range[0]:self.mining_range[1]]
+        return self.tech_keys[self.mining_range[0] : self.mining_range[1]]
 
     def tech_keys_range_weapon(self):
-        return self.tech_keys[self.weapon_range[0]:self.weapon_range[1]]
+        return self.tech_keys[self.weapon_range[0] : self.weapon_range[1]]
 
     def tech_keys_range_shield(self):
-        return self.tech_keys[self.shield_range[0]:self.shield_range[1]]
+        return self.tech_keys[self.shield_range[0] : self.shield_range[1]]
 
     def tech_keys_range_support(self):
-        return self.tech_keys[self.support_range[0]:self.support_range[1]]
+        return self.tech_keys[self.support_range[0] : self.support_range[1]]
 
     def range_name(self, tech_id):
-        name = 'unknown'
+        name = "unknown"
 
         if tech_id >= self.other_range[0] and tech_id < self.other_range[1]:
-            name = 'other'
+            name = "other"
         elif tech_id >= self.ships_range[0] and tech_id < self.ships_range[1]:
-            name = 'ships'
+            name = "ships"
         elif tech_id >= self.trade_range[0] and tech_id < self.trade_range[1]:
-            name = 'trade'
+            name = "trade"
         elif tech_id >= self.mining_range[0] and tech_id < self.mining_range[1]:
-            name = 'mining'
+            name = "mining"
         elif tech_id >= self.weapon_range[0] and tech_id < self.weapon_range[1]:
-            name = 'weapon'
+            name = "weapon"
         elif tech_id >= self.shield_range[0] and tech_id < self.shield_range[1]:
-            name = 'shield'
+            name = "shield"
         elif tech_id >= self.support_range[0] and tech_id < self.support_range[1]:
-            name = 'support'
+            name = "support"
 
         return name
 

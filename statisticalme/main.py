@@ -17,24 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
+import os
 import sys
 
 from dotenv import load_dotenv
 from pathlib import Path
 from .responder import MainCommand
+
 import discord
 import logging
-import os
 import re
 import shlex
 import time
 
-load_dotenv(Path('var/env.sh'))
+load_dotenv(Path("var/env.sh"))
 
-logger = logging.getLogger('StatisticalMe')
+logger = logging.getLogger("StatisticalMe")
 logger.setLevel(logging.DEBUG)
 
-logpath = Path('var/log/statisticalme.log')
+logpath = Path("var/log/statisticalme.log")
 logpath.parent.mkdir(parents=True, exist_ok=True)
 logfh = logging.FileHandler(logpath)
 logfh.setLevel(logging.DEBUG)
@@ -44,36 +45,35 @@ class UTCFormatter(logging.Formatter):
     converter = time.gmtime
 
 
-logformatter = UTCFormatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logformatter = UTCFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logfh.setFormatter(logformatter)
 logger.addHandler(logfh)
 
-logger.info('App starting; logger ready')
+logger.info("App starting; logger ready")
 
 # pseudo global vars
 
-dev_author_env = os.environ['STATISTICALME_DEV_AUTHORS']
-ok_channels_env = os.environ['STATISTICALME_OK_CHANNELS']
+dev_author_env = os.environ["STATISTICALME_DEV_AUTHORS"]
+ok_channels_env = os.environ["STATISTICALME_OK_CHANNELS"]
 
-dev_author_list = [int(aa) for aa in dev_author_env.split(',')]
+dev_author_list = [int(aa) for aa in dev_author_env.split(",")]
 mainc = MainCommand(dev_author_list, ok_channels_env)
 
-devecho_match = re.compile(r'\s*!sme\s+dev\s+echo\b', re.IGNORECASE)
-devping_match = re.compile(r'\s*!sme\s+dev\s+ping\b', re.IGNORECASE)
+devecho_match = re.compile(r"\s*!sme\s+dev\s+echo\b", re.IGNORECASE)
+devping_match = re.compile(r"\s*!sme\s+dev\s+ping\b", re.IGNORECASE)
 
 alias_matches = [
-    (re.compile(r'\s*!sme\b', re.IGNORECASE), []),
-    (re.compile(r'\s*!gt\b', re.IGNORECASE), ['tech', 'list']),
-    (re.compile(r'\s*!away\b', re.IGNORECASE), ['time', 'away']),
-    (re.compile(r'\s*!back\b', re.IGNORECASE), ['time', 'back']),
-    (re.compile(r'\s*!checkin\b', re.IGNORECASE), ['time', 'checkin']),
-    (re.compile(r'\s*!dead\b', re.IGNORECASE), ['ws', 'ship', 'dead']),
-    (re.compile(r'\s*!ship\b', re.IGNORECASE), ['ws', 'ship']),
-    (re.compile(r'\s*!st\b', re.IGNORECASE), ['tech', 'set']),
-    (re.compile(r'\s*!tr\b', re.IGNORECASE), ['tech', 'report']),
-    (re.compile(r'\s*!time\s+set\b', re.IGNORECASE), ['time']),  # keeps the 'set'
-    (re.compile(r'\s*!time\b', re.IGNORECASE), ['time', 'list'])
+    (re.compile(r"\s*!sme\b", re.IGNORECASE), []),
+    (re.compile(r"\s*!gt\b", re.IGNORECASE), ["tech", "list"]),
+    (re.compile(r"\s*!away\b", re.IGNORECASE), ["time", "away"]),
+    (re.compile(r"\s*!back\b", re.IGNORECASE), ["time", "back"]),
+    (re.compile(r"\s*!checkin\b", re.IGNORECASE), ["time", "checkin"]),
+    (re.compile(r"\s*!dead\b", re.IGNORECASE), ["ws", "ship", "dead"]),
+    (re.compile(r"\s*!ship\b", re.IGNORECASE), ["ws", "ship"]),
+    (re.compile(r"\s*!st\b", re.IGNORECASE), ["tech", "set"]),
+    (re.compile(r"\s*!tr\b", re.IGNORECASE), ["tech", "report"]),
+    (re.compile(r"\s*!time\s+set\b", re.IGNORECASE), ["time"]),  # keeps the 'set'
+    (re.compile(r"\s*!time\b", re.IGNORECASE), ["time", "list"]),
 ]
 
 
@@ -89,20 +89,28 @@ class SmeClient(discord.Client):
         return_message_list = []
 
         if devecho_match.match(message.clean_content):
-            logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+            logger.info(
+                f"Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}"
+            )
 
             if message.author.id in dev_author_list:
-                msg_list = ['Content:', str(message.content),
-                            '```\n' + str(message.content) + '\n```',
-                            'Clean content:', str(message.clean_content),
-                            '```\n' + str(message.clean_content) + '\n```']
+                msg_list = [
+                    "Content:",
+                    str(message.content),
+                    "```\n" + str(message.content) + "\n```",
+                    "Clean content:",
+                    str(message.clean_content),
+                    "```\n" + str(message.clean_content) + "\n```",
+                ]
                 # print('ECHO msg_list "{}"'.format(msg_list))
-                return_message_list = ['\n'.join(msg_list)]
+                return_message_list = ["\n".join(msg_list)]
         elif devping_match.match(message.clean_content):
-            logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+            logger.info(
+                f"Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}"
+            )
 
             if message.author.id in dev_author_list:
-                return_message_list = ['Pong']
+                return_message_list = ["Pong"]
         else:
             pre_list = None
 
@@ -112,10 +120,14 @@ class SmeClient(discord.Client):
                     break
 
             if pre_list is not None:
-                logger.info(f'Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}')
+                logger.info(
+                    f"Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}"
+                )
 
                 params = shlex.split(message.content)
-                msg_list = await mainc.on_message(pre_list + params[1:], message.author, message.channel)
+                msg_list = await mainc.on_message(
+                    pre_list + params[1:], message.author, message.channel
+                )
                 return_message_list = return_message_list + msg_list
             # else:
             #     await mainc.on_unused_message(message)
@@ -123,15 +135,15 @@ class SmeClient(discord.Client):
         if return_message_list is not None:
             if len(return_message_list) == 1:
                 rarg = return_message_list[0]
-                if rarg[:23] == 'dented-control-message:':
+                if rarg[:23] == "dented-control-message:":
                     return_message_list.pop()
                     rarg_command = rarg[23:]
 
-                    if rarg_command == 'no-reply':
+                    if rarg_command == "no-reply":
                         pass
-                    if rarg_command == 'delete-original-message':
+                    if rarg_command == "delete-original-message":
                         await message.delete()
-                    elif rarg_command == 'quit':
+                    elif rarg_command == "quit":
                         await self.close()
                         sys.exit(0)
 
@@ -141,11 +153,11 @@ class SmeClient(discord.Client):
                         await message.channel.send(mm)
 
     async def on_ready(self):
-        logger.info('Client event on_ready')
+        logger.info("Client event on_ready")
 
-        logger.info('Logged in as: {}'.format(self.user.name))
+        logger.info("Logged in as: {}".format(self.user.name))
 
-        logger.info('In guilds: {}'.format(', '.join([str(g) for g in self.guilds])))
+        logger.info("In guilds: {}".format(", ".join([str(g) for g in self.guilds])))
         if len(self.guilds) >= 1:
             mainc.set_guild(self.guilds[0])
 
@@ -159,8 +171,8 @@ def main_function():
 
     client = SmeClient(intents=intents)
 
-    logger.info('Calling discord Client.run')
-    client.run(os.environ['STATISTICALME_TOKEN'])
+    logger.info("Calling discord Client.run")
+    client.run(os.environ["STATISTICALME_TOKEN"])
 
 
 if __name__ == "__main__":

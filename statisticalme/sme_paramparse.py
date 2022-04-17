@@ -20,10 +20,10 @@ from .sme_utils import normalize_caseless
 import logging
 
 
-logger = logging.getLogger('StatisticalMe')
+logger = logging.getLogger("StatisticalMe")
 
 
-class CommandParse():
+class CommandParse:
     def __init__(self, title):
         self.title = title
 
@@ -50,9 +50,12 @@ class CommandParse():
                     else:
                         return_list = return_list + await value(pparams)
                 else:
-                    logger.warning('Command denied')
+                    logger.warning("Command denied")
             else:
-                return_list = return_list + ['Unknown command {go}. Expected one of {ex}'.format(
-                    go=pcommand, ex=[e for e in self.params])]
+                return_list = return_list + [
+                    "Unknown command {go}. Expected one of {ex}".format(
+                        go=pcommand, ex=[e for e in self.params]
+                    )
+                ]
 
         return return_list

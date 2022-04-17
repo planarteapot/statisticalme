@@ -33,7 +33,7 @@ import yaml
 import statisticalme.statisticalme as smer
 
 
-logger = logging.getLogger('StatisticalMe')
+logger = logging.getLogger("StatisticalMe")
 teh = sme_tech.TechHandler()
 
 bs_support_count = [0, 0, 1, 2, 3, 4, 5]
@@ -57,10 +57,10 @@ def is_float(value):
 
 class MainCommand:
     def __init__(self, dev_author_list, ok_channels):
-        logger.debug('MainCommand __init__')
+        logger.debug("MainCommand __init__")
 
         self.dev_author_list = dev_author_list
-        self.ok_channels = ok_channels.split(',')
+        self.ok_channels = ok_channels.split(",")
 
         self.time_now = smer.sme_time_now()
         self.time_up = self.time_now
@@ -71,102 +71,119 @@ class MainCommand:
 
         self.current_guild = None
 
-        self.timeparse_match1 = re.compile(r'(\d+)([dhm])')
-        self.timeparse_match2 = re.compile(r'(\d+):(\d+):(\d+)')
-        self.timeparse_match3 = re.compile(r'(\d+):(\d+)')
-        self.timeparse_match4 = re.compile(r'(\d+)d(\d+)h(\d+)m')
-        self.ws_name_match = re.compile(r'-([a-zA-Z]+\d*)$')
+        self.timeparse_match1 = re.compile(r"(\d+)([dhm])")
+        self.timeparse_match2 = re.compile(r"(\d+):(\d+):(\d+)")
+        self.timeparse_match3 = re.compile(r"(\d+):(\d+)")
+        self.timeparse_match4 = re.compile(r"(\d+)d(\d+)h(\d+)m")
+        self.ws_name_match = re.compile(r"-([a-zA-Z]+\d*)$")
 
         # Load configuration/non-pilot data
-        self.config_filepath = 'var/config.yaml'
+        self.config_filepath = "var/config.yaml"
         self.flag_config_dirty = False
         self.groups = dict()
         self.ws = dict()
         self.config_load()
 
         # Load persistant/pilot data
-        self.persdata_filepath = 'var/persdata.yaml'
+        self.persdata_filepath = "var/persdata.yaml"
         self.flag_persdata_dirty = False
         self.players = dict()
         self.persdata_load()
 
         # Even if a dev group is saved and loaded, we do not use it and we overwrite it.
-        self.groups_protected = ['dev']
+        self.groups_protected = ["dev"]
         self.groups_next_refresh_all = self.time_now
-        self.group_set('dev', ' '.join([f'<@!{mm}>' for mm in dev_author_list]))
+        self.group_set("dev", " ".join([f"<@!{mm}>" for mm in dev_author_list]))
 
         self.messages_out = list()
 
-        logger.debug(f'{ok_channels=}')
+        logger.debug(f"{ok_channels=}")
 
         self.weights = dict()
         try:
-            with open('var/weights.yaml', 'r') as fh:
+            with open("var/weights.yaml", "r") as fh:
                 loaded = yaml.safe_load(fh)
 
-                if 'weights' in loaded:
-                    self.weights = copy.copy(loaded['weights'])
+                if "weights" in loaded:
+                    self.weights = copy.copy(loaded["weights"])
         except Exception:
             pass
 
-        self.dev_parser = sme_paramparse.CommandParse(
-            title='StatisticalMe Dev')
-        self.dev_parser.add_command('info', False, self.dev_command_info)
-        self.dev_parser.add_command('save', False, self.dev_command_save)
-        self.dev_parser.add_command('roleprint', False, self.dev_command_roleprint)
-        self.dev_parser.add_command('unitest', False, self.dev_command_unitest)
-        self.dev_parser.add_command('techlist', False, self.dev_command_techlist)
-        self.dev_parser.add_command('quit', False, self.dev_command_quit)
+        self.dev_parser = sme_paramparse.CommandParse(title="StatisticalMe Dev")
+        self.dev_parser.add_command("info", False, self.dev_command_info)
+        self.dev_parser.add_command("save", False, self.dev_command_save)
+        self.dev_parser.add_command("roleprint", False, self.dev_command_roleprint)
+        self.dev_parser.add_command("unitest", False, self.dev_command_unitest)
+        self.dev_parser.add_command("techlist", False, self.dev_command_techlist)
+        self.dev_parser.add_command("quit", False, self.dev_command_quit)
 
-        self.subparser_group = sme_paramparse.CommandParse(
-            title='StatisticalMe group')
-        self.subparser_group.add_command('add', False, self.command_group_add)
-        self.subparser_group.add_command('remove', False, self.command_group_remove)
-        self.subparser_group.add_command('list', False, self.command_group_list)
+        self.subparser_group = sme_paramparse.CommandParse(title="StatisticalMe group")
+        self.subparser_group.add_command("add", False, self.command_group_add)
+        self.subparser_group.add_command("remove", False, self.command_group_remove)
+        self.subparser_group.add_command("list", False, self.command_group_list)
 
-        self.subparser_ws = sme_paramparse.CommandParse(
-            title='StatisticalMe ws')
-        self.subparser_ws.add_command('add', False, self.command_ws_add, auth_fn=self.auth_chief)
-        self.subparser_ws.add_command('remove', False, self.command_ws_remove, auth_fn=self.auth_chief)
-        self.subparser_ws.add_command('list', False, self.command_ws_list, auth_fn=self.auth_chief)
-        self.subparser_ws.add_command('roles', False, self.command_ws_roles, auth_fn=self.auth_chief)
-        self.subparser_ws.add_command('ship', False, self.command_ws_ship, auth_fn=self.auth_watcher)
+        self.subparser_ws = sme_paramparse.CommandParse(title="StatisticalMe ws")
+        self.subparser_ws.add_command(
+            "add", False, self.command_ws_add, auth_fn=self.auth_chief
+        )
+        self.subparser_ws.add_command(
+            "remove", False, self.command_ws_remove, auth_fn=self.auth_chief
+        )
+        self.subparser_ws.add_command(
+            "list", False, self.command_ws_list, auth_fn=self.auth_chief
+        )
+        self.subparser_ws.add_command(
+            "roles", False, self.command_ws_roles, auth_fn=self.auth_chief
+        )
+        self.subparser_ws.add_command(
+            "ship", False, self.command_ws_ship, auth_fn=self.auth_watcher
+        )
 
-        self.subparser_tech = sme_paramparse.CommandParse(
-            title='StatisticalMe tech')
-        self.subparser_tech.add_command('set', False, self.command_tech_set)
-        self.subparser_tech.add_command('report', False, self.command_tech_report)
-        self.subparser_tech.add_command('list', False, self.command_tech_list)
+        self.subparser_tech = sme_paramparse.CommandParse(title="StatisticalMe tech")
+        self.subparser_tech.add_command("set", False, self.command_tech_set)
+        self.subparser_tech.add_command("report", False, self.command_tech_report)
+        self.subparser_tech.add_command("list", False, self.command_tech_list)
 
-        self.subparser_time = sme_paramparse.CommandParse(
-            title='StatisticalMe time')
-        self.subparser_time.add_command('set', False, self.command_time_set)
-        self.subparser_time.add_command('get', False, self.command_time_get)
-        self.subparser_time.add_command('list', False, self.command_time_list)
-        self.subparser_time.add_command('away', False, self.command_time_away)
-        self.subparser_time.add_command('back', False, self.command_time_back)
-        self.subparser_time.add_command('checkin', False, self.command_time_checkin)
+        self.subparser_time = sme_paramparse.CommandParse(title="StatisticalMe time")
+        self.subparser_time.add_command("set", False, self.command_time_set)
+        self.subparser_time.add_command("get", False, self.command_time_get)
+        self.subparser_time.add_command("list", False, self.command_time_list)
+        self.subparser_time.add_command("away", False, self.command_time_away)
+        self.subparser_time.add_command("back", False, self.command_time_back)
+        self.subparser_time.add_command("checkin", False, self.command_time_checkin)
 
-        self.subparser_pilot = sme_paramparse.CommandParse(
-            title='StatisticalMe pilot')
-        self.subparser_pilot.add_command('lastup', False, self.command_pilot_lastup)
+        self.subparser_pilot = sme_paramparse.CommandParse(title="StatisticalMe pilot")
+        self.subparser_pilot.add_command("lastup", False, self.command_pilot_lastup)
 
-        self.ord_parser = sme_paramparse.CommandParse(
-            title='StatisticalMe')
-        self.ord_parser.add_command('dev', True, self.dev_parser, auth_fn=self.auth_dev)
-        self.ord_parser.add_command('group', True, self.subparser_group, auth_fn=self.auth_chief)
-        self.ord_parser.add_command('ws', True, self.subparser_ws)
-        self.ord_parser.add_command('tech', True, self.subparser_tech, auth_fn=self.auth_watcher)
-        self.ord_parser.add_command('time', True, self.subparser_time, auth_fn=self.auth_watcher)
-        self.ord_parser.add_command('pilot', True, self.subparser_pilot, auth_fn=self.auth_chief)
-        self.ord_parser.add_command('score', False, self.command_score, auth_fn=self.auth_watcher)
-        self.ord_parser.add_command('msgme', False, self.command_msgme, auth_fn=self.auth_watcher)
-        self.ord_parser.add_command('clear', False, self.command_clear, auth_fn=self.auth_chief)
+        self.ord_parser = sme_paramparse.CommandParse(title="StatisticalMe")
+        self.ord_parser.add_command("dev", True, self.dev_parser, auth_fn=self.auth_dev)
+        self.ord_parser.add_command(
+            "group", True, self.subparser_group, auth_fn=self.auth_chief
+        )
+        self.ord_parser.add_command("ws", True, self.subparser_ws)
+        self.ord_parser.add_command(
+            "tech", True, self.subparser_tech, auth_fn=self.auth_watcher
+        )
+        self.ord_parser.add_command(
+            "time", True, self.subparser_time, auth_fn=self.auth_watcher
+        )
+        self.ord_parser.add_command(
+            "pilot", True, self.subparser_pilot, auth_fn=self.auth_chief
+        )
+        self.ord_parser.add_command(
+            "score", False, self.command_score, auth_fn=self.auth_watcher
+        )
+        self.ord_parser.add_command(
+            "msgme", False, self.command_msgme, auth_fn=self.auth_watcher
+        )
+        self.ord_parser.add_command(
+            "clear", False, self.command_clear, auth_fn=self.auth_chief
+        )
 
         self.current_author = None
         self.current_channel = None
 
-        logger.info('object MainCommand built')
+        logger.info("object MainCommand built")
 
     def post_guild_init(self):
         self.time_now = smer.sme_time_now()
@@ -180,60 +197,58 @@ class MainCommand:
 
     def config_load(self):
         try:
-            with open(self.config_filepath, 'r') as fh:
+            with open(self.config_filepath, "r") as fh:
                 loaded = yaml.safe_load(fh)
 
-                if 'groups' in loaded:
-                    self.groups = copy.copy(loaded['groups'])
+                if "groups" in loaded:
+                    self.groups = copy.copy(loaded["groups"])
 
-                if 'ws' in loaded:
-                    self.ws = copy.copy(loaded['ws'])
+                if "ws" in loaded:
+                    self.ws = copy.copy(loaded["ws"])
 
                 self.flag_config_dirty = False
         except Exception:
             pass
 
     def config_save(self):
-        with open(self.config_filepath, 'w') as fh:
-            yaml.dump({
-                'groups': self.groups,
-                'ws': self.ws
-            }, fh)
+        with open(self.config_filepath, "w") as fh:
+            yaml.dump({"groups": self.groups, "ws": self.ws}, fh)
 
             self.flag_config_dirty = False
 
     def persdata_load(self):
         try:
-            with open(self.persdata_filepath, 'r') as fh:
+            with open(self.persdata_filepath, "r") as fh:
                 loaded = yaml.safe_load(fh)
 
-                ltk = loaded['tech_keys']
+                ltk = loaded["tech_keys"]
 
                 if ltk == teh.tech_keys:
-                    self.players = copy.copy(loaded['players'])
+                    self.players = copy.copy(loaded["players"])
                 else:
-                    logger.info('Massaging persistant data for new tech list')
+                    logger.info("Massaging persistant data for new tech list")
 
                     self.players = dict()
                     unk_tech = set()
 
-                    for loaded_pkey, loaded_p in loaded['players'].items():
+                    for loaded_pkey, loaded_p in loaded["players"].items():
                         self.players[loaded_pkey] = copy.copy(loaded_p)
 
-                        loaded_tech = self.players[loaded_pkey]['tech']
-                        self.players[loaded_pkey]['tech'] = [0] * len(teh.tech_keys)
+                        loaded_tech = self.players[loaded_pkey]["tech"]
+                        self.players[loaded_pkey]["tech"] = [0] * len(teh.tech_keys)
 
                         for index in range(len(loaded_tech)):
                             key = ltk[index]
 
                             if teh.get_tech_index(key) >= 0:
                                 self.player_tech_set(
-                                    loaded_pkey, key, loaded_tech[index])
+                                    loaded_pkey, key, loaded_tech[index]
+                                )
                             else:
                                 unk_tech.add(key)
 
                     if len(unk_tech) > 0:
-                        logger.debug(f'Unknown techs {unk_tech} in persistant data')
+                        logger.debug(f"Unknown techs {unk_tech} in persistant data")
 
                     self.persdata_save()
 
@@ -242,11 +257,8 @@ class MainCommand:
             self.players = dict()
 
     def persdata_save(self):
-        with open(self.persdata_filepath, 'w') as fh:
-            yaml.dump({
-                'tech_keys': teh.tech_keys,
-                'players': self.players
-            }, fh)
+        with open(self.persdata_filepath, "w") as fh:
+            yaml.dump({"tech_keys": teh.tech_keys, "players": self.players}, fh)
 
             self.flag_persdata_dirty = False
 
@@ -258,14 +270,14 @@ class MainCommand:
             self.persdata_save()
 
     def auth_dev(self):
-        return self.group_contains_member('dev', self.current_author.id)
+        return self.group_contains_member("dev", self.current_author.id)
 
     def auth_chief(self):
         allowed = False
 
         if self.auth_dev():
             allowed = True
-        elif self.group_contains_member('auth_chief', self.current_author.id):
+        elif self.group_contains_member("auth_chief", self.current_author.id):
             allowed = True
 
         return allowed
@@ -277,7 +289,7 @@ class MainCommand:
             allowed = True
         elif self.auth_chief():
             allowed = True
-        elif self.group_contains_member('auth_watcher', self.current_author.id):
+        elif self.group_contains_member("auth_watcher", self.current_author.id):
             allowed = True
 
         return allowed
@@ -296,12 +308,12 @@ class MainCommand:
             return_list = return_list + await self.ord_parser.do_command(p_content)
 
             if len(return_list) < 1:
-                if self.group_contains_member('dev', self.current_author.id):
-                    return_list = ['Pardon my liege?']
-                elif self.group_contains_member('auth_chief', self.current_author.id):
-                    return_list = ['Excuse me chief?']
+                if self.group_contains_member("dev", self.current_author.id):
+                    return_list = ["Pardon my liege?"]
+                elif self.group_contains_member("auth_chief", self.current_author.id):
+                    return_list = ["Excuse me chief?"]
                 else:
-                    return_list = ['Say what?']
+                    return_list = ["Say what?"]
 
         except SmeArgumentWarning as smewarn:
             if smewarn.message is not None:
@@ -310,14 +322,14 @@ class MainCommand:
         except Exception:
             exc_type, exc_value, exc_tb = sys.exc_info()
             tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-            logger.error('on_message exception\n' + ''.join(tbe.format()))
+            logger.error("on_message exception\n" + "".join(tbe.format()))
 
-            if self.group_contains_member('dev', self.current_author.id):
-                return_list = ['The sky fell, my liege']
-            elif self.group_contains_member('auth_chief', self.current_author.id):
-                return_list = ['Sorry about that chief']
+            if self.group_contains_member("dev", self.current_author.id):
+                return_list = ["The sky fell, my liege"]
+            elif self.group_contains_member("auth_chief", self.current_author.id):
+                return_list = ["Sorry about that chief"]
             else:
-                return_list = ['Oh crap']
+                return_list = ["Oh crap"]
 
         # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
@@ -340,42 +352,48 @@ class MainCommand:
                 await who_ob.send(msg_str)
 
     async def dev_command_info(self, params):
-        info_str = 'StatisticalMe'
-        info_str += '\nversion: 22.0.2'
-        info_str += '\nnotes:'
-        info_str += '\n  - WS score 210918'
-        info_str += '\n  - unicode fun'
-        info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
+        info_str = "StatisticalMe"
+        info_str += "\nversion: 22.0.2"
+        info_str += "\nnotes:"
+        info_str += "\n  - WS score 210918"
+        info_str += "\n  - unicode fun"
+        info_str += "\nuptime: {ut}".format(
+            ut=self.timedelta_as_string(self.time_now - self.time_up)
+        )
 
         return [info_str]
 
     async def dev_command_save(self, params):
         self.config_save()
         self.persdata_save()
-        return ['App and pilot data saved']
+        return ["App and pilot data saved"]
 
     async def dev_command_roleprint(self, params):
         return_list = []
 
         who_list = list()
         role_list = list()
-        return_list = return_list + self.parse_who(params, who_list, role_list=role_list)
+        return_list = return_list + self.parse_who(
+            params, who_list, role_list=role_list
+        )
 
         if len(role_list) > 0:
             msg_list = []
             for role_id in role_list:
-                msg_list.append('Role:')
-                msg_list.append(f'  id: {role_id}')
+                msg_list.append("Role:")
+                msg_list.append(f"  id: {role_id}")
 
                 role = self.role_from_id(role_id)
                 if role is not None:
-                    msg_list.append(f'  name: {role.name}')
-                    member_names = [self.member_name_from_id(memb.id) for memb in role.members]
-                    msg_list.append('  members: ' + ', '.join(member_names))
+                    msg_list.append(f"  name: {role.name}")
+                    member_names = [
+                        self.member_name_from_id(memb.id) for memb in role.members
+                    ]
+                    msg_list.append("  members: " + ", ".join(member_names))
 
-            return_list.append('\n'.join(msg_list))
+            return_list.append("\n".join(msg_list))
         else:
-            return_list.append('Pardon my liege? No config var name')
+            return_list.append("Pardon my liege? No config var name")
 
         return return_list
 
@@ -387,25 +405,25 @@ class MainCommand:
 
         if len(who_list) > 0:
             msg_list = []
-            msg_list.append('Names:')
+            msg_list.append("Names:")
             for who_id in who_list:
                 who_name = self.member_name_from_id(who_id)
                 who_p = normalize_caseless(who_name)
                 who_r = smer.sme_utils_normalize_caseless(who_name)
-                msg_list.append(f'  {who_name}\t{who_p}\t{who_r}')
+                msg_list.append(f"  {who_name}\t{who_p}\t{who_r}")
 
-            return_list.append('\n'.join(msg_list))
+            return_list.append("\n".join(msg_list))
         else:
-            return_list.append('Pardon my liege? No config var name')
+            return_list.append("Pardon my liege? No config var name")
 
         return return_list
 
     async def dev_command_techlist(self, params):
-        return ['Valid tech names: ' + ', '.join(teh.tech_keys)]
+        return ["Valid tech names: " + ", ".join(teh.tech_keys)]
 
     async def dev_command_quit(self, params):
         self.opportunistic_save()
-        return ['dented-control-message:quit']
+        return ["dented-control-message:quit"]
 
     def member_from_id(self, p_id):
         memb = None
@@ -432,7 +450,7 @@ class MainCommand:
                 name = memb.name
 
         if name is None:
-            name = ''
+            name = ""
 
         return name
 
@@ -456,22 +474,18 @@ class MainCommand:
         role = None
 
         if self.current_guild is not None:
-            role = next(
-                (r for r in self.current_guild.roles if r.name == p_name), None)
+            role = next((r for r in self.current_guild.roles if r.name == p_name), None)
 
         return role
 
     def group_set(self, group_name, group_def):
-        self.groups[group_name] = {
-            'defn': str(group_def),
-            'members': list()
-        }
+        self.groups[group_name] = {"defn": str(group_def), "members": list()}
 
         self.group_refresh(group_name)
 
     def group_remove(self, group_name):
         if group_name in self.groups:
-            del(self.groups[group_name])
+            del self.groups[group_name]
 
     def group_exists(self, group_name):
         found = False
@@ -483,21 +497,21 @@ class MainCommand:
     def group_refresh(self, group_name):
         if group_name in self.groups:
             grp = self.groups[group_name]
-            if group_name == 'dev':
-                grp['members'] = copy.copy(self.dev_author_list)
+            if group_name == "dev":
+                grp["members"] = copy.copy(self.dev_author_list)
             else:
-                grp['members'] = list()
-                self.parse_who(grp['defn'].split(' '), grp['members'])
+                grp["members"] = list()
+                self.parse_who(grp["defn"].split(" "), grp["members"])
 
             self.flag_config_dirty = True
 
     def group_refresh_all(self):
         for group_name, grp in self.groups.items():
-            if group_name == 'dev':
-                grp['members'] = copy.copy(self.dev_author_list)
+            if group_name == "dev":
+                grp["members"] = copy.copy(self.dev_author_list)
             else:
-                grp['members'] = list()
-                self.parse_who(grp['defn'].split(' '), grp['members'])
+                grp["members"] = list()
+                self.parse_who(grp["defn"].split(" "), grp["members"])
 
         self.flag_config_dirty = True
         self.groups_next_refresh_all = self.time_now + 20
@@ -506,18 +520,20 @@ class MainCommand:
         found = False
         if group_name in self.groups:
             grp = self.groups[group_name]
-            if memb_id in grp['members']:
+            if memb_id in grp["members"]:
                 found = True
 
         return found
 
-    def parse_who(self, param_list, who_list, memb_list=None, role_list=None, other=None):
+    def parse_who(
+        self, param_list, who_list, memb_list=None, role_list=None, other=None
+    ):
         return_list = []
 
         who_set = list()
 
         for value in param_list:
-            if value[0:3] == '<@!' and value[3].isdigit() and value[-1] == '>':
+            if value[0:3] == "<@!" and value[3].isdigit() and value[-1] == ">":
                 memb = self.member_from_id(int(value[3:-1]))
                 if memb is not None:
                     if memb_list is not None:
@@ -525,7 +541,7 @@ class MainCommand:
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
-            elif value[0:2] == '<@' and value[2].isdigit() and value[-1] == '>':
+            elif value[0:2] == "<@" and value[2].isdigit() and value[-1] == ">":
                 memb = self.member_from_id(int(value[2:-1]))
                 if memb is not None:
                     if memb_list is not None:
@@ -533,7 +549,7 @@ class MainCommand:
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
-            elif value[0:3] == '<@&' and value[3].isdigit() and value[-1] == '>':
+            elif value[0:3] == "<@&" and value[3].isdigit() and value[-1] == ">":
                 role = self.role_from_id(int(value[3:-1]))
                 if role is not None:
                     if role_list is not None:
@@ -542,7 +558,7 @@ class MainCommand:
                         for memb in role.members:
                             if memb.id not in who_set:
                                 who_set.append(memb.id)
-            elif value[0:2] == '?!':
+            elif value[0:2] == "?!":
                 memb = self.member_from_name(value[2:])
                 if memb is not None:
                     if memb_list is not None:
@@ -550,7 +566,7 @@ class MainCommand:
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
-            elif value[0:2] == '?&':
+            elif value[0:2] == "?&":
                 role = self.role_from_name(value[2:])
                 if role is not None:
                     if role_list is not None:
@@ -578,47 +594,49 @@ class MainCommand:
         who_set = list()
         other_list = list()
 
-        return_list = return_list + self.parse_who(param_list, who_set, other=other_list)
+        return_list = return_list + self.parse_who(
+            param_list, who_set, other=other_list
+        )
 
         what_set = list()
 
         for value in other_list:
             if is_int(value):
                 int_list.append(int(value))
-            elif value == '|':
+            elif value == "|":
                 pass
             else:
                 what = normalize_caseless(value)
-                if what == 'other':
+                if what == "other":
                     for tt in teh.tech_keys_range_other():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'ships':
+                elif what == "ships":
                     for tt in teh.tech_keys_range_ships():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'trade':
+                elif what == "trade":
                     for tt in teh.tech_keys_range_trade():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'mining':
+                elif what == "mining":
                     for tt in teh.tech_keys_range_mining():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'weapons':
+                elif what == "weapons":
                     for tt in teh.tech_keys_range_weapon():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'shields':
+                elif what == "shields":
                     for tt in teh.tech_keys_range_shield():
                         if tt not in what_set:
                             what_set.append(tt)
-                elif what == 'support':
+                elif what == "support":
                     for tt in teh.tech_keys_range_support():
                         if tt not in what_set:
                             what_set.append(tt)
                 else:
-                    if what[0:2] == '--' or what[0:1] == '+':
+                    if what[0:2] == "--" or what[0:1] == "+":
                         if other is not None:
                             other.append(what)
                     else:
@@ -637,16 +655,13 @@ class MainCommand:
             if teh.get_tech_index(what) >= 0:
                 what_list.append(what)
             else:
-                return_list.append(f'Tech {what} not found')
+                return_list.append(f"Tech {what} not found")
 
         return return_list
 
     def ensure_player_created(self, playerid):
         if playerid not in self.players:
-            self.players[playerid] = {
-                'tech': [0] * len(teh.tech_keys),
-                'info': dict()
-            }
+            self.players[playerid] = {"tech": [0] * len(teh.tech_keys), "info": dict()}
 
     def player_tech_get(self, playerid, techname):
         r_value = 0
@@ -654,12 +669,12 @@ class MainCommand:
         if playerid in self.players:
             p = self.players[playerid]
 
-            if 'tech' in p:
-                pt = p['tech']
+            if "tech" in p:
+                pt = p["tech"]
 
-                if techname == 'relics' or techname == 'totalcargo':
-                    ti_cbe = teh.get_tech_index('cargobayextension')
-                    ti_ts = teh.get_tech_index('transport')
+                if techname == "relics" or techname == "totalcargo":
+                    ti_cbe = teh.get_tech_index("cargobayextension")
+                    ti_ts = teh.get_tech_index("transport")
 
                     if ti_cbe >= 0 and ti_ts >= 0:
                         totalcargo = 0
@@ -674,7 +689,7 @@ class MainCommand:
                             totalcargo += score_ts[val_ts - 1]
 
                         r_value = int(totalcargo)
-                        if techname == 'relics':
+                        if techname == "relics":
                             r_value = int(totalcargo / 4)
                 else:
                     tech_index = teh.get_tech_index(techname)
@@ -689,7 +704,7 @@ class MainCommand:
 
         if tech_index >= 0 and tech_index < 9900:
             self.ensure_player_created(playerid)
-            pt = self.players[playerid]['tech']
+            pt = self.players[playerid]["tech"]
             pt[tech_index] = int(techvalue)
 
             self.flag_persdata_dirty = True
@@ -700,8 +715,8 @@ class MainCommand:
         if playerid in self.players:
             p = self.players[playerid]
 
-            if 'info' in p:
-                pi = p['info']
+            if "info" in p:
+                pi = p["info"]
 
                 if infoname in pi:
                     r_value = pi[infoname]
@@ -710,7 +725,7 @@ class MainCommand:
 
     def player_info_set(self, playerid, infoname, infovalue):
         self.ensure_player_created(playerid)
-        pi = self.players[playerid]['info']
+        pi = self.players[playerid]["info"]
         pi[infoname] = infovalue
 
         self.flag_persdata_dirty = True
@@ -722,17 +737,26 @@ class MainCommand:
         other_list = list()
         memb_list = list()
         role_list = list()
-        self.parse_who(params, who_list_scratch, memb_list=memb_list,
-                       role_list=role_list, other=other_list)
+        self.parse_who(
+            params,
+            who_list_scratch,
+            memb_list=memb_list,
+            role_list=role_list,
+            other=other_list,
+        )
 
         if other_list and (memb_list or role_list):
             group_name = other_list[0]
             if group_name not in self.groups_protected:
-                self.group_set(group_name, ' '.join(
-                    [f'<@!{mm}>' for mm in memb_list] +
-                    [f'<@&{rr}>' for rr in role_list]))
+                self.group_set(
+                    group_name,
+                    " ".join(
+                        [f"<@!{mm}>" for mm in memb_list]
+                        + [f"<@&{rr}>" for rr in role_list]
+                    ),
+                )
 
-                return_list.append(f'Group {group_name} added')
+                return_list.append(f"Group {group_name} added")
                 self.flag_config_dirty = True
 
         return return_list
@@ -745,7 +769,7 @@ class MainCommand:
             if group_name in self.groups and group_name not in self.groups_protected:
                 self.group_remove(group_name)
 
-                return_list.append(f'Group {group_name} removed')
+                return_list.append(f"Group {group_name} removed")
                 self.flag_config_dirty = True
 
         return return_list
@@ -759,17 +783,24 @@ class MainCommand:
             who_list_scratch = list()
             memb_list = list()
             role_list = list()
-            self.parse_who(grp['defn'].split(' '), who_list_scratch,
-                           memb_list=memb_list, role_list=role_list)
+            self.parse_who(
+                grp["defn"].split(" "),
+                who_list_scratch,
+                memb_list=memb_list,
+                role_list=role_list,
+            )
 
-            group_strs.append(gname + ': ' +
-                              ', '.join(
-                                  [self.member_name_from_id(mm) for mm in memb_list] +
-                                  [str(self.role_from_id(rr)) for rr in role_list]
-                              ))
+            group_strs.append(
+                gname
+                + ": "
+                + ", ".join(
+                    [self.member_name_from_id(mm) for mm in memb_list]
+                    + [str(self.role_from_id(rr)) for rr in role_list]
+                )
+            )
 
         if group_strs:
-            return_list.append('\n'.join(group_strs))
+            return_list.append("\n".join(group_strs))
 
         return return_list
 
@@ -793,27 +824,27 @@ class MainCommand:
         outp = list()
 
         if td_days >= 1:
-            outp.append(str(td_days) + 'd')
+            outp.append(str(td_days) + "d")
 
         if td_secs >= 1:
             sec = int(td_secs)
             hr = int(int(sec) / int(3600))
             if hr >= 1:
-                outp.append(str(hr) + 'h')
+                outp.append(str(hr) + "h")
                 sec -= hr * 3600
 
             mn = int(int(sec) / int(60))
 
             if show_sec:
                 if mn >= 1:
-                    outp.append(str(mn) + 'm')
+                    outp.append(str(mn) + "m")
                     sec -= mn * 60
 
-                outp.append(str(sec) + 's')
+                outp.append(str(sec) + "s")
             else:
-                outp.append(str(mn) + 'm')
+                outp.append(str(mn) + "m")
 
-        return ' '.join(outp)
+        return " ".join(outp)
 
     def timedelta_as_string2(self, timedelta_s):
         (td_days, td_secs) = self.timedelta_to_days_secs(timedelta_s)
@@ -837,9 +868,9 @@ class MainCommand:
 
         tstr = None
         if part_d > 0:
-            tstr = '{:d}:{:02d}:{:02d}'.format(part_d, part_h, part_m)
+            tstr = "{:d}:{:02d}:{:02d}".format(part_d, part_h, part_m)
         else:
-            tstr = '{:2d}:{:02d}'.format(part_h, part_m)
+            tstr = "{:2d}:{:02d}".format(part_h, part_m)
 
         return tstr
 
@@ -852,11 +883,11 @@ class MainCommand:
                 m_id = int(try1_match.group(1))
                 m_control = try1_match.group(2)
 
-                if m_control == 'd':
+                if m_control == "d":
                     timed += m_id * 24 * 3600
-                elif m_control == 'h':
+                elif m_control == "h":
                     timed += m_id * 3600
-                elif m_control == 'm':
+                elif m_control == "m":
                     timed += m_id * 60
                 else:
                     break
@@ -911,59 +942,68 @@ class MainCommand:
 
         for ws_name, ws_struct in self.ws.items():
             try:
-                if 'done' not in ws_struct or not ws_struct['done']:
-                    nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
+                if "done" not in ws_struct or not ws_struct["done"]:
+                    nova_time = smer.sme_time_from_string(ws_struct["nova_time"])
 
                     ws_time_str = ""
 
                     if (nova_time + 30) < self.time_now:
-                        ws_struct['done'] = True
+                        ws_struct["done"] = True
                         self.flag_config_dirty = True
-                        ws_time_str = 'over'
+                        ws_time_str = "over"
                         ws_over.append(ws_name)
                     else:
                         # Resolves to a minute, so add 30s here to cause a round up.
                         ws_time = nova_time + 30 - self.time_now
                         ws_time_str = self.timedelta_as_string(ws_time)
 
-                    new_content = f'```\nNova time {ws_time_str}\n'
+                    new_content = f"```\nNova time {ws_time_str}\n"
 
-                    control_role = ws_struct['control_role']
-                    all_role = ws_struct['all_role']
+                    control_role = ws_struct["control_role"]
+                    all_role = ws_struct["all_role"]
 
                     if control_role > 0 or all_role > 0:
                         role_list = []
 
                         if control_role > 0:
                             control_role_ob = self.role_from_id(control_role)
-                            role_list.append('Leaders: @{}'.format(str(control_role_ob)))
+                            role_list.append(
+                                "Leaders: @{}".format(str(control_role_ob))
+                            )
 
                         if all_role > 0:
                             all_role_ob = self.role_from_id(all_role)
-                            role_list.append('pilots: @{}'.format(str(all_role_ob)))
+                            role_list.append("pilots: @{}".format(str(all_role_ob)))
 
-                        new_content += ', '.join(role_list) + '\n'
+                        new_content += ", ".join(role_list) + "\n"
 
                     if all_role > 0:
-                        all_role_str = f'<@&{all_role}>'
+                        all_role_str = f"<@&{all_role}>"
 
-                        newcont2 = await self.command_time_list([all_role_str], ws_info=ws_struct)
-                        if newcont2 and newcont2[0][:3] == '```':
+                        newcont2 = await self.command_time_list(
+                            [all_role_str], ws_info=ws_struct
+                        )
+                        if newcont2 and newcont2[0][:3] == "```":
                             new_content += newcont2[0][3:-3]
 
-                        newcont2 = self.nicommand_ws_shiplist([all_role_str], ws_info=ws_struct)
-                        if newcont2 and newcont2[0][:3] == '```':
+                        newcont2 = self.nicommand_ws_shiplist(
+                            [all_role_str], ws_info=ws_struct
+                        )
+                        if newcont2 and newcont2[0][:3] == "```":
                             new_content += newcont2[0][3:-3]
 
-                    new_content += '```'
+                    new_content += "```"
 
-                    if 'old_content' not in ws_struct or new_content != ws_struct['old_content']:
-                        ws_struct['old_content'] = new_content
+                    if (
+                        "old_content" not in ws_struct
+                        or new_content != ws_struct["old_content"]
+                    ):
+                        ws_struct["old_content"] = new_content
                         self.flag_config_dirty = True
 
-                        chan_ob = self.current_guild.get_channel(ws_struct['channel'])
+                        chan_ob = self.current_guild.get_channel(ws_struct["channel"])
                         if chan_ob is not None:
-                            msg_id = ws_struct['message']
+                            msg_id = ws_struct["message"]
 
                             msg_ob = None
                             if msg_id > 0:
@@ -975,26 +1015,29 @@ class MainCommand:
                             if msg_ob is None:
                                 msg_ob = await chan_ob.send(new_content)
                                 msg_id = msg_ob.id
-                                ws_struct['message'] = msg_id
+                                ws_struct["message"] = msg_id
                                 self.flag_config_dirty = True
                             else:
                                 await msg_ob.edit(content=new_content)
 
-                            if 'dirty' in ws_struct:
-                                del(ws_struct['dirty'])
+                            if "dirty" in ws_struct:
+                                del ws_struct["dirty"]
                                 self.flag_config_dirty = True
                         else:
-                            ws_struct['done'] = True
+                            ws_struct["done"] = True
                             self.flag_config_dirty = True
-                            ws_time_str = 'over'
+                            ws_time_str = "over"
                             ws_over.append(ws_name)
-
 
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-                logger.error('background_update_all Exception processing WhiteStar ' +
-                             ws_name + '\n' + ''.join(tbe.format()))
+                logger.error(
+                    "background_update_all Exception processing WhiteStar "
+                    + ws_name
+                    + "\n"
+                    + "".join(tbe.format())
+                )
 
         for ws_name in ws_over:
             try:
@@ -1002,8 +1045,12 @@ class MainCommand:
             except Exception:
                 exc_type, exc_value, exc_tb = sys.exc_info()
                 tbe = traceback.TracebackException(exc_type, exc_value, exc_tb)
-                logger.error('background_update_all Exception removing WhiteStar ' +
-                             ws_name + '\n' + ''.join(tbe.format()))
+                logger.error(
+                    "background_update_all Exception removing WhiteStar "
+                    + ws_name
+                    + "\n"
+                    + "".join(tbe.format())
+                )
 
         # Opportunistic send out messages queued
         if len(self.messages_out) > 0:
@@ -1028,14 +1075,16 @@ class MainCommand:
             nova_timedelta = self.timedelta_from_strings(other_list)
 
             if nova_timedelta < (1 * 60) or nova_timedelta > (5 * 24 * 3600):
-                return_list.append('Error: Nova time out of good range')
+                return_list.append("Error: Nova time out of good range")
             else:
                 control_role = 0
-                assist_group = ''
+                assist_group = ""
                 if len(role_list) >= 1:
                     control_role = role_list[0]
-                    assist_group = f'ws_{ws_name}_assist'
-                    self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
+                    assist_group = f"ws_{ws_name}_assist"
+                    self.group_set(
+                        assist_group, " ".join(["<@&{rid}>".format(rid=control_role)])
+                    )
 
                 all_role = 0
                 if len(role_list) >= 2:
@@ -1045,20 +1094,20 @@ class MainCommand:
 
                 self.ws[ws_name] = {
                     # inputs
-                    'control_role': control_role,
-                    'all_role': all_role,
-                    'nova_time': smer.sme_time_as_string(int(nova_time)),
+                    "control_role": control_role,
+                    "all_role": all_role,
+                    "nova_time": smer.sme_time_as_string(int(nova_time)),
                     # other state
-                    'old_content': '',
-                    'assist_group': assist_group,
-                    'channel': self.current_channel.id,
-                    'message': 0,
-                    'greens': {},
-                    'reds': {},
-                    'done': False
+                    "old_content": "",
+                    "assist_group": assist_group,
+                    "channel": self.current_channel.id,
+                    "message": 0,
+                    "greens": {},
+                    "reds": {},
+                    "done": False,
                 }
 
-                return_list.append(f'WhiteStar {ws_name} added')
+                return_list.append(f"WhiteStar {ws_name} added")
                 self.flag_config_dirty = True
 
                 self.opportunistic_background_update_start()
@@ -1086,13 +1135,13 @@ class MainCommand:
 
         if ws_name in self.ws:
             ws_struct = self.ws[ws_name]
-            self.group_remove(ws_struct['assist_group'])
+            self.group_remove(ws_struct["assist_group"])
 
-            del(self.ws[ws_name])
+            del self.ws[ws_name]
 
             self.opportunistic_background_update_stop()
 
-            return_list.append(f'WhiteStar {ws_name} removed')
+            return_list.append(f"WhiteStar {ws_name} removed")
             self.flag_config_dirty = True
 
         return return_list
@@ -1103,35 +1152,37 @@ class MainCommand:
         for ws_name, ws_struct in self.ws.items():
             str_list = []
 
-            nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
+            nova_time = smer.sme_time_from_string(ws_struct["nova_time"])
 
             ws_time_str = ""
 
             if (nova_time + 30) < self.time_now:
-                ws_time_str = 'over'
+                ws_time_str = "over"
             else:
                 # Resolves to a minute, so add 30s here to cause a round up.
                 ws_time = nova_time + 30 - self.time_now
                 ws_time_str = self.timedelta_as_string(ws_time)
 
-            str_list.append('\t{:3}, Nova time: {}'.format(ws_name, ws_time_str))
+            str_list.append("\t{:3}, Nova time: {}".format(ws_name, ws_time_str))
 
-            control_role = ws_struct['control_role']
+            control_role = ws_struct["control_role"]
             if control_role > 0:
                 control_role_ob = self.role_from_id(control_role)
-                str_list.append(f'leaders: @{str(control_role_ob)}')
+                str_list.append(f"leaders: @{str(control_role_ob)}")
 
-            all_role = ws_struct['all_role']
+            all_role = ws_struct["all_role"]
             if all_role > 0:
                 all_role_ob = self.role_from_id(all_role)
-                str_list.append(f'pilots: @{str(all_role_ob)}')
+                str_list.append(f"pilots: @{str(all_role_ob)}")
 
-            ws_strlist.append(', '.join(str_list) + ' in <#{cid}>'.format(cid=ws_struct['channel']))
+            ws_strlist.append(
+                ", ".join(str_list) + " in <#{cid}>".format(cid=ws_struct["channel"])
+            )
 
         if not ws_strlist:
-            ws_strlist = ['\tempty']
+            ws_strlist = ["\tempty"]
 
-        return ['WhiteStar list:\n' + '\n'.join(ws_strlist)]
+        return ["WhiteStar list:\n" + "\n".join(ws_strlist)]
 
     async def command_ws_roles(self, params):
         return_list = []
@@ -1149,14 +1200,16 @@ class MainCommand:
 
             control_role = role_list[0]
             all_role = role_list[1]
-            assist_group = f'ws_{ws_name}_assist'
+            assist_group = f"ws_{ws_name}_assist"
 
-            ws_struct['control_role'] = control_role
-            ws_struct['all_role'] = all_role
-            ws_struct['assist_group'] = assist_group
-            self.group_set(assist_group, ' '.join(['<@&{rid}>'.format(rid=control_role)]))
+            ws_struct["control_role"] = control_role
+            ws_struct["all_role"] = all_role
+            ws_struct["assist_group"] = assist_group
+            self.group_set(
+                assist_group, " ".join(["<@&{rid}>".format(rid=control_role)])
+            )
 
-            return_list.append(f'WhiteStar roles added to {ws_name}')
+            return_list.append(f"WhiteStar roles added to {ws_name}")
             self.flag_config_dirty = True
 
         return return_list
@@ -1166,7 +1219,9 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         ws_name = None
         wsname_match = self.ws_name_match.search(str(self.current_channel))
@@ -1175,20 +1230,20 @@ class MainCommand:
             ws_name = wsname_match.group(1)
             if ws_name in self.ws:
                 ws_struct = self.ws[ws_name]
-                nova_time = smer.sme_time_from_string(ws_struct['nova_time'])
+                nova_time = smer.sme_time_from_string(ws_struct["nova_time"])
 
                 # two dicts, one 'green' keyed by pilotid, one 'red' keyed by string
                 # in each case storing a 4 string tuple:
                 #   (bs ship type in, bs closed countdown, sup ship type in, sup closed countdown)
-                if 'greens' not in ws_struct:
-                    ws_struct['greens'] = dict()
+                if "greens" not in ws_struct:
+                    ws_struct["greens"] = dict()
 
-                ws_greens = ws_struct['greens']
+                ws_greens = ws_struct["greens"]
 
-                if 'reds' not in ws_struct:
-                    ws_struct['reds'] = dict()
+                if "reds" not in ws_struct:
+                    ws_struct["reds"] = dict()
 
-                ws_reds = ws_struct['reds']
+                ws_reds = ws_struct["reds"]
 
                 # if not self.auth_chief():
                 #     who_list_good = [self.current_author.id]
@@ -1202,19 +1257,19 @@ class MainCommand:
 
                 for ostr_withcase in other_list:
                     ostr = normalize_caseless(ostr_withcase)
-                    if ostr in ['in', 'out', 'timer', 'dead', 'add', 'remove']:
+                    if ostr in ["in", "out", "timer", "dead", "add", "remove"]:
                         s_cmd = ostr
-                    elif ostr in ['bs', 'bat', 'battleship', 'fs', 'flagship']:
-                        s_shiptype = 'bs'
-                        if ostr in ['fs', 'flagship']:
+                    elif ostr in ["bs", "bat", "battleship", "fs", "flagship"]:
+                        s_shiptype = "bs"
+                        if ostr in ["fs", "flagship"]:
                             s_flagship = True
-                    elif ostr in ['ts', 'tr', 'tran', 'trans', 'transport']:
-                        s_shiptype = 'ts'
-                    elif ostr in ['ms', 'mn', 'mr', 'min', 'miner']:
-                        s_shiptype = 'mn'
-                    elif ostr in ['at', 'nova', 'ago', 'hence']:
+                    elif ostr in ["ts", "tr", "tran", "trans", "transport"]:
+                        s_shiptype = "ts"
+                    elif ostr in ["ms", "mn", "mr", "min", "miner"]:
+                        s_shiptype = "mn"
+                    elif ostr in ["at", "nova", "ago", "hence"]:
                         s_timertype = ostr
-                    elif ostr_withcase[0] == '!':
+                    elif ostr_withcase[0] == "!":
                         s_enemy = ostr_withcase
                     else:
                         time_list.append(ostr)
@@ -1229,55 +1284,84 @@ class MainCommand:
                 # logger.debug('MEGAFONE ship who {sf} {se}'.format(sf=s_friend, se=s_enemy))
 
                 if s_friend != 0 and s_enemy is not None:
-                    return_list.append('Crap: Can not work on friend and enemy at same time')
-                elif s_timertype is not None and s_timertype not in ['at', 'nova', 'ago', 'hence']:
-                    return_list.append('Crap: Need a time code like: at, nova, ago, hence')
+                    return_list.append(
+                        "Crap: Can not work on friend and enemy at same time"
+                    )
+                elif s_timertype is not None and s_timertype not in [
+                    "at",
+                    "nova",
+                    "ago",
+                    "hence",
+                ]:
+                    return_list.append(
+                        "Crap: Need a time code like: at, nova, ago, hence"
+                    )
                 else:
                     if s_cmd is not None:
-                        if s_cmd == 'add':
+                        if s_cmd == "add":
                             if s_enemy is not None:
                                 if s_enemy not in ws_reds:
-                                    ws_reds[s_enemy] = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
+                                    ws_reds[s_enemy] = {
+                                        "bship": "",
+                                        "bdelay": "",
+                                        "sship": "",
+                                        "sdelay": "",
+                                    }
                                     self.flag_config_dirty = True
                             else:
-                                return_list.append('Crap: Need enemy name with !, like: !Ralph')
-                        elif s_cmd == 'remove':
+                                return_list.append(
+                                    "Crap: Need enemy name with !, like: !Ralph"
+                                )
+                        elif s_cmd == "remove":
                             if s_enemy is not None:
                                 if s_enemy in ws_reds:
-                                    del(ws_reds[s_enemy])
+                                    del ws_reds[s_enemy]
                                     self.flag_config_dirty = True
                             else:
-                                return_list.append('Crap: Need enemy name with !, like: !Ralph')
+                                return_list.append(
+                                    "Crap: Need enemy name with !, like: !Ralph"
+                                )
                         else:
                             if s_shiptype is not None:
                                 given_time = self.timedelta_from_strings(time_list)
                                 if len(time_list) == 0:
-                                    s_timertype = 'hence'
+                                    s_timertype = "hence"
                                     given_time = 0
 
                                 open_time = None
-                                pilot_data = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
+                                pilot_data = {
+                                    "bship": "",
+                                    "bdelay": "",
+                                    "sship": "",
+                                    "sdelay": "",
+                                }
 
-                                if s_timertype is not None and s_timertype == 'ago':
+                                if s_timertype is not None and s_timertype == "ago":
                                     open_time = self.time_now - given_time
                                 else:
-                                    if s_cmd == 'timer':
+                                    if s_cmd == "timer":
                                         # Command timer has a different default timertype
-                                        if s_timertype is not None and s_timertype in ['at', 'nova']:
+                                        if s_timertype is not None and s_timertype in [
+                                            "at",
+                                            "nova",
+                                        ]:
                                             open_time = nova_time - given_time
                                         else:
                                             # Default timertype: in
                                             open_time = self.time_now + given_time
                                     else:
-                                        if s_timertype is not None and s_timertype == 'hence':
+                                        if (
+                                            s_timertype is not None
+                                            and s_timertype == "hence"
+                                        ):
                                             open_time = self.time_now + given_time
                                         else:
                                             # Default timertype: at, nova
                                             open_time = nova_time - given_time
 
-                                if s_cmd == 'in':
+                                if s_cmd == "in":
                                     open_time += 2 * 3600
-                                elif s_cmd == 'dead':
+                                elif s_cmd == "dead":
                                     if s_flagship:
                                         open_time += 16 * 3600
                                     else:
@@ -1295,16 +1379,16 @@ class MainCommand:
                                     if s_friend in ws_greens:
                                         pilot_data = ws_greens[s_friend]
 
-                                shipkey = 'sship'
-                                delaykey = 'sdelay'
-                                if s_shiptype == 'bs':
-                                    shipkey = 'bship'
-                                    delaykey = 'bdelay'
+                                shipkey = "sship"
+                                delaykey = "sdelay"
+                                if s_shiptype == "bs":
+                                    shipkey = "bship"
+                                    delaykey = "bdelay"
 
-                                if s_cmd == 'in':
+                                if s_cmd == "in":
                                     pilot_data[shipkey] = s_shiptype
-                                elif s_cmd != 'timer':
-                                    pilot_data[shipkey] = ''
+                                elif s_cmd != "timer":
+                                    pilot_data[shipkey] = ""
 
                                 pilot_data[delaykey] = open_time_str
 
@@ -1315,11 +1399,14 @@ class MainCommand:
 
                                 self.flag_config_dirty = True
                     else:
-                        return_list.append('Crap: Need command, one of: {}'.format(
-                            ['in', 'out', 'dead', 'timer', 'add', 'remove']))
+                        return_list.append(
+                            "Crap: Need command, one of: {}".format(
+                                ["in", "out", "dead", "timer", "add", "remove"]
+                            )
+                        )
 
         if len(return_list) < 1:
-            return_list.append('dented-control-message:delete-original-message')
+            return_list.append("dented-control-message:delete-original-message")
 
         return return_list
 
@@ -1336,14 +1423,19 @@ class MainCommand:
         #     if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
         #         who_list_good = [self.current_author.id]
 
-        if ws_info is not None and 'pilot_order' in ws_info:
+        if ws_info is not None and "pilot_order" in ws_info:
             # Friends, greens
             green_list = []
-            if 'greens' in ws_info:
-                ws_greens = ws_info['greens']
-                for pkey in ws_info['pilot_order']:
+            if "greens" in ws_info:
+                ws_greens = ws_info["greens"]
+                for pkey in ws_info["pilot_order"]:
                     if pkey not in ws_greens:
-                        ws_greens[pkey] = {'bship': '', 'bdelay': '', 'sship': '', 'sdelay': ''}
+                        ws_greens[pkey] = {
+                            "bship": "",
+                            "bdelay": "",
+                            "sship": "",
+                            "sdelay": "",
+                        }
                         self.flag_config_dirty = True
 
                     pilot_name = self.member_name_from_id(pkey)
@@ -1352,8 +1444,8 @@ class MainCommand:
 
             # Enemies, reds
             red_list = []
-            if 'reds' in ws_info:
-                ws_reds = ws_info['reds']
+            if "reds" in ws_info:
+                ws_reds = ws_info["reds"]
 
                 red_pilots = list(ws_reds.keys())
                 red_pilots.sort()
@@ -1362,50 +1454,53 @@ class MainCommand:
                     red_list.append(user_info)
 
             if green_list or red_list:
-                t_header = ['Ships', 'BS', 'Supp']
-                t_align = ['l', 'l', 'l']
+                t_header = ["Ships", "BS", "Supp"]
+                t_align = ["l", "l", "l"]
 
                 return_list += sme_table.draw(t_header, t_align, green_list + red_list)
 
         return return_list
 
     def list_one_pilot(self, pilot_name, pilot_data):
-        b_delay = ''
-        b_until_str = pilot_data['bdelay']
+        b_delay = ""
+        b_until_str = pilot_data["bdelay"]
         if b_until_str is not None and len(b_until_str) > 2:
             away_until = smer.sme_time_from_string(b_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
                 b_delay = self.timedelta_as_string2(td + 15)
             else:
-                pilot_data['bdelay'] = ''
+                pilot_data["bdelay"] = ""
                 self.flag_config_dirty = True
 
-        b_ship = pilot_data['bship']
+        b_ship = pilot_data["bship"]
         if len(b_ship) == 0 and len(b_delay) == 0:
-            b_ship = '!'
+            b_ship = "!"
 
-        s_delay = ''
-        s_until_str = pilot_data['sdelay']
+        s_delay = ""
+        s_until_str = pilot_data["sdelay"]
         if s_until_str is not None and len(s_until_str) > 2:
             away_until = smer.sme_time_from_string(s_until_str)
             if self.time_now < away_until:
                 td = away_until - self.time_now
                 s_delay = self.timedelta_as_string2(td + 15)
             else:
-                pilot_data['sdelay'] = ''
+                pilot_data["sdelay"] = ""
                 self.flag_config_dirty = True
 
-        s_ship = pilot_data['sship']
+        s_ship = pilot_data["sship"]
         if len(s_ship) == 0 and len(s_delay) == 0:
-            s_ship = '!'
+            s_ship = "!"
 
         # p_name = copy.copy(pilot_name)
         # if len(p_name) > 11:
         #     p_name = p_name[:11]
 
-        return ['{:.11}'.format(pilot_name), '{:1.1} {:>5}'.format(b_ship, b_delay),
-                '{:1.1} {:>5}'.format(s_ship, s_delay)]
+        return [
+            "{:.11}".format(pilot_name),
+            "{:1.1} {:>5}".format(b_ship, b_delay),
+            "{:1.1} {:>5}".format(s_ship, s_delay),
+        ]
 
     async def command_tech_set(self, params):
         return_list = []
@@ -1413,8 +1508,9 @@ class MainCommand:
         who_list_good = list()
         what_list_good = list()
         value_list = list()
-        return_list = return_list + \
-            self.parse_who_what_int(params, who_list_good, what_list_good, value_list)
+        return_list = return_list + self.parse_who_what_int(
+            params, who_list_good, what_list_good, value_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
@@ -1428,26 +1524,36 @@ class MainCommand:
 
                 for who in who_list_good:
                     self.player_info_set(
-                        who, 'last_name', self.member_name_from_id(who))
+                        who, "last_name", self.member_name_from_id(who)
+                    )
 
                     from_str = smer.sme_time_as_string(self.time_now)
-                    self.player_info_set(who, 'last_tech_update', from_str)
+                    self.player_info_set(who, "last_tech_update", from_str)
 
                     for what, val in zip(what_list_good, value_list):
                         old_value_list.append(self.player_tech_get(who, what))
                         self.player_tech_set(who, what, val)
 
                 if len(value_list) == 1:
-                    return_list.append('Value set to {nv} (was {ov})'.format(
-                        nv=value_list[0], ov=old_value_list[0]))
+                    return_list.append(
+                        "Value set to {nv} (was {ov})".format(
+                            nv=value_list[0], ov=old_value_list[0]
+                        )
+                    )
                 else:
-                    return_list.append('Values set to {nl} (was {ol})'.format(
-                        nl=value_list, ol=old_value_list))
+                    return_list.append(
+                        "Values set to {nl} (was {ol})".format(
+                            nl=value_list, ol=old_value_list
+                        )
+                    )
 
                 self.persdata_save()
             else:
-                return_list.append('Got {go} value(s) when I expected {ex}'.format(
-                    go=len(value_list), ex=len(what_list_good)))
+                return_list.append(
+                    "Got {go} value(s) when I expected {ex}".format(
+                        go=len(value_list), ex=len(what_list_good)
+                    )
+                )
 
         return return_list
 
@@ -1458,9 +1564,9 @@ class MainCommand:
         what_list_good = list()
         value_list = list()
         other_list = list()
-        return_list = return_list + \
-            self.parse_who_what_int(params, who_list_good, what_list_good,
-                                    value_list, other=other_list)
+        return_list = return_list + self.parse_who_what_int(
+            params, who_list_good, what_list_good, value_list, other=other_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
@@ -1469,23 +1575,28 @@ class MainCommand:
             who_list_good = [self.current_author.id]
 
         flag_csv = False
-        if '--csv' in other_list or '+csv' in other_list:
+        if "--csv" in other_list or "+csv" in other_list:
             flag_csv = True
 
         if len(who_list_good) > 0 and len(what_list_good) > 0:
             user_list = []
 
             for who in who_list_good:
-                user_list.append([self.member_name_from_id(who)] +
-                                 [self.player_tech_get(who, what) for what in what_list_good])
+                user_list.append(
+                    [self.member_name_from_id(who)]
+                    + [self.player_tech_get(who, what) for what in what_list_good]
+                )
 
             if not flag_csv:
                 user_list.sort(key=lambda x: x[1], reverse=True)
 
             what_names = [teh.get_tech_name(what) for what in what_list_good]
-            return_list += sme_table.draw(['User'] + what_names,
-                                          ['l'] + ['r'] * len(what_list_good),
-                                          user_list, flag_csv=flag_csv)
+            return_list += sme_table.draw(
+                ["User"] + what_names,
+                ["l"] + ["r"] * len(what_list_good),
+                user_list,
+                flag_csv=flag_csv,
+            )
 
         return return_list
 
@@ -1497,9 +1608,9 @@ class MainCommand:
         what_list_good = list()
         value_list = list()
         other_list = list()
-        return_list = return_list + \
-            self.parse_who_what_int(params, who_list_good, what_list_good,
-                                    value_list, other=other_list)
+        return_list = return_list + self.parse_who_what_int(
+            params, who_list_good, what_list_good, value_list, other=other_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
@@ -1508,10 +1619,10 @@ class MainCommand:
             who_list_good = [self.current_author.id]
 
         flag_csv = False
-        if '--csv' in other_list or '+csv' in other_list:
+        if "--csv" in other_list or "+csv" in other_list:
             flag_csv = True
 
-        if '--all' in other_list or '+all' in other_list or len(what_list_good) == 0:
+        if "--all" in other_list or "+all" in other_list or len(what_list_good) == 0:
             what_list_good = teh.tech_keys
 
         # if len(what_list_good) == 0:
@@ -1526,19 +1637,22 @@ class MainCommand:
                 if row_data != ([0] * len(row_data)) or flag_csv:
                     tech_index = teh.get_tech_index(what)
                     if flag_csv:
-                        prefix = ''
+                        prefix = ""
                     else:
-                        prefix = '  '
+                        prefix = "  "
                         if teh.is_range_change(last_tech_index, tech_index):
-                            prefix = '- '
+                            prefix = "- "
 
                     user_list.append([prefix + teh.get_tech_name(what)] + row_data)
                     last_tech_index = tech_index
 
             who_names = [self.member_name_from_id(wh) for wh in who_list_good]
-            return_list += sme_table.draw(['Tech'] + who_names,
-                                          ['l'] + ['r'] * len(who_list_good),
-                                          user_list, flag_csv=flag_csv)
+            return_list += sme_table.draw(
+                ["Tech"] + who_names,
+                ["l"] + ["r"] * len(who_list_good),
+                user_list,
+                flag_csv=flag_csv,
+            )
 
         return return_list
 
@@ -1547,7 +1661,9 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
@@ -1559,15 +1675,15 @@ class MainCommand:
             if len(other_list) > 0:
                 tzstr = str(other_list[0])
                 prefix = normalize_caseless(tzstr[:3])
-                if prefix in ['utc', 'gmt', 'fof'] and len(other_list) > 1:
+                if prefix in ["utc", "gmt", "fof"] and len(other_list) > 1:
                     tzstr = tzstr + other_list[1]
                     other_list = other_list[2:]
                 else:
                     other_list = other_list[1:]
 
                 if bool(smer.sme_time_is_valid_timezone(tzstr)):
-                    self.player_info_set(who_list_good[0], 'timezone', tzstr)
-                    return_list.append('OK')
+                    self.player_info_set(who_list_good[0], "timezone", tzstr)
+                    return_list.append("OK")
 
         return return_list
 
@@ -1587,10 +1703,14 @@ class MainCommand:
             user_list = []
 
             for pkey in who_list_good:
-                user_list.append([self.member_name_from_id(
-                    pkey), self.player_info_get(pkey, 'timezone')])
+                user_list.append(
+                    [
+                        self.member_name_from_id(pkey),
+                        self.player_info_get(pkey, "timezone"),
+                    ]
+                )
 
-            return_list += sme_table.draw(['User', 'timezone'], ['l', 'l'], user_list)
+            return_list += sme_table.draw(["User", "timezone"], ["l", "l"], user_list)
 
         return return_list
 
@@ -1604,63 +1724,77 @@ class MainCommand:
             if len(who_list_good) == 0:
                 who_list_good = [self.current_author.id]
 
-            if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+            if (
+                not str(self.current_channel) in self.ok_channels
+                and not self.auth_chief()
+            ):
                 who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0:
             user_list = []
 
             for pkey in who_list_good:
-                timestr = 'timeless'
+                timestr = "timeless"
                 t_sorting = int(0)
-                tz_str = self.player_info_get(pkey, 'timezone')
+                tz_str = self.player_info_get(pkey, "timezone")
                 if tz_str is not None:
                     try:
-                        converted0, converted1 = str(smer.sme_time_convert_to_timezone(self.time_now, tz_str)).split(',')
+                        converted0, converted1 = str(
+                            smer.sme_time_convert_to_timezone(self.time_now, tz_str)
+                        ).split(",")
                         if len(converted0) > 0 and len(converted1) > 0:
                             timestr = str(converted0)
                             t_sorting = int(converted1)
                     except ValueError:
                         pass
 
-                away_result = ''
-                away_msg_str = ''
-                away_until_str = self.player_info_get(pkey, 'away_until')
+                away_result = ""
+                away_msg_str = ""
+                away_until_str = self.player_info_get(pkey, "away_until")
                 if away_until_str is not None and len(away_until_str) > 2:
                     away_until = smer.sme_time_from_string(away_until_str)
                     if self.time_now < away_until:
-                        (td_days, td_secs) = self.timedelta_to_days_secs(away_until - self.time_now)
+                        (td_days, td_secs) = self.timedelta_to_days_secs(
+                            away_until - self.time_now
+                        )
                         if td_days >= 1:
-                            away_result = away_result + f'{td_days}d '
+                            away_result = away_result + f"{td_days}d "
 
                         sec = td_secs
                         if sec >= 3600:
                             hrs = int(sec / 3600)
-                            away_result = away_result + f'{hrs}h '
+                            away_result = away_result + f"{hrs}h "
                             sec = sec - hrs * 3600
 
                         mins = int(sec / 60)
-                        away_result = away_result + f'{mins}m'
+                        away_result = away_result + f"{mins}m"
 
-                        away_msg_str = self.player_info_get(pkey, 'away_msg')
+                        away_msg_str = self.player_info_get(pkey, "away_msg")
                         if away_msg_str is None:
-                            away_msg_str = ''
+                            away_msg_str = ""
 
                 # Use '\U0001F451' for a unicode emoji of Crown.
                 pilot_name = self.member_name_from_id(pkey)
                 if ws_info is not None:
-                    if self.group_contains_member(ws_info['assist_group'], pkey):
-                        pilot_name = '+ ' + pilot_name
+                    if self.group_contains_member(ws_info["assist_group"], pkey):
+                        pilot_name = "+ " + pilot_name
                     else:
-                        pilot_name = '  ' + pilot_name
+                        pilot_name = "  " + pilot_name
 
-                user_info = [pilot_name, timestr, away_result, t_sorting, pkey, away_msg_str]
+                user_info = [
+                    pilot_name,
+                    timestr,
+                    away_result,
+                    t_sorting,
+                    pkey,
+                    away_msg_str,
+                ]
                 user_list.append(user_info)
 
             user_list.sort(key=lambda x: x[3], reverse=True)
 
-            t_header = ['User', 'time']
-            t_align = ['l', 'l']
+            t_header = ["User", "time"]
+            t_align = ["l", "l"]
             t_user_list = list()
 
             sumlen = 2
@@ -1674,19 +1808,19 @@ class MainCommand:
             if sumlen <= 2:
                 t_user_list = [[ee[0], ee[1]] for ee in user_list]
             elif sumlen <= 3:
-                t_header = ['User', 'time', 'away']
-                t_align = ['l', 'l', 'r']
+                t_header = ["User", "time", "away"]
+                t_align = ["l", "l", "r"]
                 t_user_list = [[ee[0], ee[1], ee[2]] for ee in user_list]
             else:
-                t_header = ['User', 'time', 'away', 'reason']
-                t_align = ['l', 'l', 'r', 'l']
+                t_header = ["User", "time", "away", "reason"]
+                t_align = ["l", "l", "r", "l"]
                 t_user_list = [[ee[0], ee[1], ee[2], ee[5]] for ee in user_list]
 
             return_list += sme_table.draw(t_header, t_align, t_user_list)
 
-            if ws_info is not None and 'pilot_order' not in ws_info:
-                ws_info['pilot_order'] = [pi[4] for pi in user_list]
-                ws_info['dirty'] = True
+            if ws_info is not None and "pilot_order" not in ws_info:
+                ws_info["pilot_order"] = [pi[4] for pi in user_list]
+                ws_info["dirty"] = True
 
         return return_list
 
@@ -1695,7 +1829,9 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         away_player_id = 0
         if self.auth_chief():
@@ -1704,32 +1840,34 @@ class MainCommand:
             elif len(who_list_good) == 1:
                 away_player_id = who_list_good[0]
             else:
-                return_list.append('Sorry about that chief. Can only do one.')
+                return_list.append("Sorry about that chief. Can only do one.")
         else:
             if len(who_list_good) == 0:
                 away_player_id = self.current_author.id
             else:
-                return_list.append('Oh crap. Will only work on self.')
+                return_list.append("Oh crap. Will only work on self.")
 
         if away_player_id > 0 and len(other_list) >= 1 and is_float(other_list[0]):
             delay = float(other_list[0])
 
             if delay <= 36.0:
                 from_str = smer.sme_time_as_string(self.time_now)
-                self.player_info_set(away_player_id, 'away_from', from_str)
+                self.player_info_set(away_player_id, "away_from", from_str)
 
                 until_time = self.time_now + (delay * 3600)
                 until_str = smer.sme_time_as_string(int(until_time))
-                self.player_info_set(away_player_id, 'away_until', until_str)
+                self.player_info_set(away_player_id, "away_until", until_str)
 
                 if len(other_list) >= 2:
-                    self.player_info_set(away_player_id, 'away_msg', ' '.join(other_list[1:]))
+                    self.player_info_set(
+                        away_player_id, "away_msg", " ".join(other_list[1:])
+                    )
                 else:
-                    self.player_info_set(away_player_id, 'away_msg', '')
+                    self.player_info_set(away_player_id, "away_msg", "")
 
-                return_list.append('OK')
+                return_list.append("OK")
             else:
-                return_list.append('Away denied. Engage leaders for therapy.')
+                return_list.append("Away denied. Engage leaders for therapy.")
 
         return return_list
 
@@ -1738,16 +1876,18 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         if len(who_list_good) > 0:
-            return_list.append('Oh crap. Will only work on self.')
+            return_list.append("Oh crap. Will only work on self.")
         else:
-            self.player_info_set(self.current_author.id, 'away_from', '')
-            self.player_info_set(self.current_author.id, 'away_until', '')
-            self.player_info_set(self.current_author.id, 'away_msg', '')
+            self.player_info_set(self.current_author.id, "away_from", "")
+            self.player_info_set(self.current_author.id, "away_until", "")
+            self.player_info_set(self.current_author.id, "away_msg", "")
 
-            return_list.append('OK')
+            return_list.append("OK")
 
         return return_list
 
@@ -1760,7 +1900,7 @@ class MainCommand:
 
         if not self.auth_chief():
             who_list_good = list()
-            return_list.append('Only for chiefs')
+            return_list.append("Only for chiefs")
 
         if len(who_list_good) > 0:
             delay = 1
@@ -1771,7 +1911,7 @@ class MainCommand:
 
             for pkey in who_list_good:
                 flag_away = False
-                away_until_str = self.player_info_get(pkey, 'away_until')
+                away_until_str = self.player_info_get(pkey, "away_until")
                 if away_until_str is not None and len(away_until_str) > 2:
                     away_until = smer.sme_time_from_string(away_until_str)
                     if self.time_now < away_until:
@@ -1781,22 +1921,25 @@ class MainCommand:
                     who_list_away.append(pkey)
                 else:
                     return_ok = True
-                    self.player_info_set(pkey, 'checkin_from', from_str)
-                    self.player_info_set(pkey, 'checkin_by', until_str)
+                    self.player_info_set(pkey, "checkin_from", from_str)
+                    self.player_info_set(pkey, "checkin_by", until_str)
 
                     memb = self.member_from_id(pkey)
                     if memb is not None:
-                        self.queue_msg_for_send_out(memb, f'{instigator_name} wants you to check in during the next hour')
+                        self.queue_msg_for_send_out(
+                            memb,
+                            f"{instigator_name} wants you to check in during the next hour",
+                        )
 
             if who_list_away:
                 name_list = [self.member_name_from_id(pkey) for pkey in who_list_away]
                 if len(name_list) > 1:
-                    return_list.append(', '.join(name_list) + ' are all away')
+                    return_list.append(", ".join(name_list) + " are all away")
                 else:
-                    return_list.append(name_list[0] + ' is away')
+                    return_list.append(name_list[0] + " is away")
 
             if return_ok and not return_list:
-                return_list.append('OK')
+                return_list.append("OK")
 
         return return_list
 
@@ -1805,12 +1948,14 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if '--not' in other_list or '+not' in other_list:
+        if "--not" in other_list or "+not" in other_list:
             all_who = set()
             for pkey in self.players:
                 all_who.add(pkey)
@@ -1826,11 +1971,13 @@ class MainCommand:
 
             for pkey in who_list_good:
                 lup_result = float(0.0)
-                lup_was_str = self.player_info_get(pkey, 'last_tech_update')
+                lup_was_str = self.player_info_get(pkey, "last_tech_update")
                 if lup_was_str is not None and len(lup_was_str) > 2:
                     lup_was = smer.sme_time_from_string(lup_was_str)
                     if self.time_now > lup_was:
-                        (td_days, td_secs) = self.timedelta_to_days_secs(self.time_now - lup_was)
+                        (td_days, td_secs) = self.timedelta_to_days_secs(
+                            self.time_now - lup_was
+                        )
                         if td_days >= 1:
                             lup_result = lup_result + float(td_days)
 
@@ -1840,7 +1987,9 @@ class MainCommand:
 
             user_list.sort(key=lambda x: x[1], reverse=True)
 
-            return_list += sme_table.draw(['User', 'days since update'], ['l', 'l'], user_list)
+            return_list += sme_table.draw(
+                ["User", "days since update"], ["l", "l"], user_list
+            )
 
         return return_list
 
@@ -1849,7 +1998,9 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
@@ -1857,7 +2008,7 @@ class MainCommand:
         if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
-        score_key = '210918'
+        score_key = "210918"
         flag_detail = False
         flagged_whotruncated = False
         if len(other_list) > 0:
@@ -1865,7 +2016,7 @@ class MainCommand:
             if new_key in self.weights:
                 score_key = new_key
 
-            if '--detail' in other_list or '+detail' in other_list:
+            if "--detail" in other_list or "+detail" in other_list:
                 flag_detail = True
 
                 if len(who_list_good) > 4:
@@ -1873,22 +2024,22 @@ class MainCommand:
                     del who_list_good[4:]
 
         flag_wspoints210918 = False
-        if score_key == '210918':
+        if score_key == "210918":
             flag_wspoints210918 = True
 
         flag_wspoints201206 = False
-        if score_key == '201206':
+        if score_key == "201206":
             flag_wspoints201206 = True
 
         ww = self.weights[score_key]
 
         user_list = []
 
-        t_header = ['User', score_key]
+        t_header = ["User", score_key]
 
         for pkey in who_list_good:
             pp = self.players[pkey]
-            ppt = pp['tech']
+            ppt = pp["tech"]
             accum = 0
 
             if flag_wspoints201206:
@@ -1901,7 +2052,7 @@ class MainCommand:
                 detail_sh = []
 
                 # relics, entrust, dispatch, data, relicdrone
-                for tkey in ['relics', 'entrust', 'dispatch', 'dart', 'relicdrone']:
+                for tkey in ["relics", "entrust", "dispatch", "dart", "relicdrone"]:
                     if tkey in ww:
                         tweights = ww[tkey]
                         tval = self.player_tech_get(pkey, tkey)
@@ -1909,7 +2060,7 @@ class MainCommand:
                             score = tweights[tval - 1]
                             faccum.append(float(score))
                             if flag_detail:
-                                detail_aa.append(f'{tkey} {score}')
+                                detail_aa.append(f"{tkey} {score}")
 
                 # mining
                 otherminingtech = list()
@@ -1927,7 +2078,7 @@ class MainCommand:
 
                 if len(otherminingtech) > 0:
                     otherminingtech.sort(key=lambda x: x[1], reverse=True)
-                    minerlvl = self.player_tech_get(pkey, 'miner')
+                    minerlvl = self.player_tech_get(pkey, "miner")
                     mcount = 0
                     if minerlvl >= 2 and minerlvl <= 6:
                         mcount = minerlvl - 1
@@ -1943,8 +2094,9 @@ class MainCommand:
                         iscore = float(otherminingtech[zz][1])
                         fscore += iscore
                         if flag_detail:
-                            detail_mi.append('{tn} {ts}'.format(
-                                tn=otherminingtech[zz][0], ts=iscore))
+                            detail_mi.append(
+                                "{tn} {ts}".format(tn=otherminingtech[zz][0], ts=iscore)
+                            )
 
                     if mcount < mmax:
                         mhi = mcount * 2 - 2
@@ -1955,13 +2107,16 @@ class MainCommand:
                             iscore = float(otherminingtech[zz][1]) * 0.5
                             fscore += iscore
                             if flag_detail:
-                                detail_mi.append('{tn} {ts}'.format(
-                                    tn=otherminingtech[zz][0], ts=iscore))
+                                detail_mi.append(
+                                    "{tn} {ts}".format(
+                                        tn=otherminingtech[zz][0], ts=iscore
+                                    )
+                                )
 
                     faccum.append(fscore)
 
                 # support
-                bslvl = self.player_tech_get(pkey, 'bs')
+                bslvl = self.player_tech_get(pkey, "bs")
                 if bslvl >= 2 and bslvl <= 6:
                     scount = bslvl - 1
 
@@ -1993,8 +2148,9 @@ class MainCommand:
                             iscore = float(supporttech[zz][1])
                             fscore += iscore
                             if flag_detail:
-                                detail_s1.append('{tn} {ts}'.format(
-                                    tn=supporttech[zz][0], ts=iscore))
+                                detail_s1.append(
+                                    "{tn} {ts}".format(tn=supporttech[zz][0], ts=iscore)
+                                )
 
                         if scount < smax:
                             shi = scount * 2
@@ -2005,22 +2161,28 @@ class MainCommand:
                                 iscore = float(supporttech[zz][1]) * 0.75
                                 fscore += iscore
                                 if flag_detail:
-                                    detail_s1.append('{tn} {ts}'.format(
-                                        tn=supporttech[zz][0], ts=iscore))
+                                    detail_s1.append(
+                                        "{tn} {ts}".format(
+                                            tn=supporttech[zz][0], ts=iscore
+                                        )
+                                    )
 
                             if (scount * 2) < smax:
                                 for zz in range(scount * 2, smax):
                                     iscore = float(supporttech[zz][1]) * 0.25
                                     fscore += iscore
                                     if flag_detail:
-                                        detail_s2.append('{tn} {ts}'.format(
-                                            tn=supporttech[zz][0], ts=iscore))
+                                        detail_s2.append(
+                                            "{tn} {ts}".format(
+                                                tn=supporttech[zz][0], ts=iscore
+                                            )
+                                        )
 
                         faccum.append(fscore)
 
                 # weapons
                 wl1 = teh.tech_keys_range_weapon()
-                techlist = [t for t in wl1 if t not in ['dart']]
+                techlist = [t for t in wl1 if t not in ["dart"]]
                 weapontech = list()
                 for tkey in techlist:
                     score = 0
@@ -2041,7 +2203,7 @@ class MainCommand:
                     for weapon_tuple in weapontech:
                         skey = weapon_tuple[0]
 
-                        if skey in ['battery', 'laser']:
+                        if skey in ["battery", "laser"]:
                             if not got_first:
                                 wt2.append(weapon_tuple)
                                 got_first = True
@@ -2057,21 +2219,25 @@ class MainCommand:
                         iscore = float(wt2[0][1])
                         fscore = iscore
                         if flag_detail:
-                            detail_we.append('{tn} {ts}'.format(tn=wt2[0][0], ts=iscore))
+                            detail_we.append(
+                                "{tn} {ts}".format(tn=wt2[0][0], ts=iscore)
+                            )
 
                         if 1 < whi:
                             iscore = float(wt2[1][1]) * 0.75
                             fscore += iscore
                             if flag_detail:
-                                detail_we.append('{tn} {ts}'.format(
-                                    tn=wt2[1][0], ts=iscore))
+                                detail_we.append(
+                                    "{tn} {ts}".format(tn=wt2[1][0], ts=iscore)
+                                )
 
                             if 2 < whi:
                                 iscore = float(wt2[2][1]) * 0.5
                                 fscore += iscore
                                 if flag_detail:
-                                    detail_we.append('{tn} {ts}'.format(
-                                        tn=wt2[2][0], ts=iscore))
+                                    detail_we.append(
+                                        "{tn} {ts}".format(tn=wt2[2][0], ts=iscore)
+                                    )
 
                         faccum.append(fscore)
 
@@ -2098,19 +2264,19 @@ class MainCommand:
                     for ss in shieldtech:
                         skey = ss[0]
 
-                        if skey in ['passiveshield', 'omegashield', 'mirrorshield']:
+                        if skey in ["passiveshield", "omegashield", "mirrorshield"]:
                             if not gotmain:
                                 st2.append(ss)
                                 gotmain = True
 
-                        elif skey in ['areashield', 'deltashield']:
+                        elif skey in ["areashield", "deltashield"]:
                             if not gotareadelta:
                                 st2.append(ss)
                                 gotareadelta = True
                             else:
                                 st2.append([skey, ss[1] * 0.5])
 
-                        elif skey in ['blastshield']:
+                        elif skey in ["blastshield"]:
                             st2.append(ss)
 
                     fscore = float(0.0)
@@ -2119,7 +2285,7 @@ class MainCommand:
                         iscore = float(ss[1])
                         fscore += iscore
                         if flag_detail:
-                            detail_sh.append('{tn} {ts}'.format(tn=ss[0], ts=iscore))
+                            detail_sh.append("{tn} {ts}".format(tn=ss[0], ts=iscore))
 
                     faccum.append(fscore)
 
@@ -2136,19 +2302,19 @@ class MainCommand:
                 detail_sh = []
 
                 # relics, entrust, dispatch, data, relicdrone
-                for tkey in ['relics', 'entrust', 'dispatch', 'dart', 'relicdrone']:
+                for tkey in ["relics", "entrust", "dispatch", "dart", "relicdrone"]:
                     if tkey in ww:
                         tweights = ww[tkey]
                         tval = self.player_tech_get(pkey, tkey)
                         if tval > 0:
                             score = tweights[tval - 1]
-                            if tkey == 'dart':
+                            if tkey == "dart":
                                 # Special bonus for dart
                                 score = 50
 
                             faccum.append(float(score))
                             if flag_detail:
-                                detail_aa.append('{tk} {sc}'.format(tk=tkey, sc=score))
+                                detail_aa.append("{tk} {sc}".format(tk=tkey, sc=score))
 
                 # mining
                 otherminingtech = list()
@@ -2166,7 +2332,7 @@ class MainCommand:
 
                 if len(otherminingtech) > 0:
                     otherminingtech.sort(key=lambda x: x[1], reverse=True)
-                    minerlvl = self.player_tech_get(pkey, 'miner')
+                    minerlvl = self.player_tech_get(pkey, "miner")
                     mcount = 0
                     if minerlvl >= 2 and minerlvl <= 6:
                         mcount = minerlvl - 1
@@ -2182,8 +2348,9 @@ class MainCommand:
                         iscore = float(otherminingtech[zz][1])
                         fscore += iscore
                         if flag_detail:
-                            detail_mi.append('{tn} {ts}'.format(
-                                tn=otherminingtech[zz][0], ts=iscore))
+                            detail_mi.append(
+                                "{tn} {ts}".format(tn=otherminingtech[zz][0], ts=iscore)
+                            )
 
                     if mcount < mmax:
                         mhi = mcount * 2 - 2
@@ -2194,13 +2361,16 @@ class MainCommand:
                             iscore = float(otherminingtech[zz][1]) * 0.5
                             fscore += iscore
                             if flag_detail:
-                                detail_mi.append('{tn} {ts}'.format(
-                                    tn=otherminingtech[zz][0], ts=iscore))
+                                detail_mi.append(
+                                    "{tn} {ts}".format(
+                                        tn=otherminingtech[zz][0], ts=iscore
+                                    )
+                                )
 
                     faccum.append(fscore)
 
                 # support
-                bslvl = self.player_tech_get(pkey, 'bs')
+                bslvl = self.player_tech_get(pkey, "bs")
                 if bslvl >= 2 and bslvl <= 6:
                     scount = bslvl - 1
 
@@ -2232,8 +2402,9 @@ class MainCommand:
                             iscore = float(supporttech[zz][1])
                             fscore += iscore
                             if flag_detail:
-                                detail_s1.append('{tn} {ts}'.format(
-                                    tn=supporttech[zz][0], ts=iscore))
+                                detail_s1.append(
+                                    "{tn} {ts}".format(tn=supporttech[zz][0], ts=iscore)
+                                )
 
                         if scount < smax:
                             shi = scount * 2
@@ -2244,16 +2415,22 @@ class MainCommand:
                                 iscore = float(supporttech[zz][1]) * 0.75
                                 fscore += iscore
                                 if flag_detail:
-                                    detail_s1.append('{tn} {ts}'.format(
-                                        tn=supporttech[zz][0], ts=iscore))
+                                    detail_s1.append(
+                                        "{tn} {ts}".format(
+                                            tn=supporttech[zz][0], ts=iscore
+                                        )
+                                    )
 
                             if (scount * 2) < smax:
                                 for zz in range(scount * 2, smax):
                                     iscore = float(supporttech[zz][1]) * 0.25
                                     fscore += iscore
                                     if flag_detail:
-                                        detail_s2.append('{tn} {ts}'.format(
-                                            tn=supporttech[zz][0], ts=iscore))
+                                        detail_s2.append(
+                                            "{tn} {ts}".format(
+                                                tn=supporttech[zz][0], ts=iscore
+                                            )
+                                        )
 
                         faccum.append(fscore)
 
@@ -2279,7 +2456,7 @@ class MainCommand:
                     for weapon_tuple in weapontech:
                         skey = weapon_tuple[0]
 
-                        if skey in ['battery', 'laser']:
+                        if skey in ["battery", "laser"]:
                             if not got_first:
                                 wt2.append(weapon_tuple)
                                 got_first = True
@@ -2295,21 +2472,25 @@ class MainCommand:
                         iscore = float(wt2[0][1])
                         fscore = iscore
                         if flag_detail:
-                            detail_we.append('{tn} {ts}'.format(tn=wt2[0][0], ts=iscore))
+                            detail_we.append(
+                                "{tn} {ts}".format(tn=wt2[0][0], ts=iscore)
+                            )
 
                         if 1 < whi:
                             iscore = float(wt2[1][1]) * 0.75
                             fscore += iscore
                             if flag_detail:
-                                detail_we.append('{tn} {ts}'.format(
-                                    tn=wt2[1][0], ts=iscore))
+                                detail_we.append(
+                                    "{tn} {ts}".format(tn=wt2[1][0], ts=iscore)
+                                )
 
                             if 2 < whi:
                                 iscore = float(wt2[2][1]) * 0.5
                                 fscore += iscore
                                 if flag_detail:
-                                    detail_we.append('{tn} {ts}'.format(
-                                        tn=wt2[2][0], ts=iscore))
+                                    detail_we.append(
+                                        "{tn} {ts}".format(tn=wt2[2][0], ts=iscore)
+                                    )
 
                         faccum.append(fscore)
 
@@ -2336,19 +2517,19 @@ class MainCommand:
                     for ss in shieldtech:
                         skey = ss[0]
 
-                        if skey in ['passiveshield', 'omegashield', 'mirrorshield']:
+                        if skey in ["passiveshield", "omegashield", "mirrorshield"]:
                             if not gotmain:
                                 st2.append(ss)
                                 gotmain = True
 
-                        elif skey in ['areashield', 'deltashield']:
+                        elif skey in ["areashield", "deltashield"]:
                             if not gotareadelta:
                                 st2.append(ss)
                                 gotareadelta = True
                             else:
                                 st2.append([skey, ss[1] * 0.5])
 
-                        elif skey in ['blastshield']:
+                        elif skey in ["blastshield"]:
                             st2.append(ss)
 
                     fscore = float(0.0)
@@ -2357,7 +2538,7 @@ class MainCommand:
                         iscore = float(ss[1])
                         fscore += iscore
                         if flag_detail:
-                            detail_sh.append('{tn} {ts}'.format(tn=ss[0], ts=iscore))
+                            detail_sh.append("{tn} {ts}".format(tn=ss[0], ts=iscore))
 
                     faccum.append(fscore)
 
@@ -2377,33 +2558,35 @@ class MainCommand:
 
             if flag_detail:
                 olist = list()
-                olist.append('`| {nm}` {ac}'.format(nm=self.member_name_from_id(pkey), ac=accum))
-                olist.append('`|     :` ' + ', '.join(detail_aa))
-                olist.append('`|   mi:` ' + ', '.join(detail_mi))
-                olist.append('`|   su:` ' + ', '.join(detail_s1))
-                olist.append('`|   su:` ' + ', '.join(detail_s2))
-                olist.append('`|   we:` ' + ', '.join(detail_we))
-                olist.append('`|   sh:` ' + ', '.join(detail_sh))
-                return_list.append('\n'.join(olist))
+                olist.append(
+                    "`| {nm}` {ac}".format(nm=self.member_name_from_id(pkey), ac=accum)
+                )
+                olist.append("`|     :` " + ", ".join(detail_aa))
+                olist.append("`|   mi:` " + ", ".join(detail_mi))
+                olist.append("`|   su:` " + ", ".join(detail_s1))
+                olist.append("`|   su:` " + ", ".join(detail_s2))
+                olist.append("`|   we:` " + ", ".join(detail_we))
+                olist.append("`|   sh:` " + ", ".join(detail_sh))
+                return_list.append("\n".join(olist))
             else:
                 user_list.append([self.member_name_from_id(pkey), accum])
 
         if not flag_detail:
             user_list.sort(key=lambda x: x[1], reverse=True)
 
-            return_list += sme_table.draw(t_header, ['l', 'r'], user_list)
+            return_list += sme_table.draw(t_header, ["l", "r"], user_list)
 
         if flagged_whotruncated:
-            return_list.append('Only showing 4 pilots')
+            return_list.append("Only showing 4 pilots")
 
         return return_list
 
     async def command_msgme(self, params):
         return_list = []
 
-        self.queue_msg_for_send_out(self.current_author, 'You rang?')
+        self.queue_msg_for_send_out(self.current_author, "You rang?")
 
-        return_list.append('OK')
+        return_list.append("OK")
 
         return return_list
 
@@ -2412,7 +2595,9 @@ class MainCommand:
 
         who_list_good = list()
         other_list = list()
-        return_list = return_list + self.parse_who(params, who_list_good, other=other_list)
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         count_clear = 1
         flag_all = False
@@ -2422,17 +2607,19 @@ class MainCommand:
         while other_count < len(other_list):
             oo = other_list[other_count]
 
-            if oo == '+all':
+            if oo == "+all":
                 pass
                 # flag_all = True
-            elif oo == '+keep':
+            elif oo == "+keep":
                 count_after = 1
-                if (other_count + 1) < len(other_list) and is_int(other_list[other_count + 1]):
+                if (other_count + 1) < len(other_list) and is_int(
+                    other_list[other_count + 1]
+                ):
                     count_after = int(other_list[other_count + 1])
                     other_count += 1
 
                     if count_after > 10:
-                        return_list.append(f'Error: wont keep more than {count_after}')
+                        return_list.append(f"Error: wont keep more than {count_after}")
                         count_clear = 0
                         flag_all = False
                         count_after = 0
@@ -2450,7 +2637,9 @@ class MainCommand:
 
         found_after = None
         if count_after > 0:
-            old_msgs = await self.current_channel.history(limit=int(count_after + 1), oldest_first=True).flatten()
+            old_msgs = await self.current_channel.history(
+                limit=int(count_after + 1), oldest_first=True
+            ).flatten()
 
             if count_after >= len(old_msgs):
                 count_clear = 0
@@ -2472,7 +2661,7 @@ class MainCommand:
             await self.current_channel.purge(limit=count_clear + 1, after=found_after)
 
         if len(return_list) < 1:
-            return_list.append('dented-control-message:no-reply')
+            return_list.append("dented-control-message:no-reply")
 
         return return_list
 
