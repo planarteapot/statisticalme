@@ -111,23 +111,8 @@ class MainCommand:
         except Exception:
             pass
 
-        self.temp_rolemap = dict()
-        # self.temp_rolemap = {  # Previous RS role mappings
-        #     550500946694635522: 475210524024504322,
-        #     540224673795801122: 475210373478219776,
-        #     540224947608354817: 475210207161614356,
-        #     545823511151640587: 475209965938802688
-        # }
-
-        # Dev parser
-        # self.subparser_config = sme_paramparse.CommandParse(
-        #     title='StatisticalMe Dev config')
-        # self.subparser_config.add_command('set', False, self.dev_command_config_set)
-        # self.subparser_config.add_command('get', False, self.dev_command_config_get)
-
         self.dev_parser = sme_paramparse.CommandParse(
             title='StatisticalMe Dev')
-        # self.dev_parser.add_command('config', True, self.subparser_config)
         self.dev_parser.add_command('info', False, self.dev_command_info)
         self.dev_parser.add_command('save', False, self.dev_command_save)
         self.dev_parser.add_command('roleprint', False, self.dev_command_roleprint)
