@@ -131,6 +131,7 @@ class MainCommand:
         self.dev_parser.add_command('info', False, self.dev_command_info)
         self.dev_parser.add_command('save', False, self.dev_command_save)
         self.dev_parser.add_command('roleprint', False, self.dev_command_roleprint)
+        self.dev_parser.add_command('unitest', False, self.dev_command_unitest)
         self.dev_parser.add_command('techlist', False, self.dev_command_techlist)
         self.dev_parser.add_command('quit', False, self.dev_command_quit)
 
@@ -363,11 +364,9 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 22.0.0'
+        info_str += '\nversion: 22.0.1'
         info_str += '\nrecent changes:'
         info_str += '\n  - WS score 210918'
-        info_str += '\n  - update dependancies'
-        info_str += '\n  - change base to debian 11'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
@@ -395,6 +394,27 @@ class MainCommand:
                     msg_list.append(f'  name: {role.name}')
                     member_names = [self.member_name_from_id(memb.id) for memb in role.members]
                     msg_list.append('  members: ' + ', '.join(member_names))
+
+            return_list.append('\n'.join(msg_list))
+        else:
+            return_list.append('Pardon my liege? No config var name')
+
+        return return_list
+
+    async def dev_command_unitest1(self, params):
+        return_list = []
+
+        who_list = list()
+        return_list = return_list + self.parse_who(params, who_list)
+
+        if len(who_list) > 0:
+            msg_list = []
+            msg_list.append('Names:')
+            for who_id in who_list:
+                who_name = self.member_name_from_id(who_id)
+                who_p = normalize_caseless(who_name)
+                who_r = smer.sme_utils_normalize_caseless(who_name)
+                msg_list.append(f'  {who_name}\t{who_p}\t{who_r}')
 
             return_list.append('\n'.join(msg_list))
         else:
