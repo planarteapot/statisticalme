@@ -364,9 +364,10 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = 'StatisticalMe'
-        info_str += '\nversion: 22.0.1'
-        info_str += '\nrecent changes:'
+        info_str += '\nversion: 22.0.2'
+        info_str += '\nnotes:'
         info_str += '\n  - WS score 210918'
+        info_str += '\n  - unicode fun'
         info_str += '\nuptime: {ut}'.format(ut=self.timedelta_as_string(self.time_now - self.time_up))
 
         return [info_str]
@@ -401,7 +402,7 @@ class MainCommand:
 
         return return_list
 
-    async def dev_command_unitest1(self, params):
+    async def dev_command_unitest(self, params):
         return_list = []
 
         who_list = list()

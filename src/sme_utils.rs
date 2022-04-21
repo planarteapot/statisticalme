@@ -1,15 +1,13 @@
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
-use unicase::UniCase;
+use unicode_normalization::UnicodeNormalization;
 
 fn mod_init() {
 }
 
-// def normalize_caseless(text):
-//     return unicodedata.normalize("NFKD", text.casefold())
 fn sme_utils_normalize_caseless_impl(text: &str) -> String {
-    UniCase::new(text).to_string()
+    text.nfkd().collect::<String>().to_lowercase()
 }
 
 #[pyfunction]
@@ -17,8 +15,6 @@ pub fn sme_utils_normalize_caseless(text: &str) -> PyResult<String> {
     Ok(sme_utils_normalize_caseless_impl(text))
 }
 
-// def is_equal_caseless(left, right):
-//     return normalize_caseless(left) == normalize_caseless(right)
 fn sme_utils_is_equal_caseless_impl(left: &str, right: &str) -> bool {
     sme_utils_normalize_caseless_impl(left) == sme_utils_normalize_caseless_impl(right)
 }
