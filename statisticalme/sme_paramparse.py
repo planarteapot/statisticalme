@@ -16,8 +16,8 @@
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from .sme_utils import normalize_caseless
 import logging
+import statisticalme.statisticalme as smer
 
 
 logger = logging.getLogger("StatisticalMe")
@@ -30,13 +30,13 @@ class CommandParse:
         self.params = dict()
 
     def add_command(self, key, object_flag, value, auth_fn=None):
-        self.params[normalize_caseless(key)] = [object_flag, value, auth_fn]
+        self.params[smer.sme_utils_normalize_caseless(key)] = [object_flag, value, auth_fn]
 
     async def do_command(self, param_list):
         return_list = []
 
         if len(param_list) >= 1:
-            pcommand = normalize_caseless(param_list[0])
+            pcommand = smer.sme_utils_normalize_caseless(param_list[0])
 
             pparams = []
             if len(param_list) > 1:

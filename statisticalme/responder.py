@@ -18,7 +18,6 @@
 import sys
 
 from discord.ext import tasks
-from .sme_utils import normalize_caseless
 import aiohttp
 import copy
 import discord
@@ -584,7 +583,7 @@ class MainCommand:
             elif value == "|":
                 pass
             else:
-                what = normalize_caseless(value)
+                what = smer.sme_utils_normalize_caseless(value)
                 if what == "other":
                     for tt in teh.tech_keys_range_other():
                         if tt not in what_set:
@@ -1234,7 +1233,7 @@ class MainCommand:
                 s_enemy = None
 
                 for ostr_withcase in other_list:
-                    ostr = normalize_caseless(ostr_withcase)
+                    ostr = smer.sme_utils_normalize_caseless(ostr_withcase)
                     if ostr in ["in", "out", "timer", "dead", "add", "remove"]:
                         s_cmd = ostr
                     elif ostr in ["bs", "bat", "battleship", "fs", "flagship"]:
@@ -1652,7 +1651,7 @@ class MainCommand:
         if len(who_list_good) > 0:
             if len(other_list) > 0:
                 tzstr = str(other_list[0])
-                prefix = normalize_caseless(tzstr[:3])
+                prefix = smer.sme_utils_normalize_caseless(tzstr[:3])
                 if prefix in ["utc", "gmt", "fof"] and len(other_list) > 1:
                     tzstr = tzstr + other_list[1]
                     other_list = other_list[2:]
