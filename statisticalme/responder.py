@@ -351,10 +351,9 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = "StatisticalMe"
-        info_str += "\nversion: 22.0.2"
+        info_str += "\nversion: 22.0.3"
         info_str += "\nnotes:"
-        info_str += "\n  - WS score 210918"
-        info_str += "\n  - unicode fun"
+        info_str += "\n  - checking indexing during sme score"
         info_str += "\nuptime: {ut}".format(
             ut=self.timedelta_as_string(self.time_now - self.time_up)
         )
