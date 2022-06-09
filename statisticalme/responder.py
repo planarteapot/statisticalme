@@ -351,7 +351,7 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = "StatisticalMe"
-        info_str += "\nversion: 22.0.3"
+        info_str += "\nversion: 22.1.0"
         info_str += "\nnotes:"
         info_str += "\n  - checking indexing during sme score"
         info_str += "\nuptime: {ut}".format(
