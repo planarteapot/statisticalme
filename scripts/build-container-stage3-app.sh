@@ -4,7 +4,7 @@ set -o errexit
 
 # Wheel prebuild
 
-/bin/rm -rf target/wheels/
+/bin/rm -rf target/
 # "${HOME}"/.venv/sme_deploy/bin/maturin build --no-sdist --bindings pyo3 --compatibility linux --release --cargo-extra-args='--jobs 4'
 podman run --rm --tty --volume "$(pwd):/work" --workdir /work sme-debian-builder maturin build --no-sdist --bindings pyo3 --compatibility linux --release --cargo-extra-args='--jobs 4'
 wheelname=$(ls target/wheels/statisticalme-*-cp39-cp39-linux_x86_64.whl)
