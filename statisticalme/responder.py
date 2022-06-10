@@ -106,7 +106,7 @@ class MainCommand:
                 if "weights" in loaded:
                     self.weights = copy.copy(loaded["weights"])
         except Exception:
-            pass
+            logger.debug("Exception reading weights file")
 
         self.dev_parser = sme_paramparse.CommandParse(title="StatisticalMe Dev")
         self.dev_parser.add_command("info", False, self.dev_command_info)
@@ -206,7 +206,7 @@ class MainCommand:
 
                 self.flag_config_dirty = False
         except Exception:
-            pass
+            logger.debug("Exception reading config file")
 
     def config_save(self):
         with open(self.config_filepath, "w") as fh:
@@ -252,6 +252,7 @@ class MainCommand:
 
                 self.flag_persdata_dirty = False
         except Exception:
+            logger.debug("Exception reading persdata file")
             self.players = dict()
 
     def persdata_save(self):
