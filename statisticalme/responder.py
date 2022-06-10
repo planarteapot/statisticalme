@@ -21,14 +21,15 @@ from discord.ext import tasks
 import aiohttp
 import copy
 import discord
+import json
 import logging
 import math
 import re
+import traceback
+
 from . import sme_paramparse
 from . import sme_table
 from . import sme_tech
-import traceback
-import yaml
 import statisticalme.statisticalme as smer
 
 
@@ -77,14 +78,14 @@ class MainCommand:
         self.ws_name_match = re.compile(r"-([a-zA-Z]+\d*)$")
 
         # Load configuration/non-pilot data
-        self.config_filepath = "var/config.yaml"
+        self.config_filepath = "var/config.json"
         self.flag_config_dirty = False
         self.groups = dict()
         self.ws = dict()
         self.config_load()
 
         # Load persistant/pilot data
-        self.persdata_filepath = "var/persdata.yaml"
+        self.persdata_filepath = "var/persdata.json"
         self.flag_persdata_dirty = False
         self.players = dict()
         self.persdata_load()
@@ -100,8 +101,8 @@ class MainCommand:
 
         self.weights = dict()
         try:
-            with open("var/weights.yaml", "r") as fh:
-                loaded = yaml.safe_load(fh)
+            with open("var/weights.json", "r") as fh:
+                loaded = json.load(fh)
 
                 if "weights" in loaded:
                     self.weights = copy.copy(loaded["weights"])
@@ -196,7 +197,7 @@ class MainCommand:
     def config_load(self):
         try:
             with open(self.config_filepath, "r") as fh:
-                loaded = yaml.safe_load(fh)
+                loaded = json.load(fh)
 
                 if "groups" in loaded:
                     self.groups = copy.copy(loaded["groups"])
@@ -210,14 +211,14 @@ class MainCommand:
 
     def config_save(self):
         with open(self.config_filepath, "w") as fh:
-            yaml.dump({"groups": self.groups, "ws": self.ws}, fh)
+            json.dump({"groups": self.groups, "ws": self.ws}, fh)
 
             self.flag_config_dirty = False
 
     def persdata_load(self):
         try:
             with open(self.persdata_filepath, "r") as fh:
-                loaded = yaml.safe_load(fh)
+                loaded = json.load(fh)
 
                 ltk = loaded["tech_keys"]
 
@@ -257,7 +258,7 @@ class MainCommand:
 
     def persdata_save(self):
         with open(self.persdata_filepath, "w") as fh:
-            yaml.dump({"tech_keys": teh.tech_keys, "players": self.players}, fh)
+            json.dump({"tech_keys": teh.tech_keys, "players": self.players}, fh)
 
             self.flag_persdata_dirty = False
 
@@ -558,7 +559,7 @@ class MainCommand:
 
         # People
         for who in who_set:
-            if who not in self.players:
+            if str(who) not in self.players:
                 self.ensure_player_created(who)
 
             who_list.append(who)
@@ -622,7 +623,7 @@ class MainCommand:
 
         # People
         for who in who_set:
-            if who not in self.players:
+            if str(who) not in self.players:
                 self.ensure_player_created(who)
 
             who_list.append(who)
@@ -636,11 +637,13 @@ class MainCommand:
 
         return return_list
 
-    def ensure_player_created(self, playerid):
+    def ensure_player_created(self, p_playerid):
+        playerid = str(p_playerid)
         if playerid not in self.players:
             self.players[playerid] = {"tech": [0] * len(teh.tech_keys), "info": dict()}
 
-    def player_tech_get(self, playerid, techname):
+    def player_tech_get(self, p_playerid, techname):
+        playerid = str(p_playerid)
         r_value = 0
 
         if playerid in self.players:
@@ -676,7 +679,8 @@ class MainCommand:
 
         return r_value
 
-    def player_tech_set(self, playerid, techname, techvalue):
+    def player_tech_set(self, p_playerid, techname, techvalue):
+        playerid = str(p_playerid)
         tech_index = teh.get_tech_index(techname)
 
         if tech_index >= 0 and tech_index < 9900:
@@ -686,7 +690,8 @@ class MainCommand:
 
             self.flag_persdata_dirty = True
 
-    def player_info_get(self, playerid, infoname):
+    def player_info_get(self, p_playerid, infoname):
+        playerid = str(p_playerid)
         r_value = None
 
         if playerid in self.players:
@@ -700,7 +705,8 @@ class MainCommand:
 
         return r_value
 
-    def player_info_set(self, playerid, infoname, infovalue):
+    def player_info_set(self, p_playerid, infoname, infovalue):
+        playerid = str(p_playerid)
         self.ensure_player_created(playerid)
         pi = self.players[playerid]["info"]
         pi[infoname] = infovalue
@@ -1935,7 +1941,7 @@ class MainCommand:
         if "--not" in other_list or "+not" in other_list:
             all_who = set()
             for pkey in self.players:
-                all_who.add(pkey)
+                all_who.add(int(pkey))
 
             who_set = set(who_list_good)
             who_list_good = list(all_who - who_set)
@@ -2015,7 +2021,7 @@ class MainCommand:
         t_header = ["User", score_key]
 
         for pkey in who_list_good:
-            pp = self.players[pkey]
+            pp = self.players[str(pkey)]
             ppt = pp["tech"]
             accum = 0
 
