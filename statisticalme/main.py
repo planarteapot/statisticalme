@@ -27,8 +27,8 @@ from .responder import MainCommand
 import discord
 import logging
 import re
-import shlex
 import time
+import statisticalme.statisticalme as smer
 
 load_dotenv(Path("var/env.sh"))
 
@@ -124,7 +124,7 @@ class SmeClient(discord.Client):
                     f"Client event on_message author={str(message.author)} channel={str(message.channel)} content={str(message.content)}"
                 )
 
-                params = shlex.split(message.content)
+                params = smer.sme_utils_shellwords(message.content)
                 msg_list = await mainc.on_message(
                     pre_list + params[1:], message.author, message.channel
                 )
