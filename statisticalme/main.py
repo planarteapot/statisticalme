@@ -17,10 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
 import sys
 
-from dotenv import load_dotenv
 from pathlib import Path
 from .responder import MainCommand
 
@@ -30,7 +28,7 @@ import re
 import time
 import statisticalme.statisticalme as smer
 
-load_dotenv(Path("var/env.sh"))
+smer.sme_utils_loadenv("var/env.sh")
 
 logger = logging.getLogger("StatisticalMe")
 logger.setLevel(logging.DEBUG)
@@ -53,8 +51,8 @@ logger.info("App starting; logger ready")
 
 # pseudo global vars
 
-dev_author_env = os.environ["STATISTICALME_DEV_AUTHORS"]
-ok_channels_env = os.environ["STATISTICALME_OK_CHANNELS"]
+dev_author_env = smer.sme_utils_getenv("STATISTICALME_DEV_AUTHORS")
+ok_channels_env = smer.sme_utils_getenv("STATISTICALME_OK_CHANNELS")
 
 dev_author_list = [int(aa) for aa in dev_author_env.split(",")]
 mainc = MainCommand(dev_author_list, ok_channels_env)
@@ -172,7 +170,7 @@ def main_function():
     client = SmeClient(intents=intents)
 
     logger.info("Calling discord Client.run")
-    client.run(os.environ["STATISTICALME_TOKEN"])
+    client.run(smer.sme_utils_getenv("STATISTICALME_TOKEN"))
 
 
 if __name__ == "__main__":
