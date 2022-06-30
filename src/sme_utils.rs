@@ -3,8 +3,7 @@ use pyo3::wrap_pyfunction;
 
 use unicode_normalization::UnicodeNormalization;
 
-fn mod_init() {
-}
+fn mod_init() {}
 
 fn sme_utils_normalize_caseless_impl(text: &str) -> String {
     text.nfkd().collect::<String>().to_lowercase()
@@ -27,7 +26,7 @@ pub fn sme_utils_is_equal_caseless(left: &str, right: &str) -> PyResult<bool> {
 fn sme_utils_shellwords_impl(text: &str) -> Vec<String> {
     match shell_words::split(text) {
         Ok(words) => words,
-        Err(_) => Vec::new()
+        Err(_) => Vec::new(),
     }
 }
 
@@ -37,7 +36,8 @@ pub fn sme_utils_shellwords(text: &str) -> PyResult<Vec<String>> {
 }
 
 fn sme_utils_loadenv_impl(path_env_file: &str) {
-    dotenv::from_filename(path_env_file).expect(format!("Error: failed to load environment file {}", path_env_file).as_str());
+    dotenv::from_filename(path_env_file)
+        .expect(format!("Error: failed to load environment file {}", path_env_file).as_str());
 }
 
 #[pyfunction]
@@ -46,7 +46,8 @@ pub fn sme_utils_loadenv(path_env_file: &str) {
 }
 
 fn sme_utils_getenv_impl(env_var: &str) -> String {
-    std::env::var(env_var).expect(format!("Error: failed to find environment var {}", env_var).as_str())
+    std::env::var(env_var)
+        .expect(format!("Error: failed to find environment var {}", env_var).as_str())
 }
 
 #[pyfunction]
