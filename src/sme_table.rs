@@ -2,7 +2,7 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
 use cli_table::{
-    format::{Border, HorizontalLine, Separator},
+    format::{Border, HorizontalLine, Separator, VerticalLine},
     Table,
 };
 use termcolor::ColorChoice;
@@ -14,14 +14,17 @@ fn sme_table_render_impl(
     header: &Vec<String>,
     data: &Vec<Vec<String>>,
 ) -> Vec<String> {
-    let hh = HorizontalLine::new(' ', ' ', ' ', '-');
-
     let tt = data
         .table()
         .color_choice(ColorChoice::Never)
         .title(header)
         .border(Border::builder().build())
-        .separator(Separator::builder().title(Some(hh)).build());
+        .separator(
+            Separator::builder()
+                .title(Some(HorizontalLine::new(' ', ' ', ' ', '-')))
+                .column(Some(VerticalLine::new(' ')))
+                .build(),
+        );
 
     tt.display()
         .unwrap()
