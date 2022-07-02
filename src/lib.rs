@@ -1,3 +1,4 @@
+mod sme_table;
 mod sme_time;
 mod sme_utils;
 
@@ -11,6 +12,7 @@ use pyo3::prelude::*;
 fn statisticalme(py: Python, m: &PyModule) -> PyResult<()> {
     // mod_init();
 
+    sme_table::sme_table_pymodule(py, m)?;
     sme_time::sme_time_pymodule(py, m)?;
     sme_utils::sme_utils_pymodule(py, m)?;
 
