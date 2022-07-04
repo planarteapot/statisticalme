@@ -2,8 +2,8 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 
 use cli_table::{
-    format::{Border, HorizontalLine, Separator, VerticalLine},
-    Table,
+    format::{Border, HorizontalLine, Justify, Padding, Separator, VerticalLine},
+    Cell, Table,
 };
 use termcolor::ColorChoice;
 
@@ -12,9 +12,31 @@ use termcolor::ColorChoice;
 
 fn sme_table_render_impl(
     header: &Vec<String>,
+    data_align: &Vec<String>,
     data: &Vec<Vec<String>>,
 ) -> Vec<String> {
-    let tt = data
+    let mut table_cells = Vec::new();
+
+    for drow in data {
+        let mut row_cells = Vec::new();
+
+        for (dcell, djust) in drow.iter().zip(data_align.iter()) {
+            row_cells.push(
+                dcell
+                    .cell()
+                    .justify(if djust.eq("l") {
+                        Justify::Left
+                    } else {
+                        Justify::Right
+                    })
+                    .padding(Padding::builder().build()),
+            )
+        }
+
+        table_cells.push(row_cells)
+    }
+
+    table_cells
         .table()
         .color_choice(ColorChoice::Never)
         .title(header)
@@ -24,9 +46,8 @@ fn sme_table_render_impl(
                 .title(Some(HorizontalLine::new(' ', ' ', ' ', '-')))
                 .column(Some(VerticalLine::new(' ')))
                 .build(),
-        );
-
-    tt.display()
+        )
+        .display()
         .unwrap()
         .to_string()
         .split("\n")
@@ -37,9 +58,10 @@ fn sme_table_render_impl(
 #[pyfunction]
 pub fn sme_table_render(
     header: Vec<String>,
+    data_align: Vec<String>,
     data: Vec<Vec<String>>,
 ) -> PyResult<Vec<String>> {
-    Ok(sme_table_render_impl(&header, &data))
+    Ok(sme_table_render_impl(&header, &data_align, &data))
 }
 
 pub fn sme_table_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
