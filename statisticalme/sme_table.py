@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
-from texttable import Texttable
+import statisticalme.statisticalme as smer
 
 
 def draw(header, data_align, data, flag_csv=False):
@@ -38,17 +38,15 @@ def draw(header, data_align, data, flag_csv=False):
             msg_lines.append(csv_line)
     else:
         # pretty text table
-        table = Texttable(0)
-        table.set_chars([" ", " ", " ", "-"])
-        table.set_deco(Texttable.HEADER | Texttable.VLINES)
-        table.set_header_align(["l"] * len(data_align))
-        table.set_cols_align(data_align)
+        data2 = list()
+        for drow in data:
+            data2.append([str(dcell) for dcell in drow])
 
-        table.header(header)
-
-        table.add_rows(data, header=False)
-
-        msg_lines = table.draw().splitlines()
+        msg_lines = smer.sme_table_render(
+            [str(hcell) for hcell in header],
+            [str(acell) for acell in data_align],
+            data2,
+        )
 
     flag_truncated = False
     next_out = list()
