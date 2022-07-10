@@ -114,6 +114,7 @@ class MainCommand:
         self.dev_parser.add_command("save", False, self.dev_command_save)
         self.dev_parser.add_command("roleprint", False, self.dev_command_roleprint)
         self.dev_parser.add_command("techlist", False, self.dev_command_techlist)
+        self.dev_parser.add_command("purge1", False, self.dev_command_purge1)
         self.dev_parser.add_command("quit", False, self.dev_command_quit)
 
         self.subparser_group = sme_paramparse.CommandParse(title="StatisticalMe group")
@@ -398,6 +399,35 @@ class MainCommand:
 
     async def dev_command_techlist(self, params):
         return ["Valid tech names: " + ", ".join(teh.tech_keys)]
+
+    async def dev_command_purge1(self, params):
+        delete_player_list = list()
+        len_all = len(self.players)
+
+        flag_yes = False
+        if "-y" in params:
+            flag_yes = True
+
+        for pkey,pdata in self.players.items():
+            flag_remove = True
+
+            if pdata["tech"] != [0] * len(teh.tech_keys):
+                flag_remove = False
+
+            ii = pdata["info"]
+            if "last_tech_update" in ii:
+                flag_remove = False
+
+            if flag_remove:
+                delete_player_list.append(pkey)
+
+        len_purge1 = len(delete_player_list)
+
+        if flag_yes:
+            for pkey in delete_player_list:
+                del self.players[pkey]
+
+        return [f"Purge1: current {len_all}, remove {len_purge1}"]
 
     async def dev_command_quit(self, params):
         self.opportunistic_save()
