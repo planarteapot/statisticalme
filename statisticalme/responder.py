@@ -401,8 +401,6 @@ class MainCommand:
         return ["Valid tech names: " + ", ".join(teh.tech_keys)]
 
     async def dev_command_purge1(self, params):
-        return_list = []
-
         delete_player_list = list()
         len_all = len(self.players)
 
@@ -430,20 +428,22 @@ class MainCommand:
 
         len_purge1 = len(delete_player_list)
 
-        return_list.append(f"Purge1: current {len_all}, remove {len_purge1}")
+        return_str = f"Purge1: current {len_all}, remove {len_purge1}"
 
-        if flag_name:
-            return_list.append("These players have NO tech:-")
-            name_list = [self.member_name_from_id(pkey) for pkey in delete_player_list]
+        if len_purge1 > 0:
+            if flag_name:
+                name_list = [
+                    self.member_name_from_id(pkey) for pkey in delete_player_list
+                ]
+                return_str += "\nThese players have NO tech:-\n  - " + "\n  - ".join(
+                    name_list
+                )
 
-            if len(name_list) > 0:
-                return_list += name_list
+            if flag_yes:
+                for pkey in delete_player_list:
+                    del self.players[pkey]
 
-        if flag_yes:
-            for pkey in delete_player_list:
-                del self.players[pkey]
-
-        return return_list
+        return [return_str]
 
     async def dev_command_quit(self, params):
         self.opportunistic_save()
