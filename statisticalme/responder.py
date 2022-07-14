@@ -455,7 +455,7 @@ class MainCommand:
         # TODO loop thru all guilds, and do not accept someone from outside those
 
         if self.current_guild is not None:
-            memb = self.current_guild.get_member(p_id)
+            memb = self.current_guild.get_member(int(p_id))
 
         return memb
 
@@ -482,7 +482,7 @@ class MainCommand:
         memb = None
 
         if self.current_guild is not None:
-            memb = self.current_guild.get_member_named(p_name)
+            memb = self.current_guild.get_member_named(str(p_name))
 
         return memb
 
@@ -490,7 +490,7 @@ class MainCommand:
         role = None
 
         if self.current_guild is not None:
-            role = self.current_guild.get_role(p_id)
+            role = self.current_guild.get_role(int(p_id))
 
         return role
 
