@@ -561,7 +561,8 @@ class MainCommand:
                 memb = self.member_from_id(int(value[3:-1]))
                 if memb is not None:
                     if memb_list is not None:
-                        memb_list.append(memb.id)
+                        if memb.id not in memb_list:
+                            memb_list.append(memb.id)
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
@@ -569,7 +570,8 @@ class MainCommand:
                 memb = self.member_from_id(int(value[2:-1]))
                 if memb is not None:
                     if memb_list is not None:
-                        memb_list.append(memb.id)
+                        if memb.id not in memb_list:
+                            memb_list.append(memb.id)
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
@@ -577,7 +579,8 @@ class MainCommand:
                 role = self.role_from_id(int(value[3:-1]))
                 if role is not None:
                     if role_list is not None:
-                        role_list.append(role.id)
+                        if role.id not in role_list:
+                            role_list.append(role.id)
                     else:
                         for memb in role.members:
                             if memb.id not in who_set:
@@ -586,7 +589,8 @@ class MainCommand:
                 memb = self.member_from_name(value[2:])
                 if memb is not None:
                     if memb_list is not None:
-                        memb_list.append(memb.id)
+                        if memb.id not in memb_list:
+                            memb_list.append(memb.id)
                     else:
                         if memb.id not in who_set:
                             who_set.append(memb.id)
@@ -594,7 +598,8 @@ class MainCommand:
                 role = self.role_from_name(value[2:])
                 if role is not None:
                     if role_list is not None:
-                        role_list.append(role.id)
+                        if role.id not in role_list:
+                            role_list.append(role.id)
                     else:
                         for memb in role.members:
                             if memb.id not in who_set:
