@@ -935,8 +935,8 @@ class MainCommand:
                     else:
                         try3_match = self.timeparse_match3.search(other)
                         if try3_match:
-                            timed += int(try3_match.group(2)) * 3600
-                            timed += int(try3_match.group(3)) * 60
+                            timed += int(try3_match.group(1)) * 3600
+                            timed += int(try3_match.group(2)) * 60
                         else:
                             break
 
