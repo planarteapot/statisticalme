@@ -1,3 +1,13 @@
 [build-system]
-requires = ["maturin>=0.10,<0.11", "wheel"]
+requires = ["maturin>=0.13", "wheel"]
 build-backend = "maturin"
+
+[project]
+name = "statisticalme"
+version = "22.2.2"
+description = "StatisticalMe"
+authors = [ { name = "Antony", email = "dentad@users.noreply.github.com" } ]
+requires-python = ">= 3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
