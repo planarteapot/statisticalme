@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-podman stop StatisticalMe
-podman rm StatisticalMe
+docker stop StatisticalMe
+docker rm StatisticalMe
 
 # --memory 500m
-podman run --detach --name StatisticalMe --volume "$(readlink -f ~/var-testing):/opt/statisticalme/var" localhost/statisticalme:latest
+docker run --detach --name StatisticalMe --volume "$(readlink -f ~/var-testing):/homesme/var" statisticalme:latest
