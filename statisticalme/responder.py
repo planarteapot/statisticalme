@@ -122,6 +122,13 @@ class MainCommand:
         self.subparser_group.add_command("remove", False, self.command_group_remove)
         self.subparser_group.add_command("list", False, self.command_group_list)
 
+        self.subparser_rolemem = sme_paramparse.CommandParse(
+            title="StatisticalMe role members"
+        )
+        self.subparser_rolemem.add_command("add", False, self.command_rolemem_add)
+        self.subparser_rolemem.add_command("remove", False, self.command_rolemem_remove)
+        self.subparser_rolemem.add_command("list", False, self.command_rolemem_list)
+
         self.subparser_ws = sme_paramparse.CommandParse(title="StatisticalMe ws")
         self.subparser_ws.add_command(
             "add", False, self.command_ws_add, auth_fn=self.auth_chief
@@ -159,6 +166,9 @@ class MainCommand:
         self.ord_parser.add_command("dev", True, self.dev_parser, auth_fn=self.auth_dev)
         self.ord_parser.add_command(
             "group", True, self.subparser_group, auth_fn=self.auth_chief
+        )
+        self.ord_parser.add_command(
+            "rolemem", True, self.subparser_rolemem, auth_fn=self.auth_chief
         )
         self.ord_parser.add_command("ws", True, self.subparser_ws)
         self.ord_parser.add_command(
@@ -835,6 +845,124 @@ class MainCommand:
 
         if group_strs:
             return_list.append("\n".join(group_strs))
+
+        return return_list
+
+    async def command_rolemem_add(self, params):
+        return_list = []
+
+        who_list_scratch = list()
+        memb_list = list()
+        role_list = list()
+        self.parse_who(
+            params,
+            who_list_scratch,
+            memb_list=memb_list,
+            role_list=role_list,
+        )
+
+        if len(role_list) > 0 and len(memb_list) > 0:
+            flag_added = False
+
+            for memb_id in memb_list:
+                memb = self.member_from_id(memb_id)
+                if memb is not None:
+                    list_roles = list()
+                    for role_id in role_list:
+                        role = self.role_from_id(role_id)
+                        if role is not None:
+                            if role not in memb.roles:
+                                list_roles.append(role)
+
+                    if list_roles:
+                        # print(f"MEGAFONE list_roles {list_roles}")
+                        # print(f"MEGAFONE t list_roles {type(list_roles)}")
+                        # print(f"MEGAFONE t0 list_roles {type(list_roles[0])}")
+                        await memb.add_roles(
+                            *list_roles,
+                            reason="StatisticalMe member adding role(s)",
+                            atomic=True,
+                        )
+                        flag_added = True
+
+            if flag_added:
+                return_list.append("Added")
+            else:
+                return_list.append("No adds")
+        else:
+            return_list.append("No members or roles")
+
+        return return_list
+
+    async def command_rolemem_remove(self, params):
+        return_list = []
+
+        who_list_scratch = list()
+        memb_list = list()
+        role_list = list()
+        self.parse_who(
+            params,
+            who_list_scratch,
+            memb_list=memb_list,
+            role_list=role_list,
+        )
+
+        if len(role_list) > 0 and len(memb_list) > 0:
+            flag_removed = False
+
+            for memb_id in memb_list:
+                memb = self.member_from_id(memb_id)
+                if memb is not None:
+                    list_roles = list()
+                    for role_id in role_list:
+                        role = self.role_from_id(role_id)
+                        if role is not None:
+                            if role in memb.roles:
+                                list_roles.append(role)
+
+                    if list_roles:
+                        await memb.remove_roles(
+                            *list_roles,
+                            reason="StatisticalMe member removing role(s)",
+                            atomic=True,
+                        )
+                        flag_removed = True
+
+            if flag_removed:
+                return_list.append("Removed")
+            else:
+                return_list.append("No removals")
+        else:
+            return_list.append("No members or roles")
+
+        return return_list
+
+    async def command_rolemem_list(self, params):
+        return_list = []
+
+        who_list_scratch = list()
+        role_list = list()
+        self.parse_who(
+            params,
+            who_list_scratch,
+            role_list=role_list,
+        )
+
+        if len(role_list) > 0:
+            msg_list = []
+            for role_id in role_list:
+                role = self.role_from_id(role_id)
+                if role is not None:
+                    msg_list.append(f"Role: {role.name}")
+                    member_names = [
+                        self.member_name_from_id(memb.id) for memb in role.members
+                    ]
+                    member_names.sort()
+                    msg_list.append("  members: " + ", ".join(member_names))
+
+            return_list.append("\n".join(msg_list))
+        else:
+            return_list.append("No roles")
 
         return return_list
 
