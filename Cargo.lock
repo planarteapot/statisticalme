@@ -383,7 +383,7 @@ checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 
 [[package]]
 name = "statisticalme"
-version = "22.2.2"
+version = "22.3.0"
 dependencies = [
  "chrono",
  "chrono-tz",
