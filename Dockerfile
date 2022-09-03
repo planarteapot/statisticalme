@@ -17,10 +17,6 @@ WORKDIR /working
 RUN maturin build --bindings pyo3 --compatibility linux --release --jobs 4
 
 RUN mkdir -p /opt/statisticalme
-RUN useradd --home-dir /opt/statisticalme sme
-RUN chown -R sme: /opt/statisticalme
-USER sme
-
 RUN mkdir -p /opt/statisticalme/venvsme
 RUN python3 -m venv /opt/statisticalme/venvsme
 ENV PATH="/opt/statisticalme/venvsme/bin:$PATH"
@@ -42,9 +38,6 @@ apt-get clean; \
 find /var/lib/apt/lists -type f -not -empty -delete
 
 RUN mkdir -p /opt/statisticalme
-RUN useradd --home-dir /opt/statisticalme sme
-RUN chown -R sme: /opt/statisticalme
-USER sme
 WORKDIR /opt/statisticalme
 
 RUN mkdir -p /opt/statisticalme/venvsme
