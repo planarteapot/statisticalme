@@ -16,18 +16,18 @@ COPY ./ /working/
 WORKDIR /working
 RUN maturin build --bindings pyo3 --compatibility linux --release --jobs 4
 
-RUN mkdir -p /homesme
-RUN useradd --home-dir /homesme sme
-RUN chown -R sme: /homesme
+RUN mkdir -p /opt/statisticalme
+RUN useradd --home-dir /opt/statisticalme sme
+RUN chown -R sme: /opt/statisticalme
 USER sme
 
-RUN mkdir -p /homesme/venvsme
-RUN python3 -m venv /homesme/venvsme
-ENV PATH="/homesme/venvsme/bin:$PATH"
-ENV VIRTUAL_ENV="/homesme/venvsme"
+RUN mkdir -p /opt/statisticalme/venvsme
+RUN python3 -m venv /opt/statisticalme/venvsme
+ENV PATH="/opt/statisticalme/venvsme/bin:$PATH"
+ENV VIRTUAL_ENV="/opt/statisticalme/venvsme"
 RUN pip install --requirement /working/requirements.txt
 RUN pip install /working/target/wheels/statisticalme-*.whl
-RUN rm -rf "/homesme/venvsme/share/python-wheels"
+RUN rm -rf "/opt/statisticalme/venvsme/share/python-wheels"
 
 FROM debian:bullseye-slim
 
@@ -41,17 +41,17 @@ apt-get -y autoremove; \
 apt-get clean; \
 find /var/lib/apt/lists -type f -not -empty -delete
 
-RUN mkdir -p /homesme
-RUN useradd --home-dir /homesme sme
-RUN chown -R sme: /homesme
+RUN mkdir -p /opt/statisticalme
+RUN useradd --home-dir /opt/statisticalme sme
+RUN chown -R sme: /opt/statisticalme
 USER sme
-WORKDIR /homesme
+WORKDIR /opt/statisticalme
 
-RUN mkdir -p /homesme/venvsme
-COPY --from=builder /homesme/venvsme /homesme/venvsme
-ENV PATH="/homesme/venvsme/bin:$PATH"
-ENV VIRTUAL_ENV="/homesme/venvsme"
+RUN mkdir -p /opt/statisticalme/venvsme
+COPY --from=builder /opt/statisticalme/venvsme /opt/statisticalme/venvsme
+ENV PATH="/opt/statisticalme/venvsme/bin:$PATH"
+ENV VIRTUAL_ENV="/opt/statisticalme/venvsme"
 
-RUN mkdir -p /homesme/var
+RUN mkdir -p /opt/statisticalme/var
 
 ENTRYPOINT ["python3", "-m", "statisticalme"]

@@ -3,5 +3,4 @@
 docker stop StatisticalMe
 docker rm StatisticalMe
 
-# --memory 500m
-docker run --detach --name StatisticalMe --volume "$(readlink -f ~/var-testing):/homesme/var" statisticalme:latest
+docker run --detach --name StatisticalMe --volume "$(readlink -f ~/var-testing):/opt/statisticalme/var" statisticalme:latest
