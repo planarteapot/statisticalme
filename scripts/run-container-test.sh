@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker stop StatisticalMe
-docker rm StatisticalMe
+docker stop SmeTestBot
+docker rm SmeTestBot
 
-docker run --detach --name StatisticalMe --volume "$(readlink -f ~/var-testing):/opt/statisticalme/var" statisticalme:latest
+docker run --detach --name SmeTestBot --volume "$(readlink -f ~/var-testing):/opt/statisticalme/var" statisticalme:latest
