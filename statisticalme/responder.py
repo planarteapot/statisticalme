@@ -364,7 +364,7 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = "StatisticalMe"
-        info_str += "\nversion: 22.3.0"
+        info_str += "\nversion: 22.3.1"
         info_str += "\nnotes:"
         info_str += "\n  - purge 1 with naming"
         info_str += "\n  - full switch from podman to docker"
