@@ -11,7 +11,10 @@ path = "src/lib.rs"
 
 [profile.release]
 debug = false
+strip = true
+# opt-level = ""
 lto = true
+codegen-units = 1
 
 [dependencies]
 pyo3 = { version = "~0.17.1", features = ["extension-module"] }
