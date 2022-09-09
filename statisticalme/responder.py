@@ -890,10 +890,19 @@ class MainCommand:
 
             if flag_added:
                 return_list.append("Added")
+
+                msg_list = []
+                for role_id in role_list:
+                    role = self.role_from_id(role_id)
+                    if role is not None:
+                        msg_list.append(f"Role: {role.name}")
+                        msg_list.append("  members: " + " ".join([f"<@!{memb.id}>" for memb in role.members]))
+
+                return_list.append("\n".join(msg_list))
             else:
                 return_list.append("No adds")
         else:
-            return_list.append("No members or roles")
+            return_list.append("No members and/or roles")
 
         return return_list
 
