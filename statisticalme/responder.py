@@ -2073,7 +2073,10 @@ class MainCommand:
         return_ok = False
 
         who_list_good = list()
-        return_list = return_list + self.parse_who(params, who_list_good)
+        other_list = list()
+        return_list = return_list + self.parse_who(
+            params, who_list_good, other=other_list
+        )
 
         if not self.auth_chief():
             who_list_good = list()
@@ -2103,9 +2106,13 @@ class MainCommand:
 
                     memb = self.member_from_id(pkey)
                     if memb is not None:
+                        msg_out = f"{instigator_name} wants you to check in during the next hour"
+                        if len(other_list) >= 1:
+                            msg_out += "\n" + " ".join(other_list)
+
                         self.queue_msg_for_send_out(
                             memb,
-                            f"{instigator_name} wants you to check in during the next hour",
+                            msg_out,
                         )
 
             if who_list_away:
