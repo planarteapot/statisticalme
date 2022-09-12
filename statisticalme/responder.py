@@ -896,7 +896,10 @@ class MainCommand:
                     role = self.role_from_id(role_id)
                     if role is not None:
                         msg_list.append(f"Role: {role.name}")
-                        msg_list.append("  members: " + " ".join([f"<@!{memb.id}>" for memb in role.members]))
+                        msg_list.append(
+                            "  members: "
+                            + " ".join([f"<@!{memb.id}>" for memb in role.members])
+                        )
 
                 return_list.append("\n".join(msg_list))
             else:
