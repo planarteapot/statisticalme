@@ -30,7 +30,11 @@ class CommandParse:
         self.params = dict()
 
     def add_command(self, key, object_flag, value, auth_fn=None):
-        self.params[smer.sme_utils_normalize_caseless(key)] = [object_flag, value, auth_fn]
+        self.params[smer.sme_utils_normalize_caseless(key)] = [
+            object_flag,
+            value,
+            auth_fn,
+        ]
 
     async def do_command(self, param_list):
         return_list = []
