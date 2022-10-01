@@ -285,6 +285,26 @@ class TechHandler:
 
         return tname
 
+    def tech_key_range_list(self, range_name):
+        range_list = None
+
+        if range_name == "other":
+            range_list = self.tech_keys[self.other_range[0] : self.other_range[1]]
+        elif range_name in ["ship", "ships"]:
+            range_list = self.tech_keys[self.ships_range[0] : self.ships_range[1]]
+        elif range_name == "trade":
+            range_list = self.tech_keys[self.trade_range[0] : self.trade_range[1]]
+        elif range_name == "mining":
+            range_list = self.tech_keys[self.mining_range[0] : self.mining_range[1]]
+        elif range_name in ["weapon", "weapons"]:
+            range_list = self.tech_keys[self.weapon_range[0] : self.weapon_range[1]]
+        elif range_name in ["shield", "shields"]:
+            range_list = self.tech_keys[self.shield_range[0] : self.shield_range[1]]
+        elif range_name == "support":
+            range_list = self.tech_keys[self.support_range[0] : self.support_range[1]]
+
+        return range_list
+
     def tech_keys_range_other(self):
         return self.tech_keys[self.other_range[0] : self.other_range[1]]
 
