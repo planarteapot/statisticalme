@@ -650,32 +650,9 @@ class MainCommand:
                 pass
             else:
                 what = smer.sme_utils_normalize_caseless(value)
-                if what == "other":
-                    for tt in teh.tech_keys_range_other():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "ships":
-                    for tt in teh.tech_keys_range_ships():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "trade":
-                    for tt in teh.tech_keys_range_trade():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "mining":
-                    for tt in teh.tech_keys_range_mining():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "weapons":
-                    for tt in teh.tech_keys_range_weapon():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "shields":
-                    for tt in teh.tech_keys_range_shield():
-                        if tt not in what_set:
-                            what_set.append(tt)
-                elif what == "support":
-                    for tt in teh.tech_keys_range_support():
+                what_list = teh.tech_key_range_list(what)
+                if what_list is not None:
+                    for tt in what_list:
                         if tt not in what_set:
                             what_set.append(tt)
                 else:
@@ -2250,7 +2227,7 @@ class MainCommand:
 
                     # mining
                     otherminingtech = list()
-                    ml1 = teh.tech_keys_range_mining()
+                    ml1 = teh.tech_key_range_list("mining")
                     for mtkey in ml1:
                         score = 0
                         if mtkey in ww:
@@ -2308,7 +2285,7 @@ class MainCommand:
                     if bslvl >= 2 and bslvl <= 6:
                         scount = bslvl - 1
 
-                        techlist = teh.tech_keys_range_support()
+                        techlist = teh.tech_key_range_list("support")
 
                         supporttech = list()
                         for tkey in techlist:
@@ -2371,7 +2348,7 @@ class MainCommand:
                             faccum.append(fscore)
 
                     # weapons
-                    wl1 = teh.tech_keys_range_weapon()
+                    wl1 = teh.tech_key_range_list("weapon")
                     techlist = [t for t in wl1 if t not in ["dart"]]
                     weapontech = list()
                     for tkey in techlist:
@@ -2432,7 +2409,7 @@ class MainCommand:
                             faccum.append(fscore)
 
                     # shields
-                    techlist = teh.tech_keys_range_shield()
+                    techlist = teh.tech_key_range_list("shield")
                     shieldtech = list()
                     for tkey in techlist:
                         score = 0
@@ -2512,7 +2489,7 @@ class MainCommand:
 
                     # mining
                     otherminingtech = list()
-                    ml1 = teh.tech_keys_range_mining()
+                    ml1 = teh.tech_key_range_list("mining")
                     for mtkey in ml1:
                         score = 0
                         if mtkey in ww:
@@ -2570,7 +2547,7 @@ class MainCommand:
                     if bslvl >= 2 and bslvl <= 6:
                         scount = bslvl - 1
 
-                        techlist = teh.tech_keys_range_support()
+                        techlist = teh.tech_key_range_list("support")
 
                         supporttech = list()
                         for tkey in techlist:
@@ -2633,7 +2610,7 @@ class MainCommand:
                             faccum.append(fscore)
 
                     # weapons
-                    wl1 = teh.tech_keys_range_weapon()
+                    wl1 = teh.tech_key_range_list("weapon")
                     weapontech = list()
                     for tkey in wl1:
                         score = 0
@@ -2693,7 +2670,7 @@ class MainCommand:
                             faccum.append(fscore)
 
                     # shields
-                    techlist = teh.tech_keys_range_shield()
+                    techlist = teh.tech_key_range_list("shield")
                     shieldtech = list()
                     for tkey in techlist:
                         score = 0

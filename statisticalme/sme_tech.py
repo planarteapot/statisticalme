@@ -305,27 +305,6 @@ class TechHandler:
 
         return range_list
 
-    def tech_keys_range_other(self):
-        return self.tech_keys[self.other_range[0] : self.other_range[1]]
-
-    def tech_keys_range_ships(self):
-        return self.tech_keys[self.ships_range[0] : self.ships_range[1]]
-
-    def tech_keys_range_trade(self):
-        return self.tech_keys[self.trade_range[0] : self.trade_range[1]]
-
-    def tech_keys_range_mining(self):
-        return self.tech_keys[self.mining_range[0] : self.mining_range[1]]
-
-    def tech_keys_range_weapon(self):
-        return self.tech_keys[self.weapon_range[0] : self.weapon_range[1]]
-
-    def tech_keys_range_shield(self):
-        return self.tech_keys[self.shield_range[0] : self.shield_range[1]]
-
-    def tech_keys_range_support(self):
-        return self.tech_keys[self.support_range[0] : self.support_range[1]]
-
     def range_name(self, tech_id):
         name = "unknown"
 
