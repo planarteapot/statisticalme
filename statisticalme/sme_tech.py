@@ -286,7 +286,7 @@ class TechHandler:
         return tech_fullname
 
     def tech_key_range_list(self, range_name):
-        range_list = None
+        range_list = list()
 
         if range_name == "other":
             range_list = self.tech_keys[self.other_range[0] : self.other_range[1]]
