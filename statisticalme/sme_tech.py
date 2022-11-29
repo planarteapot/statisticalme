@@ -260,30 +260,30 @@ class TechHandler:
 
     #     return r_index
 
-    def get_tech_index(self, tech):
+    def get_tech_index(self, tech_key):
         li = -1
 
-        if tech in self.tech_key_index:
-            li = self.tech_key_index[tech]
-        elif tech == "relics":
+        if tech_key in self.tech_key_index:
+            li = self.tech_key_index[tech_key]
+        elif tech_key == "relics":
             li = 9900
-        elif tech == "totalcargo":
+        elif tech_key == "totalcargo":
             li = 9901
 
         return li
 
-    def get_tech_name(self, tech):
-        tname = ""
+    def get_tech_name(self, tech_key):
+        tech_fullname = ""
 
-        tindex = self.get_tech_index(tech)
+        tindex = self.get_tech_index(tech_key)
         if tindex >= 0 and tindex < 9900:
-            tname = self.tech_names[tindex]
+            tech_fullname = self.tech_names[tindex]
         elif tindex == 9900:
-            tname = "Relics"
+            tech_fullname = "Relics"
         elif tindex == 9901:
-            tname = "Total Cargo"
+            tech_fullname = "Total Cargo"
 
-        return tname
+        return tech_fullname
 
     def tech_key_range_list(self, range_name):
         range_list = None
@@ -306,24 +306,24 @@ class TechHandler:
         return range_list
 
     def range_name(self, tech_id):
-        name = "unknown"
+        range_name = "unknown"
 
         if tech_id >= self.other_range[0] and tech_id < self.other_range[1]:
-            name = "other"
+            range_name = "other"
         elif tech_id >= self.ships_range[0] and tech_id < self.ships_range[1]:
-            name = "ships"
+            range_name = "ship"
         elif tech_id >= self.trade_range[0] and tech_id < self.trade_range[1]:
-            name = "trade"
+            range_name = "trade"
         elif tech_id >= self.mining_range[0] and tech_id < self.mining_range[1]:
-            name = "mining"
+            range_name = "mining"
         elif tech_id >= self.weapon_range[0] and tech_id < self.weapon_range[1]:
-            name = "weapon"
+            range_name = "weapon"
         elif tech_id >= self.shield_range[0] and tech_id < self.shield_range[1]:
-            name = "shield"
+            range_name = "shield"
         elif tech_id >= self.support_range[0] and tech_id < self.support_range[1]:
-            name = "support"
+            range_name = "support"
 
-        return name
+        return range_name
 
     def is_range_change(self, id1, id2):
         result = False
