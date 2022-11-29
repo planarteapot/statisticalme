@@ -305,8 +305,10 @@ class TechHandler:
 
         return range_list
 
-    def range_name(self, tech_id):
+    def _get_tech_range_name(self, tech_key):
         range_name = "unknown"
+
+        tech_id = self.get_tech_index(tech_key)
 
         if tech_id >= self.other_range[0] and tech_id < self.other_range[1]:
             range_name = "other"
@@ -325,10 +327,13 @@ class TechHandler:
 
         return range_name
 
-    def is_range_change(self, id1, id2):
+    def is_range_change2(self, tech_key1, tech_key2):
         result = False
 
-        if self.range_name(id1) != self.range_name(id2):
-            result = True
+        if tech_key1 is not None and tech_key2 is not None:
+            if self._get_tech_range_name(tech_key1) != self._get_tech_range_name(
+                tech_key2
+            ):
+                result = True
 
         return result

@@ -1786,20 +1786,19 @@ class MainCommand:
         if len(who_list_good) > 0 and len(what_list_good) > 0:
             user_list = []
 
-            last_tech_index = -1
+            last_tech_key = ""
             for what in what_list_good:
                 row_data = [self.player_tech_get(who, what) for who in who_list_good]
                 if row_data != ([0] * len(row_data)) or flag_csv:
-                    tech_index = teh.get_tech_index(what)
                     if flag_csv:
                         prefix = ""
                     else:
                         prefix = "  "
-                        if teh.is_range_change(last_tech_index, tech_index):
+                        if teh.is_range_change2(last_tech_key, what):
                             prefix = "- "
 
                     user_list.append([prefix + teh.get_tech_name(what)] + row_data)
-                    last_tech_index = tech_index
+                    last_tech_key = what
 
             who_names = [self.member_name_from_id(wh) for wh in who_list_good]
             return_list += sme_table.draw(
