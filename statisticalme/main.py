@@ -167,6 +167,7 @@ def main_function():
     intents.reactions = False
     intents.members = True
     intents.messages = True
+    intents.message_content = True
 
     client = SmeClient(intents=intents)
 

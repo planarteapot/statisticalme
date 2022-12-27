@@ -320,7 +320,7 @@ class MainCommand:
 
             if len(return_list) < 1:
                 if self.group_contains_member("dev", self.current_author.id):
-                    return_list = ["Pardon my liege?"]
+                    return_list = ["Pardon, my liege?"]
                 elif self.group_contains_member("auth_chief", self.current_author.id):
                     return_list = ["Excuse me chief?"]
                 else:
@@ -364,13 +364,9 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = "StatisticalMe"
-        info_str += "\nversion: 22.3.3"
+        info_str += "\nversion: 22.3.4"
         info_str += "\nnotes:"
-        info_str += "\n  - checkin msg"
-        info_str += "\n  - purge 1 with naming"
-        info_str += "\n  - full switch from podman to docker"
-        info_str += "\n  - fix matching time HH:MM"
-        info_str += "\n  - misc improvements"
+        info_str += "\n  - discord.py 2.1"
         info_str += "\nuptime: {ut}".format(
             ut=self.timedelta_as_string(self.time_now - self.time_up)
         )

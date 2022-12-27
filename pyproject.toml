@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "statisticalme"
-version = "22.3.3"
+version = "22.3.4"
 description = "StatisticalMe"
 authors = [ { name = "Antony", email = "dentad@users.noreply.github.com" } ]
 requires-python = ">= 3.7"
