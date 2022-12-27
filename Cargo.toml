@@ -17,12 +17,12 @@ lto = true
 codegen-units = 1
 
 [dependencies]
-pyo3 = { version = "~0.17.1", features = ["extension-module"] }
+pyo3 = { version = "~0.17.3", features = ["extension-module"] }
 # pyo3-log = "~0.6.0"
 # log = "~0.4.16"
-chrono = { version = "~0.4.22", default-features = false, features = ["clock", "std"] }
-chrono-tz = "~0.6.3"
-unicode-normalization = "~0.1.21"
+chrono = { version = "~0.4.23", default-features = false, features = ["clock", "std"] }
+chrono-tz = "~0.8.1"
+unicode-normalization = "~0.1.22"
 shell-words = "1.1"
 dotenv = "~0.15.0"
 cli-table = { version = "~0.4.7", default-features = false }
