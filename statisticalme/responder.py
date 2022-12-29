@@ -646,9 +646,9 @@ class MainCommand:
                 pass
             else:
                 what = smer.sme_utils_normalize_caseless(value)
-                what_list = teh.tech_key_range_list(what)
-                if what_list is not None:
-                    for tt in what_list:
+                what_rangelist = teh.tech_key_range_list(what)
+                if what_rangelist:
+                    for tt in what_rangelist:
                         if tt not in what_set:
                             what_set.append(tt)
                 else:
