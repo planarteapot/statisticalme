@@ -20,9 +20,10 @@ pub fn sme_time_now() -> PyResult<u32> {
 }
 
 fn sme_time_as_string_impl(time_ob: u32) -> String {
-    Utc.timestamp(time_ob as i64, 0)
-        .format(_TIMEFMT)
-        .to_string()
+    match Utc.timestamp_opt(time_ob as i64, 0) {
+        LocalResult::Single(ts) => ts.format(_TIMEFMT).to_string(),
+        _ => "".to_string(),
+    }
 }
 
 #[pyfunction]
