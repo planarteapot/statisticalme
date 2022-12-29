@@ -625,6 +625,15 @@ class MainCommand:
 
             who_list.append(who)
 
+        # logger.debug(f"parse_who() return_list {return_list}")
+        # logger.debug(f"parse_who() who_list {who_list}")
+        # if memb_list is not None:
+        #     logger.debug(f"parse_who() memb_list {memb_list}")
+        # if role_list is not None:
+        #     logger.debug(f"parse_who() role_list {role_list}")
+        # if other is not None:
+        #     logger.debug(f"parse_who() other {other}")
+
         return return_list
 
     def parse_who_what_int(self, param_list, who_list, what_list, int_list, other=None):
@@ -672,6 +681,13 @@ class MainCommand:
                 what_list.append(what)
             else:
                 return_list.append(f"Tech {what} not found")
+
+        # logger.debug(f"parse_who_what_int() return_list {return_list}")
+        # logger.debug(f"parse_who_what_int() who_list {who_list}")
+        # logger.debug(f"parse_who_what_int() what_list {what_list}")
+        # logger.debug(f"parse_who_what_int() int_list {int_list}")
+        # if other is not None:
+        #     logger.debug(f"parse_who_what_int() other {other}")
 
         return return_list
 

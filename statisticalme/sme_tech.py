@@ -303,6 +303,8 @@ class TechHandler:
         elif range_name == "support":
             range_list = self.tech_keys[self.support_range[0] : self.support_range[1]]
 
+        # logger.debug(f"tech_key_range_list() range_list {range_list}")
+
         return range_list
 
     def _get_tech_range_name(self, tech_key):
