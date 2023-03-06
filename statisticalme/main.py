@@ -17,16 +17,17 @@
 # You should have received a copy of the GNU General Public License
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
-import sys
-
-from pathlib import Path
-from .responder import MainCommand
-
-import discord
 import logging
 import re
+import sys
 import time
+from pathlib import Path
+
+import discord
+
 import statisticalme.statisticalme as smer
+
+from .responder import MainCommand
 
 smer.sme_utils_loadenv("var/env.sh")
 

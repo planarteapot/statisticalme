@@ -15,23 +15,21 @@
 # You should have received a copy of the GNU General Public License
 # along with StatisticalMe.  If not, see <https://www.gnu.org/licenses/>.
 
-import sys
-
-from discord.ext import tasks
-import aiohttp
 import copy
-import discord
 import json
 import logging
 import math
 import re
+import sys
 import traceback
 
-from . import sme_paramparse
-from . import sme_table
-from . import sme_tech
+import aiohttp
+import discord
+from discord.ext import tasks
+
 import statisticalme.statisticalme as smer
 
+from . import sme_paramparse, sme_table, sme_tech
 
 logger = logging.getLogger("StatisticalMe")
 teh = sme_tech.TechHandler()

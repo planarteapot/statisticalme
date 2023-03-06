@@ -17,7 +17,6 @@
 
 import logging
 
-
 logger = logging.getLogger("StatisticalMe")
 
 

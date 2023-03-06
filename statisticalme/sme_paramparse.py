@@ -17,8 +17,8 @@
 
 
 import logging
-import statisticalme.statisticalme as smer
 
+import statisticalme.statisticalme as smer
 
 logger = logging.getLogger("StatisticalMe")
 
