@@ -1680,7 +1680,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0 and len(what_list_good) > 0:
@@ -1736,7 +1736,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         flag_csv = False
@@ -1780,7 +1780,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         flag_csv = False
@@ -1832,7 +1832,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0:
@@ -1860,7 +1860,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0:
@@ -1889,7 +1889,7 @@ class MainCommand:
                 who_list_good = [self.current_author.id]
 
             if (
-                not str(self.current_channel) in self.ok_channels
+                str(self.current_channel) not in self.ok_channels
                 and not self.auth_chief()
             ):
                 who_list_good = [self.current_author.id]
@@ -2134,7 +2134,7 @@ class MainCommand:
             who_set = set(who_list_good)
             who_list_good = list(all_who - who_set)
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         if len(who_list_good) > 0:
@@ -2176,7 +2176,7 @@ class MainCommand:
         if len(who_list_good) == 0:
             who_list_good = [self.current_author.id]
 
-        if not str(self.current_channel) in self.ok_channels and not self.auth_chief():
+        if str(self.current_channel) not in self.ok_channels and not self.auth_chief():
             who_list_good = [self.current_author.id]
 
         score_key = "210918"
