@@ -143,6 +143,7 @@ class SmeClient(discord.Client):
                     if rarg_command == "delete-original-message":
                         await message.delete()
                     elif rarg_command == "quit":
+                        logger.info("Quitting by command")
                         await self.close()
                         sys.exit(0)
 
