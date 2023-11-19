@@ -2762,6 +2762,9 @@ class MainCommand:
         if not flag_detail:
             user_list.sort(key=lambda x: x[1], reverse=True)
 
+            if len(t_header) == 2:
+                t_header[1] = "Score"
+
             return_list += sme_table.draw(t_header, ["l", "r"], user_list)
 
         if flagged_whotruncated:
