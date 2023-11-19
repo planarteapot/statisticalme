@@ -362,9 +362,9 @@ class MainCommand:
 
     async def dev_command_info(self, params):
         info_str = "StatisticalMe"
-        info_str += "\nversion: 23.0.0"
+        info_str += "\nversion: 23.1.0"
         info_str += "\nnotes:"
-        info_str += "\n  - discord.py 2.2"
+        info_str += "\n  - discord.py 2.3"
         info_str += "\nuptime: {ut}".format(
             ut=self.timedelta_as_string(self.time_now - self.time_up)
         )
