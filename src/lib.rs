@@ -9,12 +9,12 @@ use pyo3::prelude::*;
 // }
 
 #[pymodule]
-fn statisticalme(py: Python, m: &PyModule) -> PyResult<()> {
+fn statisticalme(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // mod_init();
 
-    sme_table::sme_table_pymodule(py, m)?;
-    sme_time::sme_time_pymodule(py, m)?;
-    sme_utils::sme_utils_pymodule(py, m)?;
+    sme_table::sme_table_pymodule(m)?;
+    sme_time::sme_time_pymodule(m)?;
+    sme_utils::sme_utils_pymodule(m)?;
 
     Ok(())
 }

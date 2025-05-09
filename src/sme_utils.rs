@@ -55,7 +55,7 @@ pub fn sme_utils_getenv(env_var: &str) -> PyResult<String> {
     Ok(sme_utils_getenv_impl(env_var))
 }
 
-pub fn sme_utils_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+pub fn sme_utils_pymodule(m: &Bound<'_, PyModule>) -> PyResult<()> {
     mod_init();
 
     m.add_wrapped(wrap_pyfunction!(sme_utils_normalize_caseless))?;

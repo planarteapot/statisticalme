@@ -64,7 +64,7 @@ pub fn sme_table_render(
     Ok(sme_table_render_impl(&header, &data_align, &data))
 }
 
-pub fn sme_table_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+pub fn sme_table_pymodule(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // mod_init();
 
     m.add_wrapped(wrap_pyfunction!(sme_table_render))?;

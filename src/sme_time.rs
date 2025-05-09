@@ -128,7 +128,7 @@ pub fn sme_time_convert_to_timezone(time_ob: u32, tz_str: &str) -> PyResult<Stri
     })
 }
 
-pub fn sme_time_pymodule(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+pub fn sme_time_pymodule(m: &Bound<'_, PyModule>) -> PyResult<()> {
     mod_init();
 
     m.add_wrapped(wrap_pyfunction!(sme_time_now))?;
